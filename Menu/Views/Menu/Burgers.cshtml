@@ -1,17 +1,4 @@
-﻿@* @model IEnumerable<Menu.Models.Product>
-
-<h2>Burgers</h2>
-<ul>
-@foreach (var product in Model)
-{
-    <li>
-        <strong>@product.Name</strong> - $@product.Price<br />
-        @product.Description
-    </li>
-}
-</ul> *@
-
-@model IEnumerable<Menu.Models.Product>
+﻿@model IEnumerable<Menu.Models.Product>
 @{
     ViewData["Title"] = "Burgers";
 }
@@ -29,7 +16,6 @@
             <p>@product.Description</p>
             <p><b>Category:</b> @product.Category</p>
             <p><b>Price:</b> $@product.Price</p>
-            <p><b>Stock:</b> @product.Stock</p>
         </div>
     }
 </div>

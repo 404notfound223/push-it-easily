@@ -1,7 +1,48 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Users\\source\\repos\\Menu\\",
-  "Documents": [],
+  "WorkspaceRootPath": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\specials.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\specials.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\seafood.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\seafood.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\pizza.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\pizza.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\pasta.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\pasta.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\desserts.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\desserts.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\burgers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\burgers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\all.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\all.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\menu\\beverages.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\beverages.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,8 +50,138 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Specials.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Specials.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml",
+              "RelativeToolTip": "Views\\Menu\\Specials.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:10:08.744Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Seafood.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Seafood.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml",
+              "RelativeToolTip": "Views\\Menu\\Seafood.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:09:57.799Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Pizza.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Pizza.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml",
+              "RelativeToolTip": "Views\\Menu\\Pizza.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:09:47.103Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Pasta.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Pasta.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml",
+              "RelativeToolTip": "Views\\Menu\\Pasta.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:09:29.466Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Desserts.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Desserts.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml",
+              "RelativeToolTip": "Views\\Menu\\Desserts.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:09:15.733Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Burgers.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Burgers.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml",
+              "RelativeToolTip": "Views\\Menu\\Burgers.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:09:02.11Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Beverages.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Beverages.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml",
+              "RelativeToolTip": "Views\\Menu\\Beverages.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:08:43.948Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "All.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\All.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml",
+              "RelativeToolTip": "Views\\Menu\\All.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-29T11:08:38.42Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-08-29T11:07:23.131Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-08-29T11:03:36.492Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
