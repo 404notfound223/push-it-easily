@@ -1,0 +1,12 @@
+DS001	Brownies	10.00	Chocolate fudge brownies with nuts	Desserts	/images/desserts/brownies.jpg	90	200
+DS002	Caramel Pudding	11.20	Smooth caramel pudding	Desserts	/images/desserts/caramelpudding.jpg	70	200
+DS003	Cheese Cake	12.30	Creamy New York style cheesecake	Desserts	/images/desserts/cheesecake.jpg	80	200
+DS004	Cheese Tart	13.50	Crispy tart with creamy cheese filling	Desserts	/images/desserts/cheesetart.jpg	60	200
+DS005	Chocolate Cake	14.40	Rich chocolate layered cake	Desserts	/images/desserts/chocolatecake.jpg	95	200
+DS006	Cookie	15.10	Crunchy chocolate chip cookie	Desserts	/images/desserts/cookie.jpg	150	200
+DS007	CupCake	15.80	Small sweet cupcake with frosting	Desserts	/images/desserts/cupcake.jpg	120	200
+DS008	Donut	16.20	Soft fried donut with sugar coating	Desserts	/images/desserts/donut.jpg	140	200
+DS009	Ice Cream Bowl	16.50	Creamy ice cream bowl with sprinkles	Desserts	/images/desserts/icecreambowl.jpg	110	200
+DS010	Lemon Macaron	16.80	Tangy lemon flavored macaron	Desserts	/images/desserts/lemonmacaron.jpg	75	200
+DS011	Red Velvet Cake	17.50	Moist red velvet layered cake	Desserts	/images/desserts/redvelvetcake.jpg	85	200
+DS012	Strawberry Pie	17.90	Fresh strawberry filled pie	Desserts	/images/desserts/strawberrypie.jpg	95	200

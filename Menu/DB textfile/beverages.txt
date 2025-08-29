@@ -1,0 +1,15 @@
+BV001	100 Plus	2.80	Refreshing isotonic drink	Beverages	/images/beverages/100plus.jpg	120	200
+BV002	Apple Juice	3.50	Fresh apple flavored drink	Beverages	/images/beverages/applejuice.jpg	85	200
+BV003	Chocolate Milk	4.20	Sweet chocolate flavored milk	Beverages	/images/beverages/chocolatemilk.jpg	150	200
+BV004	Coconut Water	3.80	Natural coconut drink	Beverages	/images/beverages/coconutwater.jpg	60	200
+BV005	Coffee	4.50	Hot brewed coffee	Beverages	/images/beverages/coffee.jpg	200	200
+BV006	Cola	2.50	Classic carbonated soft drink	Beverages	/images/beverages/cola.jpg	175	200
+BV007	Grape Juice	3.60	Sweet grape flavored drink	Beverages	/images/beverages/grapejuice.jpg	90	200
+BV008	Green Tea	3.20	Refreshing green tea	Beverages	/images/beverages/greentea.jpg	140	200
+BV009	Lemonade	3.00	Fresh lemon flavored drink	Beverages	/images/beverages/lemonade.jpg	70	200
+BV010	Milk	2.90	Fresh cow’s milk	Beverages	/images/beverages/milk.jpg	110	200
+BV011	Orange Juice	3.40	Fresh orange flavored drink	Beverages	/images/beverages/orangejuice.jpg	95	200
+BV012	Tea	3.00	Hot brewed tea	Beverages	/images/beverages/tea.jpg	160	200
+BV013	Water	1.50	Pure drinking water	Beverages	/images/beverages/water.jpg	130	200
+BV014	Watermelon Juice	3.70	Fresh watermelon flavored drink	Beverages	/images/beverages/watermelonjuice.jpg	75	200
+BV015	Chrysanthemum Tea	2.80	Traditional floral tea	Beverages	/images/beverages/chrysanthemumtea.jpg	105	200

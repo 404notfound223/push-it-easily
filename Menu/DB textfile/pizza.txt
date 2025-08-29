@@ -1,0 +1,10 @@
+PZ001	BBQ Chicken Pizza	15.00	Smoky BBQ chicken pizza	Pizza	/images/pizza/bbqchicken.jpg	90	200
+PZ002	Detroit Style Pizza	16.50	Thick crust Detroit style pizza	Pizza	/images/pizza/detroitstyle.jpg	85	200
+PZ003	Hawaiian Pizza	17.20	Pizza topped with ham and pineapple	Pizza	/images/pizza/hawaiian.jpg	95	200
+PZ004	Margherita Pizza	18.30	Classic Margherita with tomato and basil	Pizza	/images/pizza/margherita.jpg	100	200
+PZ005	Mozzarella Pizza	19.00	Pizza loaded with mozzarella cheese	Pizza	/images/pizza/mozzarella.jpg	80	200
+PZ006	Neapolitan Pizza	20.10	Traditional Neapolitan style pizza	Pizza	/images/pizza/neapolitan.jpg	110	200
+PZ007	Pepperoni Pizza	21.50	Pepperoni slices on cheese pizza	Pizza	/images/pizza/pepperoni.jpg	120	200
+PZ008	Pesto Pizza	22.20	Pizza with fresh basil pesto	Pizza	/images/pizza/pesto.jpg	70	200
+PZ009	Supreme Pizza	23.30	Pizza with assorted toppings	Pizza	/images/pizza/supreme.jpg	95	200
+PZ010	Truffle Pizza	25.00	Pizza with truffle oil and mushrooms	Pizza	/images/pizza/truffle.jpg	65	200

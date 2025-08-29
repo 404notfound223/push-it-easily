@@ -1,0 +1,10 @@
+PA001	Cacio e Pepe Pasta	20.00	Creamy cheese and pepper pasta	Pasta	/images/pasta/cacioepepe.jpg	80	200
+PA002	Macaroni Cheese Pasta	21.10	Cheesy macaroni baked to perfection	Pasta	/images/pasta/macaronicheese.jpg	95	200
+PA003	Penne Arrabbiata Pasta	22.20	Spicy tomato penne with chili flakes	Pasta	/images/pasta/pennearrabbiata.jpg	70	200
+PA004	Pesto Pasta	23.30	Fresh basil pesto tossed with pasta	Pasta	/images/pasta/pestopasta.jpg	65	200
+PA005	Ravioli Pasta	24.40	Cheese filled ravioli with tomato sauce	Pasta	/images/pasta/ravioli.jpg	90	200
+PA006	Spaghetti Bolognese Pasta	25.50	Classic spaghetti with meat sauce	Pasta	/images/pasta/spaghettibolognese.jpg	110	200
+PA007	Carbonara Pasta	26.60	Creamy egg and bacon spaghetti	Pasta	/images/pasta/carbonara.jpg	100	200
+PA008	Fettuccine Alfredo Pasta	27.70	Creamy alfredo sauce with fettuccine	Pasta	/images/pasta/fettuccinealfredo.jpg	85	200
+PA009	Fiocchi Pasta	28.80	Cheese filled pillow pasta	Pasta	/images/pasta/fiocchi.jpg	60	200
+PA010	Lasagna Pasta	29.90	Layers of pasta, meat, and cheese	Pasta	/images/pasta/lasagna.jpg	95	200

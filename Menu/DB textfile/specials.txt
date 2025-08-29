@@ -1,0 +1,20 @@
+SP001	BBQ Ribs	25.00	Tender BBQ ribs with smoky sauce	Specials	/images/specials/bbqribs.jpg	80	200
+SP002	Beef Brisket	26.20	Slow-cooked beef brisket	Specials	/images/specials/beefbrisket.jpg	75	200
+SP003	Chicken Chops	27.30	Grilled chicken chops with herbs	Specials	/images/specials/chickenchops.jpg	90	200
+SP004	Chicken Fajitas	28.40	Spicy chicken fajitas with peppers	Specials	/images/specials/chickenfajitas.jpg	65	200
+SP005	Chicken Tikka Masala	29.50	Creamy Indian chicken curry	Specials	/images/specials/chickentikkamasala.jpg	85	200
+SP006	Coq Au Vin	30.60	Classic French chicken stew	Specials	/images/specials/coqauvin.jpg	70	200
+SP007	Eggplant Parmesan	31.70	Baked eggplant with cheese and tomato	Specials	/images/specials/eggplantparmesan.jpg	60	200
+SP008	Fish And Chips	32.80	Crispy battered fish with fries	Specials	/images/specials/fishandchips.jpg	95	200
+SP009	Grilled Chicken	33.00	Herb-marinated grilled chicken	Specials	/images/specials/grilledchicken.jpg	80	200
+SP010	Grilled Ribeye	34.20	Juicy grilled ribeye steak	Specials	/images/specials/grilledribeye.jpg	110	200
+SP011	Grilled Salmon	35.10	Grilled salmon with lemon butter	Specials	/images/specials/grilledsalmon.jpg	85	200
+SP012	Grilled Sausages With Mashed Potatoes	36.00	Grilled sausages served with mashed potatoes	Specials	/images/specials/grilledsausageswithmashedpotatoes.jpg	75	200
+SP013	Grilled Tuna Steak	36.80	Seared tuna steak with herbs	Specials	/images/specials/grilledtunasteak.jpg	90	200
+SP014	Lamb Chops	37.50	Grilled lamb chops with seasoning	Specials	/images/specials/lambchops.jpg	80	200
+SP015	Meatloaf	38.20	Homestyle meatloaf with gravy	Specials	/images/specials/meatloaf.jpg	85	200
+SP016	Ossobuco 	39.00	Braised veal shanks in Milanese style wine sauce	Specials	/images/specials/ossobuco.jpg	70	200
+SP017	Pork Chops	39.50	Grilled pork chops with herbs	Specials	/images/specials/porkchops.jpg	95	200
+SP018	Steak	40.00	Classic grilled steak	Specials	/images/specials/steak.jpg	110	200
+SP019	Turkey Stuffing	38.50	Traditional turkey with stuffing	Specials	/images/specials/turkeystuffing.jpg	75	200
+SP020	Veal Marsala	37.80	Veal cooked in Marsala wine sauce	Specials	/images/specials/vealmarsala.jpg	80	200

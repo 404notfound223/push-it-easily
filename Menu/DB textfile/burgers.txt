@@ -1,0 +1,7 @@
+BG001	Beef Burger	8.90	Delicious beef patty with fresh vegetables	Burgers	/images/burgers/beefburger.jpg	120	200
+BG002	Cheese Burger	9.50	Classic burger topped with melted cheese	Burgers	/images/burgers/cheeseburger.jpg	135	200
+BG003	Chicken Burger	8.20	Crispy chicken fillet with lettuce and mayo	Burgers	/images/burgers/chickenburger.jpg	110	200
+BG004	Fish Burger	7.80	Fish fillet with tartar sauce and lettuce	Burgers	/images/burgers/fishburger.jpg	95	200
+BG005	Lamb Burger	10.50	Juicy lamb patty with herbs and spices	Burgers	/images/burgers/lambburger.jpg	85	200
+BG006	Mushroom Swiss Burger	9.90	Savory mushrooms with Swiss cheese	Burgers	/images/burgers/mushroomswissburger.jpg	100	200
+BG007	Veggie Burger	7.50	Grilled vegetable patty with fresh toppings	Burgers	/images/burgers/veggieburger.jpg	70	200

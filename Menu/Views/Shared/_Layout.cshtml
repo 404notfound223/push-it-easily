@@ -1,0 +1,78 @@
+﻿@{
+    var year = DateTime.Today.Year;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] ?? "The Secret Restaurant"</title>
+
+    <link rel="icon" type="image/jpeg" href="~/images/logoCSharp.jpg" asp-append-version="true" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/js/app.js" asp-append-version="true"/>
+
+    @RenderSection("head", required: false)
+</head>
+<body>
+    <header class="header-top">
+        <img src="~/images/logoCSharp.jpg" alt="Logo" />
+        <h1 class="logo-caption">The Secret Restaurant</h1>
+        <form class="search-form">
+            <input type="text" placeholder="Search..." />
+            <button type="submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </form>
+
+    </header>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-item" onclick="navigateTo('/Menu/All')">All</div>
+            <div class="sidebar-item" onclick="toggleDropdown(this)">
+                Mains
+                <span class="arrow">▶</span>
+            </div>
+            <div class="dropdown">
+                <div class="dropdown-item" onclick="navigateTo('/Menu/Specials')">Chef's Specials</div>
+                <div class="dropdown-item" onclick="navigateTo('/Menu/Pizza')">Pizza</div>
+                <div class="dropdown-item" onclick="navigateTo('/Menu/Pasta')">Pasta</div>
+                <div class="dropdown-item" onclick="navigateTo('/Menu/Seafood')">Seafood</div>
+                <div class="dropdown-item" onclick="navigateTo('/Menu/Burgers')">Burger</div>
+            </div>
+            <div class="sidebar-item" onclick="navigateTo('/Menu/Beverages')">Beverages</div>
+            <div class="sidebar-item" onclick="navigateTo('/Menu/Desserts')">Desserts</div>
+        </nav>
+
+        <main class="content">
+            @RenderBody()
+        </main>
+    </div>
+
+
+    <button onclick="scrollToTop()" class="backToTopBtn">&#x2B06;</button>
+
+    <footer>
+        Developed by <b>The Secret Restaurant</b> &middot; © @year
+    </footer>
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/js/jquery.validate.min.js"></script>
+    <script src="~/js/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    <script>
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+    </script>
+
+    @RenderSection("foot", required: false)
+</body>
+</html>

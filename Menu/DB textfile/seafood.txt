@@ -1,0 +1,20 @@
+SF001	Black Pepper Crab	20.00	Crab cooked with black pepper sauce	Seafood	/images/seafood/blackpeppercrab.jpg	85	200
+SF002	Fish Ball Soup	21.50	Flavorful fish ball soup	Seafood	/images/seafood/fishballsoup.jpg	70	200
+SF003	Fish Head Curry	22.20	Spicy fish head curry	Seafood	/images/seafood/fishheadcurry.jpg	95	200
+SF004	Fried Softshell Crab	23.30	Crispy fried softshell crab	Seafood	/images/seafood/friedsoftshellcrab.jpg	60	200
+SF005	Garlic Lobster Tail	24.00	Grilled lobster tail with garlic butter	Seafood	/images/seafood/garliclobstertail.jpg	50	200
+SF006	Grilled Octopus	25.10	Tender grilled octopus with spices	Seafood	/images/seafood/grilledoctopus.jpg	65	200
+SF007	Sambal Stingray	26.50	Stingray cooked in spicy sambal sauce	Seafood	/images/seafood/sambalstingray.jpg	80	200
+SF008	Seafood Chow Mein	27.20	Stir-fried noodles with mixed seafood	Seafood	/images/seafood/seafoodchowmein.jpg	90	200
+SF009	Seafood Gyoza	28.30	Pan-fried dumplings filled with seafood	Seafood	/images/seafood/seafoodgyoza.jpg	75	200
+SF010	Seafood Hotpot	29.00	Mixed seafood hotpot with vegetables	Seafood	/images/seafood/seafoodhotpot.jpg	65	200
+SF011	Seafood Pancake	30.10	Crispy seafood pancake	Seafood	/images/seafood/seafoodpancake.jpg	80	200
+SF012	Shrimp Fried Rice	31.20	Fried rice with shrimp and veggies	Seafood	/images/seafood/shrimpfriedrice.jpg	95	200
+SF013	Shrimp Tacos	32.00	Tacos filled with seasoned shrimp	Seafood	/images/seafood/shrimptacos.jpg	60	200
+SF014	Steamed Scallops	33.10	Steamed fresh scallops with sauce	Seafood	/images/seafood/steamedscallops.jpg	70	200
+SF015	Steamed Snapper	34.00	Steamed whole snapper with herbs	Seafood	/images/seafood/steamedsnapper.jpg	85	200
+SF016	Stuffed Crab	34.50	Crab stuffed with flavorful filling	Seafood	/images/seafood/stuffedcrab.jpg	60	200
+SF017	Stuffed Squid	35.00	Squid stuffed with seafood filling	Seafood	/images/seafood/stuffedsquid.jpg	70	200
+SF018	Sword Fish	33.50	Grilled swordfish with seasoning	Seafood	/images/seafood/swordfish.jpg	90	200
+SF019	Tomyum Seafood	31.80	Spicy Tomyum soup with mixed seafood	Seafood	/images/seafood/tomyumseafood.jpg	85	200
+SF020	Tuna Steak	30.50	Seared tuna steak with sauce	Seafood	/images/seafood/tunasteak.jpg	75	200

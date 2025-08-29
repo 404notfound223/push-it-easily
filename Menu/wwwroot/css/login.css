@@ -1,0 +1,136 @@
+﻿/* Login Page Styles */
+body {
+    background-color: #c9d6ff;
+    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background: #fff;
+    width: 400px;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 20px 35px rgba(0, 0, 1, 0.09);
+    margin: 40px auto;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    height: 80px;
+    width: auto;
+}
+
+.form-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: none;
+    border-bottom: 1px solid #757575;
+    font-size: 15px;
+    outline: none;
+    background: transparent;
+    transition: border-bottom 0.3s;
+    box-sizing: border-box;
+}
+
+    .form-control:focus {
+        border-bottom: 2px solid rgb(125, 125, 235);
+    }
+
+.form-label {
+    position: absolute;
+    left: 40px;
+    top: 12px;
+    color: #757575;
+    pointer-events: none;
+    transition: 0.3s ease all;
+    font-size: 15px;
+}
+
+.form-icon {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: #757575;
+    font-size: 18px;
+    width: 30px;
+    text-align: center;
+}
+
+.btn {
+    font-size: 1.1rem;
+    padding: 8px 0;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    width: 100%;
+    background: rgb(125, 125, 235);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+    .btn:hover {
+        background: #07001f;
+    }
+
+.links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin-top: 0.9rem;
+    font-weight: bold;
+}
+
+.links a {
+    color: rgb(125, 125, 235);
+    text-decoration: none;
+}
+
+    .links a:hover {
+        text-decoration: underline;
+        color: blue;
+    }
+
+.links p {
+    margin: 0;                      /* Remove default margin */
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}

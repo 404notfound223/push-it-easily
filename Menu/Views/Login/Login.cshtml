@@ -1,0 +1,57 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <img src="/Images/logoCSharp.jpg" alt="The Secret Restaurant" class="logo" />
+        </div>
+
+        <h1 class="form-title">Sign In</h1>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="error-message">
+                @ViewBag.Error
+            </div>
+        }
+
+        @if (ViewBag.Success != null)
+        {
+            <div class="success-message">
+                @ViewBag.Success
+            </div>
+        }
+
+        <form method="post" asp-action="Login">
+            <div class="form-group">
+                <i class="fas fa-envelope form-icon"></i>
+                <input type="email" name="email" id="email" class="form-control" placeholder="Email" required>
+                <label for="email" class="form-label"></label>
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-lock form-icon"></i>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                <label for="password" class="form-label"></label>
+            </div>
+
+            <input type="submit" class="btn" value="Sign In">
+        </form>
+
+        <div class="links">
+            <p>Customer Ordering Menu. </p>
+            <a asp-action="All" asp-controller="Menu">To Menu</a>
+        </div>
+    </div>
+</body>
+</html>
