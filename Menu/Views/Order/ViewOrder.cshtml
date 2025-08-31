@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Your Order";
+}
+
+<h2>Your Order</h2>
+<div id="order-list"></div>
+<div id="total-bar" style="position:fixed;bottom:0;left:0;width:100%;background:#eee;padding:15px;text-align:right;font-size:1.2em;">
+    Total: $<span id="order-total">0.00</span>
+</div>
+<script src="~/js/order.js"></script>
+<script>
+    renderOrder();
+</script>
