@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\views\\login\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\login\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\users\\source\\repos\\push-it-easily\\menu\\models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -63,6 +67,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Login\\Register.cshtml",
+              "RelativeDocumentMoniker": "Views\\Login\\Register.cshtml",
+              "ToolTip": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Login\\Register.cshtml",
+              "RelativeToolTip": "Views\\Login\\Register.cshtml",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAAAGMAAACIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-31T05:53:13.865Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "DB.cs",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
               "RelativeDocumentMoniker": "Models\\DB.cs",
@@ -75,7 +92,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "ErrorViewModel.cs",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Models\\ErrorViewModel.cs",
               "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
@@ -87,7 +104,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Specials.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Specials.cshtml",
@@ -99,7 +116,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Seafood.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Seafood.cshtml",
@@ -111,7 +128,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "Pizza.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Pizza.cshtml",
@@ -123,7 +140,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Pasta.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Pasta.cshtml",
@@ -135,7 +152,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -147,7 +164,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Desserts.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Desserts.cshtml",
@@ -159,7 +176,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Burgers.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Burgers.cshtml",
@@ -171,7 +188,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Beverages.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Beverages.cshtml",
@@ -183,7 +200,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "All.cshtml",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\All.cshtml",
@@ -195,7 +212,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "README.md",
               "DocumentMoniker": "C:\\Users\\Users\\source\\repos\\push-it-easily\\Menu\\README.md",
               "RelativeDocumentMoniker": "README.md",
