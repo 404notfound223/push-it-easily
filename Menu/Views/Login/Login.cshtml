@@ -49,8 +49,15 @@
         </form>
 
         <div class="links">
+            <p>Don't have an account?</p>
+            <a asp-action="Register" asp-controller="Login">Register</a>
+        </div>
+
+        @* add in a forget password here *@
+
+        <div class="links">
             <p>Customer Ordering Menu. </p>
-            <a asp-action="All" asp-controller="Menu">To Menu</a>
+            <a asp-action="All" asp-controller="Menu">Guest Menu</a>
         </div>
     </div>
 </body>

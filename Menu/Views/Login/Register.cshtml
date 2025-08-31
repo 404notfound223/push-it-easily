@@ -1,0 +1,152 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <style>
+        /* Add background for the form */
+        .form-background {
+            background: #f8f9fa;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 24px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .verify-btn {
+            display: block;
+            width: 100%;
+            margin: 8px 0 16px 0;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .verify-btn:active {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="signup">
+        <div class="logo-container">
+            <img src="~/uploads/beverage_logo.png" alt="Beverages Delight" class="logo"
+                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'logo-fallback\'><i class=\'fas fa-glass-cheers\'></i></div>'">
+        </div>
+
+        <h1 class="form-title">Register</h1>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="error-message">
+                @ViewBag.Error
+            </div>
+        }
+
+        @if (ViewBag.Success != null)
+        {
+            <div class="success-message">
+                @ViewBag.Success
+            </div>
+        }
+
+        <div class="form-background">
+            <form method="post" asp-action="Register" id="registerForm">
+                <div class="form-group">
+                    <i class="fas fa-user form-icon"></i>
+                    <input type="text" name="UName" id="UName" class="form-control" placeholder=" " required>
+                    <label for="UName" class="form-label">Username</label>
+                </div>
+
+                <div class="form-group">
+                    <i class="fas fa-envelope form-icon"></i>
+                    <input type="email" name="email" id="email" class="form-control" placeholder=" " required>
+                    <label for="email" class="form-label">Email</label>
+                </div>
+
+                <!-- Verify Email Button -->
+                <button type="button" class="verify-btn" id="verifyEmailBtn">Verify Email</button>
+
+                <!-- Email verification code box -->
+                <div class="form-group">
+                    <i class="fas fa-key form-icon"></i>
+                    <input type="text" name="verificationCode" id="verificationCode" class="form-control" placeholder="Verification Code" required maxlength="6" minlength="6">
+                    <label for="verificationCode" class="form-label"></label>
+                </div>
+
+                <div class="form-group">
+                    <i class="fas fa-lock form-icon"></i>
+                    <input type="password" name="password" id="password" class="form-control" placeholder=" " required>
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-requirements">Must be 8-16 characters</div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                    </div>
+                </div>
+
+                <!-- Re-enter password -->
+                <div class="form-group">
+                    <i class="fas fa-lock form-icon"></i>
+                    <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder=" " required>
+                    <label for="confirmPassword" class="form-label">Re-enter Password</label>
+                </div>
+
+                <div id="passwordError" class="error-message" style="display:none;"></div>
+
+                <input type="submit" class="btn" value="Register">
+            </form>
+        </div>
+
+        <div class="links">
+            <p>Already Have Account?</p>
+            <a asp-action="Login" asp-controller="Login">Sign In</a>
+        </div>
+    </div>
+
+    <script>
+        // Password length validation and error display
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+            var errorDiv = document.getElementById('passwordError');
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+
+            if (password.length < 8 || password.length > 16) {
+                errorDiv.textContent = 'Password must be between 8 and 16 characters.';
+                errorDiv.style.display = 'block';
+                e.preventDefault();
+                return;
+            }
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match.';
+                errorDiv.style.display = 'block';
+                e.preventDefault();
+                return;
+            }
+        });
+
+        // Example handler for Verify Email button (replace with AJAX as needed)
+        document.getElementById('verifyEmailBtn').addEventListener('click', function () {
+            var email = document.getElementById('email').value;
+            if (!email) {
+                alert('Please enter your email first.');
+                return;
+            }
+            // TODO: Implement AJAX call to send verification code to email
+            alert('Verification code sent to ' + email);
+        });
+    </script>
+    <script src="~/js/login.js" defer></script>
+</body>
+</html>
