@@ -80,3 +80,8 @@ public class User
     // Relationships
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }
+
+public class VerificationRequest
+{
+    public required string Email { get; set; }
+}

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Net.Mail;
 using System.Net;
+using Menu.Models;
 
 public class LoginController : Controller
 {
@@ -76,10 +77,10 @@ public class LoginController : Controller
     private void SendVerificationEmail(string toEmail, string code)
     {
         // Replace with your SMTP settings
-        var smtpClient = new SmtpClient("smtp.yourserver.com")
+        var smtpClient = new SmtpClient("smtp.gmail.com")
         {
             Port = 587,
-            Credentials = new NetworkCredential("your@email.com", "yourpassword"),
+            Credentials = new NetworkCredential("yourgmail@gmail.com", "your-app-password"),
             EnableSsl = true,
         };
 
@@ -93,5 +94,23 @@ public class LoginController : Controller
         mailMessage.To.Add(toEmail);
 
         smtpClient.Send(mailMessage);
+    }
+
+    [HttpPost]
+    public IActionResult SendVerificationCode([FromBody] VerificationRequest request)
+    {
+        string email = request.Email;
+        var code = new Random().Next(100000, 999999).ToString();
+        HttpContext.Session.SetString("VerificationCode", code);
+        HttpContext.Session.SetString("VerificationEmail", email);
+        try
+        {
+            SendVerificationEmail(email, code);
+            return Json(new { success = true });
+        }
+        catch 
+        {
+            return Json(new { success = false, error = "Failed to send email." });
+        }
     }
 }

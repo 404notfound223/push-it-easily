@@ -113,40 +113,6 @@
         </div>
     </div>
 
-    <script>
-        // Password length validation and error display
-        document.getElementById('registerForm').addEventListener('submit', function (e) {
-            var password = document.getElementById('password').value;
-            var confirmPassword = document.getElementById('confirmPassword').value;
-            var errorDiv = document.getElementById('passwordError');
-            errorDiv.style.display = 'none';
-            errorDiv.textContent = '';
-
-            if (password.length < 8 || password.length > 16) {
-                errorDiv.textContent = 'Password must be between 8 and 16 characters.';
-                errorDiv.style.display = 'block';
-                e.preventDefault();
-                return;
-            }
-            if (password !== confirmPassword) {
-                errorDiv.textContent = 'Passwords do not match.';
-                errorDiv.style.display = 'block';
-                e.preventDefault();
-                return;
-            }
-        });
-
-        // Example handler for Verify Email button (replace with AJAX as needed)
-        document.getElementById('verifyEmailBtn').addEventListener('click', function () {
-            var email = document.getElementById('email').value;
-            if (!email) {
-                alert('Please enter your email first.');
-                return;
-            }
-            // TODO: Implement AJAX call to send verification code to email
-            alert('Verification code sent to ' + email);
-        });
-    </script>
     <script src="~/js/login.js" defer></script>
 </body>
 </html>
