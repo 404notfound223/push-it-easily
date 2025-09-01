@@ -1,0 +1,165 @@
+@model StaffDashboardViewModel
+@{
+    ViewData["Title"] = "Staff Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/staff.css" asp-append-version="true" />
+<div class="staff-dashboard">
+    <div class="dashboard-header">
+        <h1>Staff Dashboard</h1>
+        <div class="role-badge role-@Model.UserRole.ToLower()">@Model.UserRole.ToUpper()</div>
+    </div>
+
+    <div class="dashboard-tabs">
+        <button class="tab-button active" onclick="showTab('orders')">Order Management</button>
+        @if (Model.UserRole == "admin")
+        {
+            <button class="tab-button" onclick="showTab('users')">User Management</button>
+        }
+    </div>
+
+     @* Order Management Tab  *@
+    <div id="orders-tab" class="tab-content active">
+        <div class="section-header">
+            <h2>Customer Orders</h2>
+            <div class="order-stats">
+                <div class="stat-card">
+                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Pending")</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Preparing")</span>
+                    <span class="stat-label">Preparing</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Ready")</span>
+                    <span class="stat-label">Ready</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Completed")</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="orders-table-container">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr class="order-row" data-order-id="@order.OrderId">
+                            <td class="order-id">@order.OrderId.Substring(0, 8).ToUpper()</td>
+                            <td class="customer-name">@order.User.Name</td>
+                            <td class="order-date">@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td class="order-total">$@order.TotalAmount.ToString("F2")</td>
+                            <td>
+                                <select class="status-select"
+                                        onchange="updateOrderStatus('@order.OrderId', this.value)"
+                                        asp-for="@order.Status"
+                                        asp-items="@(new SelectList(new[] { "Pending", "Preparing", "Ready", "Completed", "Cancelled" }, order.Status))">
+                                </select>
+                            </td>
+                            <td>
+                                <button onclick="viewOrderDetails('@order.OrderId')" class="btn btn-sm btn-info">View Details</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+     @* User Management Tab (Admin Only)  *@
+    @if (Model.UserRole == "admin")
+    {
+        <div id="users-tab" class="tab-content">
+            <div class="section-header">
+                <h2>User Management</h2>
+                <button onclick="showAddUserModal()" class="btn btn-primary">Add New User</button>
+            </div>
+
+            <div class="users-table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr class="user-row" data-user-id="@user.Id">
+                                <td class="user-id">@user.Id.Substring(0, 8).ToUpper()</td>
+                                <td class="user-name">@user.Name</td>
+                                <td class="user-email">@user.Email</td>
+                                <td>
+                                    <span class="role-badge role-@user.Role.ToLower()">@user.Role</span>
+                                </td>
+                                <td>
+                                    <button onclick="editUser('@user.Id', '@user.Name', '@user.Email', '@user.Role')" class="btn btn-sm btn-warning">Edit</button>
+                                    <button onclick="deleteUser('@user.Id')" class="btn btn-sm btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+ @* Order Details Modal  *@
+<div id="order-details-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeOrderModal()">&times;</span>
+        <h2>Order Details</h2>
+        <div id="order-details-content"></div>
+    </div>
+</div>
+
+ @* User Edit Modal  *@
+<div id="user-edit-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUserModal()">&times;</span>
+        <h2 id="user-modal-title">Edit User</h2>
+        <form id="user-form">
+            <input type="hidden" id="user-id" />
+            <div class="form-group">
+                <label for="user-name">Name:</label>
+                <input type="text" id="user-name" required />
+            </div>
+            <div class="form-group">
+                <label for="user-email">Email:</label>
+                <input type="email" id="user-email" required />
+            </div>
+            <div class="form-group">
+                <label for="user-role">Role:</label>
+                <select id="user-role" required>
+                    <option value="member">Member</option>
+                    <option value="staff">Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="saveUser()" class="btn btn-primary">Save</button>
+                <button type="button" onclick="closeUserModal()" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/js/staff.js" defer></script>

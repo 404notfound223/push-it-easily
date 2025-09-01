@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "Payment Successful";
+}
+
+<div class="payment-result success-page">
+    <div class="result-container">
+        <div class="success-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22,4 12,14.01 9,11.01"></polyline>
+            </svg>
+        </div>
+        
+        <h1>Payment Successful!</h1>
+        <p class="success-message">Thank you for your order. Your payment has been processed successfully.</p>
+        
+        <div class="order-details">
+            <div class="detail-row">
+                <span class="label">Order Number:</span>
+                <span class="value">@ViewBag.OrderId?.ToString().Substring(0, 8).ToUpper()</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Payment ID:</span>
+                <span class="value">@ViewBag.PaymentIntentId</span>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button onclick="createAnotherOrder()" class="btn btn-primary">Create Another Order</button>
+            <button onclick="goToMenu()" class="btn btn-secondary">Back to Menu</button>
+            <button onclick="logout()" class="btn btn-outline">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function createAnotherOrder() {
+        window.location.href = '/Menu/All';
+    }
+    
+    function goToMenu() {
+        window.location.href = '/Menu/All';
+    }
+    
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            fetch('/Login/Logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(() => {
+                window.location.href = '/Login/Login';
+            });
+        }
+    }
+</script>
+
+<style>
+    .payment-result {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        padding: 40px 20px;
+    }
+    
+    .result-container {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        max-width: 500px;
+        width: 100%;
+    }
+    
+    .success-icon {
+        margin-bottom: 20px;
+    }
+    
+    .success-page h1 {
+        color: #28a745;
+        margin-bottom: 15px;
+        font-size: 2.5rem;
+    }
+    
+    .success-message {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        line-height: 1.5;
+    }
+    
+    .order-details {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .detail-row:last-child {
+        margin-bottom: 0;
+    }
+    
+    .label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .value {
+        color: #212529;
+        font-family: monospace;
+    }
+    
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #6c757d;
+        border: 1px solid #6c757d;
+    }
+    
+    .btn-outline:hover {
+        background: #6c757d;
+        color: white;
+    }
+</style>

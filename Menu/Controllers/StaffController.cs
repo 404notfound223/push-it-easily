@@ -1,0 +1,170 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Menu.Models;
+
+public class StaffController : Controller
+{
+    private readonly DB _context;
+
+    public StaffController(DB context)
+    {
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Dashboard()
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return RedirectToAction("Login", "Login");
+        }
+
+        var model = new StaffDashboardViewModel
+        {
+            UserRole = userRole,
+            Orders = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync(),
+            
+            Users = userRole == "admin" ? await _context.Users.ToListAsync() : new List<User>()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateOrderStatus(string orderId, string status)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+            {
+                return Json(new { success = false, error = "Order not found" });
+            }
+
+            order.Status = status;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOrderDetails(string orderId)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                return Json(new { success = false, error = "Order not found" });
+            }
+
+            return Json(new { success = true, order });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin")
+        {
+            return Json(new { success = false, error = "Only admin can edit users" });
+        }
+
+        try
+        {
+            var user = await _context.Users.FindAsync(request.UserId);
+            if (user == null)
+            {
+                return Json(new { success = false, error = "User not found" });
+            }
+
+            user.Name = request.Name;
+            user.Email = request.Email;
+            user.Role = request.Role;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteUser(string userId)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin")
+        {
+            return Json(new { success = false, error = "Only admin can delete users" });
+        }
+
+        try
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return Json(new { success = false, error = "User not found" });
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+}
+
+public class StaffDashboardViewModel
+{
+    public string UserRole { get; set; } = string.Empty;
+    public List<Order> Orders { get; set; } = new List<Order>();
+    public List<User> Users { get; set; } = new List<User>();
+}
+
+public class UpdateUserRequest
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+}
