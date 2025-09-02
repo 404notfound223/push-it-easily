@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Menu.Models;
 using System.Text.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class OrderController : Controller
 {
@@ -15,13 +19,6 @@ public class OrderController : Controller
     [HttpGet]
     public IActionResult ViewOrder()
     {
-        // Check if user is logged in
-        var userId = HttpContext.Session.GetString("UserId");
-        if (string.IsNullOrEmpty(userId))
-        {
-            return RedirectToAction("Login", "Login");
-        }
-
         return View();
     }
 
@@ -29,23 +26,20 @@ public class OrderController : Controller
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
     {
         var userId = HttpContext.Session.GetString("UserId");
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Json(new { success = false, error = "User not logged in" });
-        }
+        var isGuest = string.IsNullOrEmpty(userId);
 
         try
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
+            User? user = null;
+            if (!isGuest)
             {
-                return Json(new { success = false, error = "User not found" });
+                user = await _context.Users.FindAsync(userId);
             }
 
             var order = new Order
             {
                 OrderId = Guid.NewGuid().ToString(),
-                UserId = userId,
+                UserId = isGuest ? null : userId, // Allow null for guest orders
                 User = user,
                 TotalAmount = request.TotalAmount,
                 Status = "Pending",
@@ -79,7 +73,7 @@ public class OrderController : Controller
 
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, orderId = order.OrderId });
+            return Json(new { success = true, orderId = order.OrderId, isGuest = isGuest });
         }
         catch (Exception ex)
         {
@@ -184,11 +178,6 @@ public class OrderController : Controller
     {
         var userId = HttpContext.Session.GetString("UserId");
         var userRole = HttpContext.Session.GetString("UserRole");
-        
-        if (string.IsNullOrEmpty(userId))
-        {
-            return RedirectToAction("Login", "Login");
-        }
 
         try
         {
@@ -204,7 +193,7 @@ public class OrderController : Controller
             }
 
             // Check if user can view this order
-            if (userRole != "admin" && userRole != "staff" && order.UserId != userId)
+            if (userRole != "admin" && userRole != "staff" && !string.IsNullOrEmpty(userId) && order.UserId != userId)
             {
                 return Forbid();
             }

@@ -38,6 +38,15 @@
         </form>
         
         <div class="top-right">
+            <button onclick="window.location.href='/Order/ViewOrder'" class="btn btn-view-order" title="View Order">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
+                    <polyline points="9,11 12,14 15,11"></polyline>
+                    <line x1="12" y1="2" x2="12" y2="14"></line>
+                </svg>
+                View Order
+                <span id="order-count" class="order-badge">0</span>
+            </button>
             @if (isLoggedIn)
             {
                 @if (userRole == "member")
@@ -61,16 +70,6 @@
                         Dashboard
                     </button>
                 }
-                
-                <button onclick="window.location.href='/Order/ViewOrder'" class="btn btn-view-order" title="View Order">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
-                        <polyline points="9,11 12,14 15,11"></polyline>
-                        <line x1="12" y1="2" x2="12" y2="14"></line>
-                    </svg>
-                    View Order
-                    <span id="order-count" class="order-badge">0</span>
-                </button>
                 
                 <span class="user-welcome">Welcome, @userName</span>
                 
