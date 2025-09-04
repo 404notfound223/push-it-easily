@@ -179,6 +179,45 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+.btn-view-order-fixed {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+    .btn-view-order-fixed:hover {
+        background-color: #ff7700;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 140, 0, 0.4);
+    }
+
+    .btn-view-order-fixed .order-badge {
+        background-color: #dc3545;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 4px;
+        min-width: 18px;
+        text-align: center;
+        display: none;
+    }
+
 @media print {
     .page-header,
     .order-actions-card {

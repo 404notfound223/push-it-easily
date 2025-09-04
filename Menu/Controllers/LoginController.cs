@@ -4,6 +4,8 @@ using System.Net.Mail;
 using System.Net;
 using Menu.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 public class LoginController : Controller
 {
@@ -32,13 +34,13 @@ public class LoginController : Controller
     public async Task<IActionResult> Login(string email, string password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
-        
+
         if (user != null)
         {
             HttpContext.Session.SetString("UserId", user.Id);
             HttpContext.Session.SetString("UserRole", user.Role);
             HttpContext.Session.SetString("UserName", user.Name);
-            
+
             // Redirect based on role
             switch (user.Role.ToLower())
             {
@@ -77,7 +79,7 @@ public class LoginController : Controller
             SendVerificationEmail(email, code);
             return RedirectToAction("VerifyCode");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             ViewBag.Error = "Failed to send verification email. Please try again.";
             return View();
@@ -137,9 +139,14 @@ public class LoginController : Controller
         {
             var smtpHost = _configuration["EmailSettings:SmtpHost"] ?? "smtp.gmail.com";
             var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
-            var smtpUsername = _configuration["EmailSettings:Username"] ?? "";
-            var smtpPassword = _configuration["EmailSettings:Password"] ?? "";
-            var fromEmail = _configuration["EmailSettings:FromEmail"] ?? smtpUsername;
+            var smtpUsername = _configuration["EmailSettings:Username"];
+            var smtpPassword = _configuration["EmailSettings:Password"];
+            var fromEmail = _configuration["EmailSettings:FromEmail"];
+
+            if (string.IsNullOrEmpty(smtpUsername) || string.IsNullOrEmpty(smtpPassword) || string.IsNullOrEmpty(fromEmail))
+            {
+                throw new Exception("Email configuration is incomplete. Please configure SMTP settings in appsettings.json");
+            }
 
             using var smtpClient = new SmtpClient(smtpHost)
             {
@@ -174,6 +181,9 @@ public class LoginController : Controller
     [HttpPost]
     public IActionResult SendVerificationCode([FromBody] VerificationRequest request)
     {
+        if (request == null || string.IsNullOrEmpty(request.Email))
+            return Json(new { success = false, error = "Invalid email." });
+
         string email = request.Email;
         var code = new Random().Next(100000, 999999).ToString();
         HttpContext.Session.SetString("VerificationCode", code);
@@ -188,7 +198,7 @@ public class LoginController : Controller
         {
             return Json(new { success = false, error = "Failed to send email: " + ex.Message });
         }
-    }
+   }
 
     [HttpPost]
     public IActionResult Logout()

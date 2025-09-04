@@ -1,69 +1,69 @@
 function addToOrder(id, name, price) {
-  const order = JSON.parse(localStorage.getItem("order")) || []
+    const order = JSON.parse(localStorage.getItem("orderItems")) || []
 
-  // Check if item already exists in order
-  const existingItem = order.find((item) => item.id === id)
-  if (existingItem) {
-    existingItem.quantity += 1
-  } else {
-    order.push({ id, name, price: Number.parseFloat(price), quantity: 1 })
-  }
+    // Check if item already exists in order
+    const existingItem = order.find((item) => item.id === id)
+    if (existingItem) {
+        existingItem.quantity += 1
+    } else {
+        order.push({ id, name, price: Number.parseFloat(price), quantity: 1 })
+    }
 
-  localStorage.setItem("order", JSON.stringify(order))
-  showNotification(name + " added to order!", "success")
+    localStorage.setItem("orderItems", JSON.stringify(order))
+    showNotification(name + " added to order!", "success")
 
-  // Update order count if there's a counter element
-  updateOrderCount()
+    // Update order count if there's a counter element
+    updateOrderCount()
 }
 
 function removeFromOrder(id) {
-  let order = JSON.parse(localStorage.getItem("order")) || []
-  order = order.filter((item) => item.id !== id)
-  localStorage.setItem("order", JSON.stringify(order))
-  renderOrder()
-  updateOrderCount()
+    let order = JSON.parse(localStorage.getItem("orderItems")) || []
+    order = order.filter((item) => item.id !== id)
+    localStorage.setItem("orderItems", JSON.stringify(order))
+    renderOrder()
+    updateOrderCount()
 }
 
 function updateQuantity(id, newQuantity) {
-  const order = JSON.parse(localStorage.getItem("order")) || []
-  const item = order.find((item) => item.id === id)
-  if (item) {
-    if (newQuantity <= 0) {
-      removeFromOrder(id)
-    } else {
-      item.quantity = newQuantity
-      localStorage.setItem("order", JSON.stringify(order))
-      renderOrder()
+    const order = JSON.parse(localStorage.getItem("orderItems")) || []
+    const item = order.find((item) => item.id === id)
+    if (item) {
+        if (newQuantity <= 0) {
+            removeFromOrder(id)
+        } else {
+            item.quantity = newQuantity
+            localStorage.setItem("orderItems", JSON.stringify(order))
+            renderOrder()
+        }
     }
-  }
 }
 
 function renderOrder() {
-  const order = JSON.parse(localStorage.getItem("order")) || []
-  const orderListElement = document.getElementById("order-list")
-  const emptyOrderElement = document.getElementById("empty-order")
-  const orderSummaryElement = document.getElementById("order-summary")
+    const order = JSON.parse(localStorage.getItem("orderItems")) || []
+    const orderListElement = document.getElementById("order-list")
+    const emptyOrderElement = document.getElementById("empty-order")
+    const orderSummaryElement = document.getElementById("order-summary")
 
-  if (!orderListElement) return // Exit if not on order page
+    if (!orderListElement) return // Exit if not on order page
 
-  let html = ""
-  let subtotal = 0
+    let html = ""
+    let subtotal = 0
 
-  if (order.length === 0) {
-    orderListElement.style.display = "none"
-    if (emptyOrderElement) emptyOrderElement.style.display = "block"
-    if (orderSummaryElement) orderSummaryElement.style.display = "none"
-    return
-  }
+    if (order.length === 0) {
+        orderListElement.style.display = "none"
+        if (emptyOrderElement) emptyOrderElement.style.display = "block"
+        if (orderSummaryElement) orderSummaryElement.style.display = "none"
+        return
+    }
 
-  orderListElement.style.display = "block"
-  if (emptyOrderElement) emptyOrderElement.style.display = "none"
-  if (orderSummaryElement) orderSummaryElement.style.display = "block"
+    orderListElement.style.display = "block"
+    if (emptyOrderElement) emptyOrderElement.style.display = "none"
+    if (orderSummaryElement) orderSummaryElement.style.display = "block"
 
-  order.forEach((item) => {
-    const itemTotal = item.price * item.quantity
-    subtotal += itemTotal
-    html += `
+    order.forEach((item) => {
+        const itemTotal = item.price * item.quantity
+        subtotal += itemTotal
+        html += `
       <div class="order-item">
         <div class="item-info">
           <span class="item-name">${item.name}</span>
@@ -78,43 +78,49 @@ function renderOrder() {
         <div class="item-total">$${itemTotal.toFixed(2)}</div>
       </div>
     `
-  })
+    })
 
-  orderListElement.innerHTML = html
+    orderListElement.innerHTML = html
 
-  // Calculate tax and total
-  const taxRate = 0.085 // 8.5% tax
-  const tax = subtotal * taxRate
-  const total = subtotal + tax
+    // Calculate tax and total
+    const taxRate = 0.085 // 8.5% tax
+    const tax = subtotal * taxRate
+    const total = subtotal + tax
 
-  // Update summary
-  const subtotalElement = document.getElementById("order-subtotal")
-  const taxElement = document.getElementById("order-tax")
-  const totalElement = document.getElementById("order-total")
+    // Update summary
+    const subtotalElement = document.getElementById("order-subtotal")
+    const taxElement = document.getElementById("order-tax")
+    const totalElement = document.getElementById("order-total")
 
-  if (subtotalElement) subtotalElement.textContent = `$${subtotal.toFixed(2)}`
-  if (taxElement) taxElement.textContent = `$${tax.toFixed(2)}`
-  if (totalElement) totalElement.textContent = `$${total.toFixed(2)}`
+    if (subtotalElement) subtotalElement.textContent = `$${subtotal.toFixed(2)}`
+    if (taxElement) taxElement.textContent = `$${tax.toFixed(2)}`
+    if (totalElement) totalElement.textContent = `$${total.toFixed(2)}`
 }
 
 function updateOrderCount() {
-  const order = JSON.parse(localStorage.getItem("order")) || []
-  const totalItems = order.reduce((sum, item) => sum + item.quantity, 0)
+    const order = JSON.parse(localStorage.getItem("orderItems")) || []
+    const totalItems = order.reduce((sum, item) => sum + item.quantity, 0)
 
-  // Update order count in navigation if element exists
-  const orderCountElement = document.getElementById("order-count")
-  if (orderCountElement) {
-    orderCountElement.textContent = totalItems
-    orderCountElement.style.display = totalItems > 0 ? "inline" : "none"
-  }
+    const orderCountElement = document.getElementById("order-count")
+    const orderCountFixedElement = document.getElementById("order-count-fixed")
+
+    if (orderCountElement) {
+        orderCountElement.textContent = totalItems
+        orderCountElement.style.display = totalItems > 0 ? "inline" : "none"
+    }
+
+    if (orderCountFixedElement) {
+        orderCountFixedElement.textContent = totalItems
+        orderCountFixedElement.style.display = totalItems > 0 ? "inline" : "none"
+    }
 }
 
 function showPaymentOptions() {
-  const subtotal = Number.parseFloat(document.getElementById("order-subtotal").textContent.replace("$", ""))
-  const tax = Number.parseFloat(document.getElementById("order-tax").textContent.replace("$", ""))
-  const total = Number.parseFloat(document.getElementById("order-total").textContent.replace("$", ""))
+    const subtotal = Number.parseFloat(document.getElementById("order-subtotal").textContent.replace("$", ""))
+    const tax = Number.parseFloat(document.getElementById("order-tax").textContent.replace("$", ""))
+    const total = Number.parseFloat(document.getElementById("order-total").textContent.replace("$", ""))
 
-  const paymentModal = `
+    const paymentModal = `
     <div id="payment-modal" class="modal">
       <div class="modal-content payment-modal-content">
         <span class="close" onclick="closePaymentModal()">&times;</span>
@@ -159,129 +165,182 @@ function showPaymentOptions() {
     </div>
   `
 
-  document.body.insertAdjacentHTML("beforeend", paymentModal)
+    document.body.insertAdjacentHTML("beforeend", paymentModal)
 }
 
 function closePaymentModal() {
-  const modal = document.getElementById("payment-modal")
-  if (modal) {
-    modal.remove()
-  }
+    const modal = document.getElementById("payment-modal")
+    if (modal) {
+        modal.remove()
+    }
 }
 
 function processPayment(method) {
-  const order = JSON.parse(localStorage.getItem("order")) || []
-  const total = Number.parseFloat(document.getElementById("order-total").textContent.replace("$", ""))
+    const order = JSON.parse(localStorage.getItem("orderItems")) || []
+    const total = Number.parseFloat(document.getElementById("order-total").textContent.replace("$", ""))
 
-  if (method === "counter") {
-    // Create counter payment order
-    const orderData = {
-      totalAmount: total,
-      items: order.map((item) => ({
-        productId: item.id,
-        quantity: item.quantity,
-      })),
+    if (method === "counter") {
+        // Create counter payment order
+        const orderData = {
+            totalAmount: total,
+            items: order.map((item) => ({
+                productId: item.id,
+                quantity: item.quantity,
+            })),
+        }
+
+        fetch("/Payment/CreateCounterPayment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    localStorage.removeItem("orderItems")
+                    updateOrderCount()
+
+                    showNotification(
+                        `Order Number: ${data.orderNumber}. Payment Number: ${data.paymentNumber}. Please present this number at the counter to complete your payment.`,
+                        "info",
+                        10000,
+                    )
+
+                    setTimeout(() => {
+                        // Check if user is logged in (member)
+                        const isLoggedIn = document.querySelector(".user-welcome") !== null
+
+                        if (isLoggedIn) {
+                            if (confirm("Would you like to create another order?")) {
+                                window.location.href = "/Menu/All"
+                            } else {
+                                if (confirm("Would you like to logout and return to the main menu?")) {
+                                    window.location.href = "/Login/Logout"
+                                } else {
+                                    window.location.href = "/Menu/All"
+                                }
+                            }
+                        } else {
+                            // Guest user - just ask if they want to create another order
+                            if (confirm("Would you like to create another order?")) {
+                                window.location.href = "/Menu/All"
+                            } else {
+                                window.location.href = "/"
+                            }
+                        }
+                    }, 3000)
+                } else {
+                    showNotification("Error creating order: " + data.error, "error")
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error)
+                showNotification("Error creating order. Please try again.", "error")
+            })
+    } else if (method === "stripe") {
+        // Create Stripe checkout session
+        const orderData = {
+            totalAmount: total,
+            items: order.map((item) => ({
+                productId: item.id,
+                quantity: item.quantity,
+            })),
+        }
+
+        showNotification("Redirecting to Stripe payment...", "info")
+
+        fetch("/Payment/CreateCheckoutSession", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    localStorage.removeItem("orderItems")
+                    updateOrderCount()
+
+                    // Redirect to Stripe Checkout
+                    window.location.href = data.checkoutUrl
+                } else {
+                    showNotification("Error creating payment session: " + data.error, "error")
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error)
+                showNotification("Error creating payment session. Please try again.", "error")
+            })
     }
 
-    fetch("/Payment/CreateCounterPayment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(orderData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          localStorage.removeItem("order")
-          updateOrderCount()
-
-          showNotification(
-            `Payment Number: ${data.paymentNumber}. Please present this number at the counter to complete your payment.`,
-            "info",
-            8000,
-          )
-
-          setTimeout(() => {
-            if (confirm("Would you like to create another order?")) {
-              window.location.href = "/Menu/All"
-            } else {
-              if (confirm("Would you like to logout and return to the main menu?")) {
-                window.location.href = "/Login/Logout"
-              } else {
-                window.location.href = "/Menu/All"
-              }
-            }
-          }, 3000)
-        } else {
-          showNotification("Error creating order: " + data.error, "error")
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error)
-        showNotification("Error creating order. Please try again.", "error")
-      })
-  } else if (method === "stripe") {
-    // Create Stripe checkout session
-    const orderData = {
-      totalAmount: total,
-      items: order.map((item) => ({
-        productId: item.id,
-        quantity: item.quantity,
-      })),
-    }
-
-    showNotification("Redirecting to Stripe payment...", "info")
-
-    fetch("/Payment/CreateCheckoutSession", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(orderData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          // Clear the order from localStorage before redirecting
-          localStorage.removeItem("order")
-          updateOrderCount()
-
-          // Redirect to Stripe Checkout
-          window.location.href = data.checkoutUrl
-        } else {
-          showNotification("Error creating payment session: " + data.error, "error")
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error)
-        showNotification("Error creating payment session. Please try again.", "error")
-      })
-  }
-
-  closePaymentModal()
+    closePaymentModal()
 }
 
 function showNotification(message, type = "info", duration = 3000) {
-  const notification = document.createElement("div")
-  notification.className = `notification ${type}`
-  notification.innerHTML = `
+    const notification = document.createElement("div")
+    notification.className = `notification ${type}`
+    notification.innerHTML = `
     <div class="notification-content">
       <span class="notification-message">${message}</span>
       <button class="notification-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
     </div>
   `
 
-  document.body.appendChild(notification)
+    document.body.appendChild(notification)
 
-  setTimeout(() => {
-    if (notification.parentElement) {
-      notification.remove()
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove()
+        }
+    }, duration)
+}
+
+function updateOrderStatus(orderId, status) {
+    fetch("/Order/UpdateOrderStatus", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ orderId, status }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                showNotification(`Order status updated to ${status}`, "success")
+                location.reload() // Refresh to show updated status
+            } else {
+                showNotification("Error updating order status: " + data.error, "error")
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error)
+            showNotification("Error updating order status", "error")
+        })
+}
+
+function viewOrderDetails(orderId) {
+    window.location.href = `/Order/OrderDetails/${orderId}`
+}
+
+function clearOrdersOnMenuExit() {
+    const isLoggedIn = document.querySelector(".user-welcome") !== null
+
+    if (!isLoggedIn) {
+        // Only clear orders for non-members when leaving menu pages
+        window.addEventListener("beforeunload", () => {
+            const currentPath = window.location.pathname
+            if (currentPath.includes("/Menu/")) {
+                localStorage.removeItem("orderItems")
+            }
+        })
     }
-  }, duration)
 }
 
 // Initialize order count on page load
 document.addEventListener("DOMContentLoaded", () => {
-  updateOrderCount()
+    updateOrderCount()
+    clearOrdersOnMenuExit()
 })
