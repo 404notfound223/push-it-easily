@@ -62,26 +62,56 @@ public class LoginController : Controller
     }
 
     [HttpPost]
-    public IActionResult Register(string fName, string lName, string email, string password)
+    public async Task<IActionResult> Register(string name, string email, string password, string verificationCode)
     {
-        HttpContext.Session.SetString("PendingFirstName", fName);
-        HttpContext.Session.SetString("PendingLastName", lName);
-        HttpContext.Session.SetString("PendingEmail", email);
-        HttpContext.Session.SetString("PendingPassword", password);
+        // Check if verification code is provided and valid
+        var expectedCode = HttpContext.Session.GetString("VerificationCode");
+        var verificationEmail = HttpContext.Session.GetString("VerificationEmail");
 
-        // Generate verification code
-        var code = new Random().Next(100000, 999999).ToString();
-        HttpContext.Session.SetString("VerificationCode", code);
-        HttpContext.Session.SetString("VerificationEmail", email);
+        if (string.IsNullOrEmpty(verificationCode))
+        {
+            ViewBag.Error = "Please verify your email first.";
+            return View();
+        }
+
+        if (verificationCode != expectedCode || email != verificationEmail)
+        {
+            ViewBag.Error = "Invalid verification code.";
+            return View();
+        }
 
         try
         {
-            SendVerificationEmail(email, code);
-            return RedirectToAction("VerifyCode");
+            // Check if user already exists
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (existingUser != null)
+            {
+                ViewBag.Error = "A user with this email already exists.";
+                return View();
+            }
+
+            var user = new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = name, // Use single name field
+                Email = email,
+                Password = password, // In production, hash this password
+                Role = "member" // Default role for new registrations
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            // Clear session data
+            HttpContext.Session.Remove("VerificationCode");
+            HttpContext.Session.Remove("VerificationEmail");
+
+            ViewBag.Success = "Registration successful! You can now login.";
+            return RedirectToAction("Login");
         }
         catch (Exception ex)
         {
-            ViewBag.Error = "Failed to send verification email. Please try again.";
+            ViewBag.Error = "Registration failed: " + ex.Message;
             return View();
         }
     }
@@ -98,15 +128,14 @@ public class LoginController : Controller
         var expectedCode = HttpContext.Session.GetString("VerificationCode");
         if (code == expectedCode)
         {
-            var firstName = HttpContext.Session.GetString("PendingFirstName");
-            var lastName = HttpContext.Session.GetString("PendingLastName");
+            var name = HttpContext.Session.GetString("PendingName");
             var email = HttpContext.Session.GetString("PendingEmail");
             var password = HttpContext.Session.GetString("PendingPassword");
 
             var user = new User
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = $"{firstName} {lastName}",
+                Name = $"{name}",
                 Email = email,
                 Password = password, // In production, hash this password
                 Role = "member" // Default role for new registrations
@@ -116,8 +145,7 @@ public class LoginController : Controller
             await _context.SaveChangesAsync();
 
             // Clear session data
-            HttpContext.Session.Remove("PendingFirstName");
-            HttpContext.Session.Remove("PendingLastName");
+            HttpContext.Session.Remove("PendingName");
             HttpContext.Session.Remove("PendingEmail");
             HttpContext.Session.Remove("PendingPassword");
             HttpContext.Session.Remove("VerificationCode");
@@ -179,26 +207,33 @@ public class LoginController : Controller
     }
 
     [HttpPost]
-    public IActionResult SendVerificationCode([FromBody] VerificationRequest request)
+    public async Task<IActionResult> SendVerificationCode([FromBody] VerificationRequest request)
     {
         if (request == null || string.IsNullOrEmpty(request.Email))
             return Json(new { success = false, error = "Invalid email." });
 
-        string email = request.Email;
-        var code = new Random().Next(100000, 999999).ToString();
-        HttpContext.Session.SetString("VerificationCode", code);
-        HttpContext.Session.SetString("VerificationEmail", email);
-
         try
         {
+            // Check if user already exists
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (existingUser != null)
+            {
+                return Json(new { success = false, error = "A user with this email already exists." });
+            }
+
+            string email = request.Email;
+            var code = new Random().Next(100000, 999999).ToString();
+            HttpContext.Session.SetString("VerificationCode", code);
+            HttpContext.Session.SetString("VerificationEmail", email);
+
             SendVerificationEmail(email, code);
-            return Json(new { success = true });
+            return Json(new { success = true, message = "Verification code sent to " + email });
         }
         catch (Exception ex)
         {
             return Json(new { success = false, error = "Failed to send email: " + ex.Message });
         }
-   }
+    }
 
     [HttpPost]
     public IActionResult Logout()
