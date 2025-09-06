@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\login\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\login\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -13,10 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\menu\\specials.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -62,48 +66,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "LoginController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\LoginController.cs",
+              "RelativeDocumentMoniker": "Controllers\\LoginController.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\LoginController.cs",
+              "RelativeToolTip": "Controllers\\LoginController.cs",
+              "ViewState": "AgIAAJ0AAAAAAAAAAAAAwKsAAABGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-04T09:45:54.913Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Register.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Login\\Register.cshtml",
               "RelativeDocumentMoniker": "Views\\Login\\Register.cshtml",
               "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Login\\Register.cshtml",
               "RelativeToolTip": "Views\\Login\\Register.cshtml",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAAEIAAABpAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-08-31T05:53:13.865Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "DB.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
-              "RelativeDocumentMoniker": "Models\\DB.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
-              "RelativeToolTip": "Models\\DB.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-29T11:35:09.625Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ErrorViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ErrorViewModel.cs",
-              "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ErrorViewModel.cs",
-              "RelativeToolTip": "Models\\ErrorViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-29T11:35:08.74Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Specials.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Specials.cshtml",
@@ -111,11 +104,51 @@
               "RelativeToolTip": "Views\\Menu\\Specials.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:10:08.744Z"
+              "WhenOpened": "2025-08-29T11:10:08.744Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-08-29T11:07:23.131Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ErrorViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ErrorViewModel.cs",
+              "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ErrorViewModel.cs",
+              "RelativeToolTip": "Models\\ErrorViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T11:35:08.74Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DB.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
+              "RelativeDocumentMoniker": "Models\\DB.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
+              "RelativeToolTip": "Models\\DB.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T11:35:09.625Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "Seafood.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Seafood.cshtml",
@@ -123,11 +156,12 @@
               "RelativeToolTip": "Views\\Menu\\Seafood.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:57.799Z"
+              "WhenOpened": "2025-08-29T11:09:57.799Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Pizza.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Pizza.cshtml",
@@ -135,11 +169,12 @@
               "RelativeToolTip": "Views\\Menu\\Pizza.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:47.103Z"
+              "WhenOpened": "2025-08-29T11:09:47.103Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Pasta.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Pasta.cshtml",
@@ -147,23 +182,12 @@
               "RelativeToolTip": "Views\\Menu\\Pasta.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:29.466Z"
+              "WhenOpened": "2025-08-29T11:09:29.466Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-08-29T11:07:23.131Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Desserts.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Desserts.cshtml",
@@ -171,11 +195,12 @@
               "RelativeToolTip": "Views\\Menu\\Desserts.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:15.733Z"
+              "WhenOpened": "2025-08-29T11:09:15.733Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Burgers.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Burgers.cshtml",
@@ -183,11 +208,12 @@
               "RelativeToolTip": "Views\\Menu\\Burgers.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:02.11Z"
+              "WhenOpened": "2025-08-29T11:09:02.11Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "Beverages.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\Beverages.cshtml",
@@ -195,11 +221,12 @@
               "RelativeToolTip": "Views\\Menu\\Beverages.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:08:43.948Z"
+              "WhenOpened": "2025-08-29T11:08:43.948Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "All.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml",
               "RelativeDocumentMoniker": "Views\\Menu\\All.cshtml",
@@ -207,11 +234,12 @@
               "RelativeToolTip": "Views\\Menu\\All.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:08:38.42Z"
+              "WhenOpened": "2025-08-29T11:08:38.42Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "README.md",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\README.md",
               "RelativeDocumentMoniker": "README.md",
@@ -219,11 +247,8 @@
               "RelativeToolTip": "README.md",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2025-08-29T11:03:36.492Z"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+              "WhenOpened": "2025-08-29T11:03:36.492Z",
+              "EditorCaption": ""
             }
           ]
         }
