@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;   
 
 namespace Menu.Models;
 
@@ -7,7 +8,7 @@ public class DB : DbContext
 {
     public DB(DbContextOptions options) : base(options) { }
 
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; }    
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderDetail> OrderDetails { get; set; }
@@ -17,13 +18,12 @@ public class DB : DbContext
     }
 }
 
-
 public class Product
 {
     [Key]
     public required string Id { get; set; }
     public required string Name { get; set; }
-    [Precision(4, 2)]  // set price upper limit: 99.99 --> lecture note slide 58
+    [Precision(4, 2)]
     public required decimal Price { get; set; }
     public required string? Description { get; set; }
     public required string Category { get; set; }
@@ -68,18 +68,28 @@ public class OrderDetail
     public decimal UnitPrice { get; set; }
 }
 
+[Table("User")]
 public class User
 {
     [Key]
+    [MaxLength(50)]
     public required string Id { get; set; }
+
+    [MaxLength(50)]
     public required string Name { get; set; }
+
+    [MaxLength(255)]
     public required string Password { get; set; }
+
+    [MaxLength(255)]
     public required string Email { get; set; }
+
+    [MaxLength(20)]
     public required string Role { get; set; }
 
-    // Relationships
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }
+
 
 public class VerificationRequest
 {
