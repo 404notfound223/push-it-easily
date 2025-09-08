@@ -325,22 +325,23 @@ function viewOrderDetails(orderId) {
     window.location.href = `/Order/OrderDetails/${orderId}`
 }
 
-function clearOrdersOnMenuExit() {
-    const isLoggedIn = document.querySelector(".user-welcome") !== null
+// clear orders when non-members wanted to exit menu page or login, register. but prompt a message to notify customer
+//function clearOrdersOnMenuExit() {
+//    const isLoggedIn = document.querySelector(".user-welcome") !== null
 
-    if (!isLoggedIn) {
-        // Only clear orders for non-members when leaving menu pages
-        window.addEventListener("beforeunload", () => {
-            const currentPath = window.location.pathname
-            if (currentPath.includes("/Menu/")) {
-                localStorage.removeItem("orderItems")
-            }
-        })
-    }
-}
+//    if (!isLoggedIn) {
+//        // Only clear orders for non-members when leaving menu pages
+//        window.addEventListener("beforeunload", () => {
+//            const currentPath = window.location.pathname
+//            if (currentPath.includes("/Menu/")) {
+//                localStorage.removeItem("orderItems")
+//            }
+//        })
+//    }
+//}
 
 // Initialize order count on page load
 document.addEventListener("DOMContentLoaded", () => {
     updateOrderCount()
-    clearOrdersOnMenuExit()
+    //clearOrdersOnMenuExit()
 })

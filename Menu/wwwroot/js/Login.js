@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BROKEN HERE NEEED FIX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // Email verification AJAX
     const verifyEmailBtn = document.getElementById('verifyEmailBtn');
     if (verifyEmailBtn) {
