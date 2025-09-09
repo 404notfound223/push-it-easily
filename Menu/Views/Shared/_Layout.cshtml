@@ -23,6 +23,12 @@
 <body>
     <header class="header-top">
         <div class="header-left">
+            <button onclick="window.history.back()" class="btn btn-return" title="Return">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                </svg>
+                Return
+            </button>
             <img src="~/images/logoCSharp.jpg" alt="Logo" />
             <h1 class="logo-caption">The Secret Restaurant</h1>
         </div>
@@ -36,28 +42,23 @@
                 </svg>
             </button>
         </form>
+
         
         <div class="top-right">
-            <button onclick="window.location.href='/Order/ViewOrder'" class="btn btn-view-order" title="View Order">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
-                    <polyline points="9,11 12,14 15,11"></polyline>
-                    <line x1="12" y1="2" x2="12" y2="14"></line>
-                </svg>
-                View Order
-                <span id="order-count" class="order-badge">0</span>
-            </button>
             @if (isLoggedIn)
             {
                 @if (userRole == "member")
                 {
-                    <button onclick="showProfile()" class="btn btn-profile" title="Profile">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Profile
-                    </button>
+                    <div class="profile-container">
+                        <button class="btn btn-profile">
+                            Profile ▾
+                        </button>
+                        <div class="profile-dropdown">
+                            <button onclick="showProfile()">View Profile</button>
+                            <button onclick="logout()">Logout</button>
+                        </div>
+                    </div>
+
                 }
                 
                 @if (userRole == "admin" || userRole == "staff")
@@ -70,8 +71,6 @@
                         Dashboard
                     </button>
                 }
-                
-                <span class="user-welcome">Welcome, @userName</span>
                 
                 <button onclick="logout()" class="btn btn-logout" title="Logout">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -87,13 +86,6 @@
                 <button onclick="window.location.href='/Login/Login'" class="btn btn-login">Login</button>
                 <button onclick="window.location.href='/Login/Register'" class="btn btn-register">Register</button>
             }
-            
-            <button onclick="window.history.back()" class="btn btn-return" title="Return">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15,18 9,12 15,6"></polyline>
-                </svg>
-                Return
-            </button>
         </div>
     </header>
 
@@ -120,9 +112,22 @@
         </main>
     </div>
 
+    <div class="btm-right">
+        <button onclick="window.location.href='/Order/ViewOrder'" class="btn btn-view-order" title="View Order">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
+                <polyline points="9,11 12,14 15,11"></polyline>
+                <line x1="12" y1="2" x2="12" y2="14"></line>
+            </svg>
+            View Order
+            <span id="order-count" class="order-badge">0</span>
+        </button>
+    </div>
+
     <footer>
         Developed by <b>The Secret Restaurant</b> &middot; © @year
     </footer>
+
 
     <div id="profile-modal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -146,44 +151,6 @@
     <script src="~/js/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/js/app.js" asp-append-version="true"></script>
     <script src="~/js/order.js" asp-append-version="true"></script>
-    <script>
-        function navigateTo(url) {
-            window.location.href = url;
-        }
-
-        function showProfile() {
-            document.getElementById('profile-modal').style.display = 'block';
-        }
-
-        function closeProfile() {
-            document.getElementById('profile-modal').style.display = 'none';
-        }
-
-        function viewOrderHistory() {
-            window.location.href = '/Order/OrderHistory';
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                fetch('/Login/Logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                }).then(() => {
-                    window.location.href = '/Login/Login';
-                });
-            }
-        }
-
-        // Update order count on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof updateOrderCount === 'function') {
-                updateOrderCount();
-            }
-        });
-    </script>
-
     @RenderSection("foot", required: false)
 </body>
 </html>
