@@ -23,6 +23,12 @@
 <body>
     <header class="header-top">
         <div class="header-left">
+            <button onclick="window.history.back()" class="btn btn-return" title="Return">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                </svg>
+                Return
+            </button>
             <img src="~/images/logoCSharp.jpg" alt="Logo" />
             <h1 class="logo-caption">The Secret Restaurant</h1>
         </div>
@@ -36,28 +42,24 @@
                 </svg>
             </button>
         </form>
+
         
         <div class="top-right">
-            <button onclick="window.location.href='/Order/ViewOrder'" class="btn btn-view-order" title="View Order">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
-                    <polyline points="9,11 12,14 15,11"></polyline>
-                    <line x1="12" y1="2" x2="12" y2="14"></line>
-                </svg>
-                View Order
-                <span id="order-count" class="order-badge">0</span>
-            </button>
             @if (isLoggedIn)
             {
                 @if (userRole == "member")
                 {
-                    <button onclick="showProfile()" class="btn btn-profile" title="Profile">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Profile
-                    </button>
+                    <div class="profile-container" style="position: relative;">
+                        <button class="btn btn-profile" onclick="toggleProfileDropdown(event)">
+                            Profile ▾
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <button onclick="showProfile()" class="btn btn-primary">View Profile</button>
+                            <button onclick="logout()" class="btn btn-primary">Logout</button>
+                            <button onclick="viewOrderHistory()" class="btn btn-primary">Order History</button>
+                        </div>
+                    </div>
+
                 }
                 
                 @if (userRole == "admin" || userRole == "staff")
@@ -70,8 +72,6 @@
                         Dashboard
                     </button>
                 }
-                
-                <span class="user-welcome">Welcome, @userName</span>
                 
                 <button onclick="logout()" class="btn btn-logout" title="Logout">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -87,13 +87,6 @@
                 <button onclick="window.location.href='/Login/Login'" class="btn btn-login">Login</button>
                 <button onclick="window.location.href='/Login/Register'" class="btn btn-register">Register</button>
             }
-            
-            <button onclick="window.history.back()" class="btn btn-return" title="Return">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15,18 9,12 15,6"></polyline>
-                </svg>
-                Return
-            </button>
         </div>
     </header>
 
@@ -120,25 +113,68 @@
         </main>
     </div>
 
+    <div class="btm-right">
+        <button onclick="window.location.href='/Order/ViewOrder'" class="btn btn-view-order" title="View Order">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"></path>
+                <polyline points="9,11 12,14 15,11"></polyline>
+                <line x1="12" y1="2" x2="12" y2="14"></line>
+            </svg>
+            View Order
+            <span id="order-count" class="order-badge">0</span>
+        </button>
+    </div>
+
     <footer>
         Developed by <b>The Secret Restaurant</b> &middot; © @year
     </footer>
+
 
     <div id="profile-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close" onclick="closeProfile()">&times;</span>
             <h2>User Profile</h2>
             <div class="profile-info">
-                <p><strong>Name:</strong> @userName</p>
+                <p>
+                    <strong>Name:</strong>
+                    <span id="username-display">@userName</span>
+                    <button id="edit-username-btn" onclick="editUsername()" class="btn btn-small">Edit</button>
+                </p>
+                <div id="username-edit" style="display: none;">
+                    <input type="text" id="new-username" value="@userName" />
+                    <button onclick="saveUsername()" class="btn btn-small btn-primary">Save</button>
+                    <button onclick="cancelEditUsername()" class="btn btn-small btn-secondary">Cancel</button>
+                </div>
                 <p><strong>Role:</strong> @userRole</p>
                 <p><strong>User ID:</strong> @userId</p>
             </div>
             <div class="profile-actions">
-                <button onclick="viewOrderHistory()" class="btn btn-primary">Order History</button>
                 <button onclick="closeProfile()" class="btn btn-secondary">Close</button>
+                <button onclick="resetPassword()" class="btn btn-primary">Reset Password</button>
             </div>
         </div>
     </div>
+
+    @* <div id="forgot-password-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeForgotPassword()">&times;</span>
+            <h2>Reset Password</h2>
+            <div id="forgot-step-1">
+                <p>Enter your email address to receive a password reset code:</p>
+                <input type="email" id="forgot-email" placeholder="Enter your email" />
+                <button onclick="sendResetCode()" class="btn btn-primary">Send Reset Code</button>
+            </div>
+            <div id="forgot-step-2" style="display: none;">
+                <p>Enter the reset code sent to your email:</p>
+                <input type="text" id="reset-code" placeholder="Enter reset code" />
+                <p>Enter your new password:</p>
+                <input type="password" id="new-password" placeholder="New password" />
+                <input type="password" id="confirm-password" placeholder="Confirm new password" />
+                <button onclick="resetPasswordWithCode()" class="btn btn-primary">Reset Password</button>
+            </div>
+            <div id="forgot-message"></div>
+        </div>
+    </div> *@
 
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
@@ -146,44 +182,6 @@
     <script src="~/js/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/js/app.js" asp-append-version="true"></script>
     <script src="~/js/order.js" asp-append-version="true"></script>
-    <script>
-        function navigateTo(url) {
-            window.location.href = url;
-        }
-
-        function showProfile() {
-            document.getElementById('profile-modal').style.display = 'block';
-        }
-
-        function closeProfile() {
-            document.getElementById('profile-modal').style.display = 'none';
-        }
-
-        function viewOrderHistory() {
-            window.location.href = '/Order/OrderHistory';
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                fetch('/Login/Logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                }).then(() => {
-                    window.location.href = '/Login/Login';
-                });
-            }
-        }
-
-        // Update order count on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof updateOrderCount === 'function') {
-                updateOrderCount();
-            }
-        });
-    </script>
-
     @RenderSection("foot", required: false)
 </body>
 </html>

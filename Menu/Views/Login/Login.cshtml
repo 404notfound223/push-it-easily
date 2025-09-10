@@ -53,12 +53,38 @@
             <a asp-action="Register" asp-controller="Login">Register</a>
         </div>
 
-        @* add in a forget password here *@
+        @* <div class="links">
+            <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+        </div> *@
 
         <div class="links">
             <p>Customer Ordering Menu. </p>
             <a asp-action="All" asp-controller="Menu">Guest Menu</a>
         </div>
     </div>
+
+    @* <div id="forgot-password-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeForgotPassword()">&times;</span>
+            <h2>Reset Password</h2>
+            <div id="forgot-step-1">
+                <p>Enter your email address to receive a password reset code:</p>
+                <input type="email" id="forgot-email" placeholder="Enter your email" />
+                <button onclick="sendResetCode()" class="btn btn-primary">Send Reset Code</button>
+            </div>
+            <div id="forgot-step-2" style="display: none;">
+                <p>Enter the reset code sent to your email:</p>
+                <input type="text" id="reset-code" placeholder="Enter reset code" />
+                <p>Enter your new password:</p>
+                <input type="password" id="new-password" placeholder="New password" />
+                <p>Confirm your new password:</p>
+                <input type="password" id="confirm-password" placeholder="Confirm new password" />
+                <button onclick="resetPasswordWithCode()" class="btn btn-primary">Reset Password</button>
+            </div>
+            <div id="forgot-message"></div>
+        </div>
+    </div> *@
+
+    <script src="~/js/forgot-password.js" asp-append-version="true"></script>
 </body>
 </html>

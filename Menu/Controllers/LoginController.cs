@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Net.Mail;
-using System.Net;
 using Menu.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Net;
+using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 
 public class LoginController : Controller
@@ -33,7 +34,8 @@ public class LoginController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string email, string password)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+        var hashedPassword = HashPassword(password);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == hashedPassword);
 
         if (user != null)
         {
@@ -64,7 +66,7 @@ public class LoginController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(string name, string email, string password, string verificationCode)
     {
-        // Check if verification code is provided and valid
+        // Check verification code
         var expectedCode = HttpContext.Session.GetString("VerificationCode");
         var verificationEmail = HttpContext.Session.GetString("VerificationEmail");
 
@@ -92,11 +94,11 @@ public class LoginController : Controller
 
             var user = new User
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = name, // Use single name field
+                Id = await GenerateMemberId(),
+                Name = name,
                 Email = email,
-                Password = password, // In production, hash this password
-                Role = "member" // Default role for new registrations
+                Password = HashPassword(password),
+                Role = "member"
             };
 
             _context.Users.Add(user);
@@ -134,22 +136,18 @@ public class LoginController : Controller
 
             var user = new User
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = $"{name}",
+                Id = await GenerateMemberId(),
+                Name = name,
                 Email = email,
-                Password = password, // In production, hash this password
-                Role = "member" // Default role for new registrations
+                Password = HashPassword(password),
+                Role = "member"
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             // Clear session data
-            HttpContext.Session.Remove("PendingName");
-            HttpContext.Session.Remove("PendingEmail");
-            HttpContext.Session.Remove("PendingPassword");
-            HttpContext.Session.Remove("VerificationCode");
-            HttpContext.Session.Remove("VerificationEmail");
+            HttpContext.Session.Clear();
 
             ViewBag.Success = "Email verified! Registration complete. You can now login.";
             return View();
@@ -201,7 +199,6 @@ public class LoginController : Controller
         }
         catch (Exception ex)
         {
-            // Log the error (in production, use proper logging)
             throw new Exception($"Failed to send email: {ex.Message}");
         }
     }
@@ -214,7 +211,6 @@ public class LoginController : Controller
 
         try
         {
-            // Check if user already exists
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (existingUser != null)
             {
@@ -240,5 +236,28 @@ public class LoginController : Controller
     {
         HttpContext.Session.Clear();
         return RedirectToAction("Login");
+    }
+
+    private string HashPassword(string password)
+    {
+        using (var sha256 = System.Security.Cryptography.SHA256.Create())
+        {
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
+    }
+
+    private async Task<string> GenerateMemberId()
+    {
+        var lastUser = await _context.Users
+            .OrderByDescending(u => u.Id)
+            .FirstOrDefaultAsync();
+
+        if (lastUser == null || string.IsNullOrEmpty(lastUser.Id))
+            return "M001";
+
+        int lastNumber = int.Parse(lastUser.Id.Substring(1));
+        return "M" + (lastNumber + 1).ToString("D3");
     }
 }
