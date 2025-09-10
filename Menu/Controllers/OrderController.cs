@@ -1,10 +1,11 @@
+using Menu.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Menu.Models;
-using System.Text.Json;
+using Stripe.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 public class OrderController : Controller
@@ -33,13 +34,13 @@ public class OrderController : Controller
             User? user = null;
             if (!isGuest)
             {
-                user = await _context.Users.FindAsync(userId);
+                user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
             }
 
-            var order = new Order
+            var order = new Menu.Models.Order
             {
-                OrderId = Guid.NewGuid().ToString(),
-                UserId = isGuest ? null : userId, // Allow null for guest orders
+                OrderId = await IdGenerator.GenerateOrderId(_context),
+                UserId = isGuest ? null : userId,
                 User = user,
                 TotalAmount = request.TotalAmount,
                 Status = "Pending",
@@ -48,15 +49,26 @@ public class OrderController : Controller
 
             _context.Orders.Add(order);
 
+            // Get the last OrderDetailId number once
+            var lastDetail = await _context.OrderDetails
+                .OrderByDescending(od => od.OrderDetailId)
+                .FirstOrDefaultAsync();
+
+            int lastNumber = 0;
+            if (lastDetail != null && lastDetail.OrderDetailId.Length > 3)
+            {
+                int.TryParse(lastDetail.OrderDetailId.Substring(3), out lastNumber);
+            }
+
             // Add order details
             foreach (var item in request.Items)
             {
-                var product = await _context.Products.FindAsync(item.ProductId);
+                var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == item.ProductId);
                 if (product != null)
                 {
                     var orderDetail = new OrderDetail
                     {
-                        OrderDetailId = Guid.NewGuid().ToString(),
+                        OrderDetailId = await IdGenerator.GenerateOrderDetailId(_context),
                         OrderId = order.OrderId,
                         Order = order,
                         ProductId = item.ProductId,
@@ -66,8 +78,11 @@ public class OrderController : Controller
                     };
                     _context.OrderDetails.Add(orderDetail);
 
-                    // Update product sold count
-                    product.Sold += item.Quantity;
+                    var trackedProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == item.ProductId);
+                    if (trackedProduct != null)
+                    {
+                        trackedProduct.Sold += item.Quantity;
+                    }
                 }
             }
 
@@ -104,7 +119,7 @@ public class OrderController : Controller
         catch (Exception ex)
         {
             ViewBag.Error = ex.Message;
-            return View(new List<Order>());
+            return View(new List<Menu.Models.Order>());
         }
     }
 
@@ -208,14 +223,3 @@ public class OrderController : Controller
     }
 }
 
-public class CreateOrderRequest
-{
-    public decimal TotalAmount { get; set; }
-    public List<OrderItemRequest> Items { get; set; } = new List<OrderItemRequest>();
-}
-
-public class OrderItemRequest
-{
-    public string ProductId { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-}

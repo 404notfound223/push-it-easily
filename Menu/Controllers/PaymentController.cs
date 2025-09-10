@@ -38,7 +38,7 @@ public class PaymentController : Controller
             // Create order first
             var order = new Order
             {
-                OrderId = Guid.NewGuid().ToString(),
+                OrderId = await IdGenerator.GenerateOrderId(_context),
                 UserId = userId,
                 User = user,
                 TotalAmount = request.TotalAmount,
@@ -57,7 +57,7 @@ public class PaymentController : Controller
                 {
                     var orderDetail = new OrderDetail
                     {
-                        OrderDetailId = Guid.NewGuid().ToString(),
+                        OrderDetailId = await IdGenerator.GenerateOrderDetailId(_context),
                         OrderId = order.OrderId,
                         Order = order,
                         ProductId = item.ProductId,
@@ -196,7 +196,7 @@ public class PaymentController : Controller
 
             var order = new Order
             {
-                OrderId = Guid.NewGuid().ToString(),
+                OrderId = await IdGenerator.GenerateOrderId(_context),
                 UserId = userId,
                 User = user,
                 TotalAmount = request.TotalAmount,
@@ -214,7 +214,7 @@ public class PaymentController : Controller
                 {
                     var orderDetail = new OrderDetail
                     {
-                        OrderDetailId = Guid.NewGuid().ToString(),
+                        OrderDetailId = await IdGenerator.GenerateOrderDetailId(_context),
                         OrderId = order.OrderId,
                         Order = order,
                         ProductId = item.ProductId,

@@ -73,7 +73,7 @@ public class User
 {
     [Key]
     [MaxLength(50)]
-    public required string Id { get; set; }
+    public required string UserId { get; set; }
 
     [MaxLength(50)]
     public required string Name { get; set; }
@@ -94,4 +94,16 @@ public class User
 public class VerificationRequest
 {
     public required string Email { get; set; }
+}
+
+public class CreateOrderRequest
+{
+    public decimal TotalAmount { get; set; }
+    public List<OrderItemRequest> Items { get; set; } = new List<OrderItemRequest>();
+}
+
+public class OrderItemRequest
+{
+    public string ProductId { get; set; } = string.Empty;
+    public int Quantity { get; set; }
 }
