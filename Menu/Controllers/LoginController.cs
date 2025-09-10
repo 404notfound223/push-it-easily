@@ -47,7 +47,7 @@ public class LoginController : Controller
                 case "admin":
                     return RedirectToAction("Configure", "Menu");
                 case "staff":
-                    return RedirectToAction("StaffDashboard", "Staff");
+                    return RedirectToAction("Dashboard", "Staff");
                 case "member":
                     return RedirectToAction("All", "Menu");
                 default:
