@@ -49,13 +49,14 @@
             {
                 @if (userRole == "member")
                 {
-                    <div class="profile-container">
-                        <button class="btn btn-profile">
+                    <div class="profile-container" style="position: relative;">
+                        <button class="btn btn-profile" onclick="toggleProfileDropdown(event)">
                             Profile ▾
                         </button>
-                        <div class="profile-dropdown">
-                            <button onclick="showProfile()">View Profile</button>
-                            <button onclick="logout()">Logout</button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <button onclick="showProfile()" class="btn btn-primary">View Profile</button>
+                            <button onclick="logout()" class="btn btn-primary">Logout</button>
+                            <button onclick="viewOrderHistory()" class="btn btn-primary">Order History</button>
                         </div>
                     </div>
 
@@ -134,16 +135,46 @@
             <span class="close" onclick="closeProfile()">&times;</span>
             <h2>User Profile</h2>
             <div class="profile-info">
-                <p><strong>Name:</strong> @userName</p>
+                <p>
+                    <strong>Name:</strong>
+                    <span id="username-display">@userName</span>
+                    <button id="edit-username-btn" onclick="editUsername()" class="btn btn-small">Edit</button>
+                </p>
+                <div id="username-edit" style="display: none;">
+                    <input type="text" id="new-username" value="@userName" />
+                    <button onclick="saveUsername()" class="btn btn-small btn-primary">Save</button>
+                    <button onclick="cancelEditUsername()" class="btn btn-small btn-secondary">Cancel</button>
+                </div>
                 <p><strong>Role:</strong> @userRole</p>
                 <p><strong>User ID:</strong> @userId</p>
             </div>
             <div class="profile-actions">
-                <button onclick="viewOrderHistory()" class="btn btn-primary">Order History</button>
                 <button onclick="closeProfile()" class="btn btn-secondary">Close</button>
+                <button onclick="resetPassword()" class="btn btn-primary">Reset Password</button>
             </div>
         </div>
     </div>
+
+    @* <div id="forgot-password-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeForgotPassword()">&times;</span>
+            <h2>Reset Password</h2>
+            <div id="forgot-step-1">
+                <p>Enter your email address to receive a password reset code:</p>
+                <input type="email" id="forgot-email" placeholder="Enter your email" />
+                <button onclick="sendResetCode()" class="btn btn-primary">Send Reset Code</button>
+            </div>
+            <div id="forgot-step-2" style="display: none;">
+                <p>Enter the reset code sent to your email:</p>
+                <input type="text" id="reset-code" placeholder="Enter reset code" />
+                <p>Enter your new password:</p>
+                <input type="password" id="new-password" placeholder="New password" />
+                <input type="password" id="confirm-password" placeholder="Confirm new password" />
+                <button onclick="resetPasswordWithCode()" class="btn btn-primary">Reset Password</button>
+            </div>
+            <div id="forgot-message"></div>
+        </div>
+    </div> *@
 
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>

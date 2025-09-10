@@ -59,18 +59,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 });
 
-function toggleProfileMenu(event) {
-    event.stopPropagation(); // prevent click from bubbling up
-    const dropdown = document.getElementById("profileDropdown");
-    dropdown.classList.toggle("show");
+function toggleProfileDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
 }
 
-// close dropdown when clicking outside
-document.addEventListener("click", function (e) {
-    const dropdown = document.getElementById("profileDropdown");
-    if (dropdown && dropdown.classList.contains("show")) {
-        if (!e.target.closest(".profile-container")) {
-            dropdown.classList.remove("show");
+// Hide dropdown when clicking outside
+document.addEventListener('click', function (e) {
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown && dropdown.style.display === 'block') {
+        if (!e.target.closest('.profile-container')) {
+            dropdown.style.display = 'none';
         }
     }
 });
@@ -78,3 +80,54 @@ document.addEventListener("click", function (e) {
 //function scrollToTop() {
 //    window.scrollTo({ top: 0, behavior: 'smooth' });
 //}
+
+function resetPassword() {
+    closeProfile()
+    showForgotPassword()
+}
+
+function editUsername() {
+    document.getElementById("username-display").style.display = "none"
+    document.getElementById("edit-username-btn").style.display = "none"
+    document.getElementById("username-edit").style.display = "block"
+}
+
+function cancelEditUsername() {
+    document.getElementById("username-display").style.display = "inline"
+    document.getElementById("edit-username-btn").style.display = "inline"
+    document.getElementById("username-edit").style.display = "none"
+}
+
+function saveUsername() {
+    const newUsername = document.getElementById("new-username").value.trim()
+    if (!newUsername) {
+        alert("Please enter a valid username")
+        return
+    }
+
+    fetch("/Login/UpdateUsername", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newUsername: newUsername }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                document.getElementById("username-display").textContent = newUsername
+                cancelEditUsername()
+                alert("Username updated successfully!")
+            } else {
+                alert("Error: " + data.error)
+            }
+        })
+        .catch((error) => {
+            alert("Error updating username: " + error)
+        })
+}
+
+// Function to show forgot password modal
+function showForgotPassword() {
+    document.getElementById("forgot-password-modal").style.display = "block"
+}

@@ -25,6 +25,8 @@ public class PaymentController : Controller
             return Json(new { success = false, error = "User not logged in" });
         }
 
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
         try
         {
             var user = await _context.Users.FindAsync(userId);
@@ -71,7 +73,7 @@ public class PaymentController : Controller
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                             UnitAmount = (long)(product.Price * 100), // Stripe uses cents
-                            Currency = "rm",
+                            Currency = "MYR",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = product.Name,
@@ -104,10 +106,14 @@ public class PaymentController : Controller
             var service = new SessionService();
             Session session = service.Create(options);
 
+            await transaction.CommitAsync();
+
             return Json(new { success = true, sessionId = session.Id, checkoutUrl = session.Url });
         }
         catch (Exception ex)
         {
+            await transaction.RollbackAsync();
+
             return Json(new { success = false, error = ex.Message });
         }
     }
