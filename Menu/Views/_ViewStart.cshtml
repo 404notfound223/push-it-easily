@@ -1,3 +1,12 @@
 ﻿@{
-    Layout = "_Layout";
+    var role = Context.Session.GetString("UserRole") ?? "guest";
+
+    if (role == "admin" || role == "staff")
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }

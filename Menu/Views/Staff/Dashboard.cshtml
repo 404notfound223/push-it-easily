@@ -1,9 +1,10 @@
-@model StaffDashboardViewModel
+﻿@model StaffDashboardViewModel
 @{
     ViewData["Title"] = "Staff Dashboard";
 }
 
 <link rel="stylesheet" href="~/css/staff.css" asp-append-version="true" />
+
 <div class="staff-dashboard">
     <div class="dashboard-header">
         <h1>Staff Dashboard</h1>
@@ -12,13 +13,13 @@
 
     <div class="dashboard-tabs">
         <button class="tab-button active" onclick="showTab('orders')">Order Management</button>
-        @if (Model.UserRole == "admin")
+        @if (Model.UserRole?.ToLower() == "admin")
         {
             <button class="tab-button" onclick="showTab('users')">User Management</button>
         }
     </div>
 
-     @* Order Management Tab  *@
+    @* ---------------- ORDER MANAGEMENT TAB ---------------- *@
     <div id="orders-tab" class="tab-content active">
         <div class="section-header">
             <h2>Customer Orders</h2>
@@ -58,10 +59,10 @@
                     @foreach (var order in Model.Orders)
                     {
                         <tr class="order-row" data-order-id="@order.OrderId">
-                            <td class="order-id">@order.OrderId.Substring(0, 8).ToUpper()</td>
-                            <td class="customer-name">@order.User.Name</td>
-                            <td class="order-date">@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
-                            <td class="order-total">$@order.TotalAmount.ToString("F2")</td>
+                            <td>@order.OrderId.Substring(0, Math.Min(8, order.OrderId.Length)).ToUpper()</td>
+                            <td>@order.User.Name</td>
+                            <td>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td>$@order.TotalAmount.ToString("F2")</td>
                             <td>
                                 <select class="status-select"
                                         onchange="updateOrderStatus('@order.OrderId', this.value)"
@@ -70,7 +71,10 @@
                                 </select>
                             </td>
                             <td>
-                                <button onclick="viewOrderDetails('@order.OrderId')" class="btn btn-sm btn-info">View Details</button>
+                                <button onclick="openPopout('orderDetailPanel', '@order.OrderId')"
+                                        class="btn btn-sm btn-info">
+                                    View Order
+                                </button>
                             </td>
                         </tr>
                     }
@@ -79,13 +83,13 @@
         </div>
     </div>
 
-     @* User Management Tab (Admin Only)  *@
-    @if (Model.UserRole == "admin")
+    @* ---------------- USER MANAGEMENT TAB (ADMIN ONLY) ---------------- *@
+    @if (Model.UserRole?.ToLower() == "admin")
     {
         <div id="users-tab" class="tab-content">
             <div class="section-header">
                 <h2>User Management</h2>
-                <button onclick="showAddUserModal()" class="btn btn-primary">Add New User</button>
+                <button onclick="openPopout('editUserPanel')" class="btn btn-primary">Add New User</button>
             </div>
 
             <div class="users-table-container">
@@ -102,16 +106,31 @@
                     <tbody>
                         @foreach (var user in Model.Users)
                         {
-                            <tr class="user-row" data-user-id="@user.Id">
-                                <td class="user-id">@user.Id.Substring(0, 8).ToUpper()</td>
-                                <td class="user-name">@user.Name</td>
-                                <td class="user-email">@user.Email</td>
+                            <tr data-user-id="@user.Id">
+                                <td>@user.Id.Substring(0, Math.Min(8, user.Id.Length)).ToUpper()</td>
+                                <td>@user.Name</td>
+                                <td>@user.Email</td>
                                 <td>
                                     <span class="role-badge role-@user.Role.ToLower()">@user.Role</span>
                                 </td>
                                 <td>
-                                    <button onclick="editUser('@user.Id', '@user.Name', '@user.Email', '@user.Role')" class="btn btn-sm btn-warning">Edit</button>
-                                    <button onclick="deleteUser('@user.Id')" class="btn btn-sm btn-danger">Delete</button>
+                                    <!-- ✅ Edit User -->
+                                    <button onclick="openPopout('editUserPanel', '@user.Id')"
+                                            class="btn btn-sm btn-warning">
+                                        Edit User
+                                    </button>
+
+                                    <!-- ✅ View Orders for this User -->
+                                    <button onclick="openPopout('orderDetailPanel', '@user.Id')"
+                                            class="btn btn-sm btn-info">
+                                        View Orders
+                                    </button>
+
+                                    <!-- ✅ Delete User -->
+                                    <button onclick="deleteUser('@user.Id')"
+                                            class="btn btn-sm btn-danger">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         }
@@ -122,43 +141,47 @@
     }
 </div>
 
- @* Order Details Modal  *@
-<div id="order-details-modal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeOrderModal()">&times;</span>
-        <h2>Order Details</h2>
-        <div id="order-details-content"></div>
+
+@* ---------------- POP-OUT PANELS ---------------- *@
+
+<!-- Edit User Panel -->
+<div id="editUserPanel" class="popout-panel">
+    <button class="close-popout" data-close="editUserPanel">&times;</button>
+    <div class="popout-header">
+        <h3>Edit User</h3>
+    </div>
+    <div class="popout-body">
+        <form id="editUserForm">
+            <input type="hidden" id="user-id" />
+            <label>Name</label>
+            <input type="text" id="user-name" placeholder="Enter name" />
+
+            <label>Email</label>
+            <input type="email" id="user-email" placeholder="Enter email" />
+
+            <label>Role</label>
+            <select id="user-role">
+                <option value="member">Member</option>
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <div class="form-actions">
+                <button type="button" onclick="saveUser()" class="btn-open-popout">Save</button>
+                <button type="button" class="btn btn-secondary" data-close="editUserPanel">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
 
- @* User Edit Modal  *@
-<div id="user-edit-modal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeUserModal()">&times;</span>
-        <h2 id="user-modal-title">Edit User</h2>
-        <form id="user-form">
-            <input type="hidden" id="user-id" />
-            <div class="form-group">
-                <label for="user-name">Name:</label>
-                <input type="text" id="user-name" required />
-            </div>
-            <div class="form-group">
-                <label for="user-email">Email:</label>
-                <input type="email" id="user-email" required />
-            </div>
-            <div class="form-group">
-                <label for="user-role">Role:</label>
-                <select id="user-role" required>
-                    <option value="member">Member</option>
-                    <option value="staff">Staff</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            <div class="form-actions">
-                <button type="button" onclick="saveUser()" class="btn btn-primary">Save</button>
-                <button type="button" onclick="closeUserModal()" class="btn btn-secondary">Cancel</button>
-            </div>
-        </form>
+<!-- Order Detail Panel -->
+<div id="orderDetailPanel" class="popout-panel">
+    <button class="close-popout" data-close="orderDetailPanel">&times;</button>
+    <div class="popout-header">
+        <h3>Order Details</h3>
+    </div>
+    <div class="popout-body" id="order-details-content">
+        <!-- Filled dynamically from staff.js -->
     </div>
 </div>
 

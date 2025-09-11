@@ -1,0 +1,38 @@
+﻿@{
+    var role = Context.Session.GetString("UserRole") ?? "staff";
+    var userName = Context.Session.GetString("UserName") ?? "Staff";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="~/css/staff.css" />
+</head>
+<body>
+    <header>
+        <button onclick="window.history.back()" class="btn btn-return" title="Return">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15,18 9,12 15,6"></polyline>
+            </svg>
+            Return
+        </button>
+
+        <nav>
+            <ul>
+                <li><a asp-controller="Staff" asp-action="Dashboard">Dashboard</a></li>
+
+                @if (role.ToLower() == "admin")
+                {
+                }
+
+            </ul>
+        </nav>
+    </header>
+
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+</body>
+</html>

@@ -47,7 +47,6 @@ public class LoginController : Controller
             switch (user.Role.ToLower())
             {
                 case "admin":
-                    return RedirectToAction("Configure", "Menu");
                 case "staff":
                     return RedirectToAction("Dashboard", "Staff");
                 case "member":
