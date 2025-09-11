@@ -34,7 +34,7 @@ public class OrderController : Controller
             User? user = null;
             if (!isGuest)
             {
-                user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+                user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
             }
 
             var order = new Menu.Models.Order

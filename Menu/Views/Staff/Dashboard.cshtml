@@ -106,8 +106,8 @@
                     <tbody>
                         @foreach (var user in Model.Users)
                         {
-                            <tr data-user-id="@user.Id">
-                                <td>@user.Id.Substring(0, Math.Min(8, user.Id.Length)).ToUpper()</td>
+                            <tr data-user-id="@user.UserId">
+                                <td>@user.UserId.Substring(0, Math.Min(8, user.UserId.Length)).ToUpper()</td>
                                 <td>@user.Name</td>
                                 <td>@user.Email</td>
                                 <td>
@@ -115,19 +115,19 @@
                                 </td>
                                 <td>
                                     <!-- ✅ Edit User -->
-                                    <button onclick="openPopout('editUserPanel', '@user.Id')"
+                                    <button onclick="openPopout('editUserPanel', '@user.UserId')"
                                             class="btn btn-sm btn-warning">
                                         Edit User
                                     </button>
 
                                     <!-- ✅ View Orders for this User -->
-                                    <button onclick="openPopout('orderDetailPanel', '@user.Id')"
+                                    <button onclick="openPopout('orderDetailPanel', '@user.UserId')"
                                             class="btn btn-sm btn-info">
                                         View Orders
                                     </button>
 
                                     <!-- ✅ Delete User -->
-                                    <button onclick="deleteUser('@user.Id')"
+                                    <button onclick="deleteUser('@user.UserId')"
                                             class="btn btn-sm btn-danger">
                                         Delete
                                     </button>

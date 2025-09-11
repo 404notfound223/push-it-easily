@@ -39,7 +39,7 @@ public class LoginController : Controller
 
         if (user != null)
         {
-            HttpContext.Session.SetString("UserId", user.Id);
+            HttpContext.Session.SetString("UserId", user.UserId);
             HttpContext.Session.SetString("UserRole", user.Role);
             HttpContext.Session.SetString("UserName", user.Name);
 
@@ -93,7 +93,7 @@ public class LoginController : Controller
 
             var user = new User
             {
-                Id = await GenerateMemberId(),
+                UserId = await GenerateMemberId(),
                 Name = name,
                 Email = email,
                 Password = HashPassword(password),
@@ -135,7 +135,7 @@ public class LoginController : Controller
 
             var user = new User
             {
-                Id = await GenerateMemberId(),
+                UserId = await GenerateMemberId(),
                 Name = name,
                 Email = email,
                 Password = HashPassword(password),
@@ -250,13 +250,13 @@ public class LoginController : Controller
     private async Task<string> GenerateMemberId()
     {
         var lastUser = await _context.Users
-            .OrderByDescending(u => u.Id)
+            .OrderByDescending(u => u.UserId)
             .FirstOrDefaultAsync();
 
-        if (lastUser == null || string.IsNullOrEmpty(lastUser.Id))
+        if (lastUser == null || string.IsNullOrEmpty(lastUser.UserId))
             return "M001";
 
-        int lastNumber = int.Parse(lastUser.Id.Substring(1));
+        int lastNumber = int.Parse(lastUser.UserId.Substring(1));
         return "M" + (lastNumber + 1).ToString("D3");
     }
 }
