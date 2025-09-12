@@ -2,6 +2,7 @@
     ViewData["Title"] = "Your Order";
 }
 
+<link rel="stylesheet" href="~/css/order.css" asp-append-version="true" />
 <div class="order-page">
     <div class="order-header">
         <h2>Your Order</h2>
@@ -10,9 +11,9 @@
 
     <div class="order-content">
         <div id="order-list" class="order-items-container">
-             Order items will be populated by JavaScript 
+            <!-- Order items will be populated by JavaScript -->
         </div>
-        
+
         <div class="empty-order-message" id="empty-order" style="display: none;">
             <div class="empty-state">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -50,57 +51,73 @@
             </button>
         </div>
     </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal" style="display: none;">
+        <div class="payment-modal-content">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <div class="payment-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="modal-subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (8.5%):</span>
+                    <span id="modal-tax">$0.00</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total:</span>
+                    <span id="modal-total">$0.00</span>
+                </div>
+            </div>
+            <div class="payment-options">
+                <button class="payment-option-btn" onclick="processOnlinePayment()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 4h22v16H1V4zm2 2v14h20V6H3zm18 14H5V8h18v12zm-1-6h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0h-2v2h2v-2z"></path>
+                    </svg>
+                    <div>
+                        <strong>Pay Online</strong>
+                        <small>Secure payment via Stripe</small>
+                    </div>
+                </button>
+                <button class="payment-option-btn" onclick="processCounterPayment()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 4h22v16H1V4zm2 2v14h20V6H3zm18 14H5V8h18v12zm-1-6h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0h-2v2h2v-2z"></path>
+                    </svg>
+                    <div>
+                        <strong>Pay at Counter</strong>
+                        <small>Pay with cash or card</small>
+                    </div>
+                </button>
+            </div>
+            <button class="cancel-btn" onclick="closePaymentModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification" style="display: none;">
+        <div class="notification-content">
+            <span id="notification-message"></span>
+            <button class="notification-close" onclick="closeNotification()">&times;</button>
+        </div>
+    </div>
 </div>
 
 <script src="~/js/order.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-    document.getElementById("checkout-button").addEventListener("click", async () => {
-        const order = JSON.parse(localStorage.getItem("order")) || [];
-        if (order.length === 0) {
-            alert("Your cart is empty.");
-            return;
-        }
-
-        const payload = {
-            TotalAmount: parseFloat(document.getElementById("order-total").innerText.replace("$", "").trim()),
-            Items: order.map(item => ({
-                ProductId: item.id,
-                Quantity: item.quantity
-            }))
-        };
-
-        console.log(payload); // Debug: See what is sent
-
-        const response = await fetch("/Payment/CreateCheckoutSession", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            const stripe = Stripe("@ViewBag.PublishableKey");
-            stripe.redirectToCheckout({ sessionId: result.sessionId });
-        } else {
-            alert("Error: " + result.error);
-        }
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
         renderOrder();
+        document.getElementById("checkout-button").addEventListener("click", function() {
+            const order = JSON.parse(localStorage.getItem("orderItems")) || [];
+            if (order.length === 0) {
+                showNotification("Your cart is empty.", "error");
+                return;
+            }
+            showPaymentOptions();
+        });
     });
-
-    function clearOrder() {
-        if (confirm('Are you sure you want to clear all items from your order?')) {
-            localStorage.removeItem('order');
-            renderOrder();
-            updateOrderCount();
-        }
-    }
 </script>
-
 <style>
     .order-page {
         max-width: 800px;
@@ -117,10 +134,10 @@
         border-bottom: 2px solid #e9ecef;
     }
 
-    .order-header h2 {
-        margin: 0;
-        color: #333;
-    }
+        .order-header h2 {
+            margin: 0;
+            color: #333;
+        }
 
     .order-content {
         min-height: 400px;
@@ -142,13 +159,13 @@
         transition: background-color 0.2s ease;
     }
 
-    .order-item:hover {
-        background-color: #f8f9fa;
-    }
+        .order-item:hover {
+            background-color: #f8f9fa;
+        }
 
-    .order-item:last-child {
-        border-bottom: none;
-    }
+        .order-item:last-child {
+            border-bottom: none;
+        }
 
     .item-info {
         flex: 1;
@@ -189,10 +206,10 @@
         transition: all 0.2s ease;
     }
 
-    .qty-btn:hover {
-        background-color: #e9ecef;
-        border-color: #adb5bd;
-    }
+        .qty-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
 
     .quantity {
         min-width: 40px;
@@ -212,9 +229,9 @@
         transition: background-color 0.2s ease;
     }
 
-    .remove-btn:hover {
-        background-color: #c82333;
-    }
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
 
     .item-total {
         font-size: 18px;
@@ -230,19 +247,19 @@
         color: #6c757d;
     }
 
-    .empty-state svg {
-        margin-bottom: 20px;
-        color: #adb5bd;
-    }
+        .empty-state svg {
+            margin-bottom: 20px;
+            color: #adb5bd;
+        }
 
-    .empty-state h3 {
-        margin-bottom: 10px;
-        color: #495057;
-    }
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
 
-    .empty-state p {
-        margin-bottom: 30px;
-    }
+        .empty-state p {
+            margin-bottom: 30px;
+        }
 
     .order-summary {
         background: white;
@@ -292,10 +309,10 @@
         border: 1px solid #dc3545;
     }
 
-    .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: white;
-    }
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
 
     .btn-lg {
         padding: 12px 24px;

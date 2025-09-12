@@ -22,7 +22,7 @@ namespace Menu.Controllers
 
         // Stripe Checkout Session
         [HttpPost]
-        public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutRequest request)
+        public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateOrderRequest request)
         {
             if (request == null)
             {
@@ -59,14 +59,6 @@ namespace Menu.Controllers
 
                 // Build line items for Stripe
                 var lineItems = new List<SessionLineItemOptions>();
-                var lastOrderDetailId = await _context.OrderDetails
-                    .OrderByDescending(o => o.OrderDetailId)
-                    .Select(o => o.OrderDetailId)
-                    .FirstOrDefaultAsync();
-
-                int nextOrderDetailId = string.IsNullOrEmpty(lastOrderDetailId)
-                    ? 1
-                    : int.Parse(lastOrderDetailId) + 1;
 
                 foreach (var item in request.Items)
                 {
@@ -75,7 +67,7 @@ namespace Menu.Controllers
                     {
                         var orderDetail = new OrderDetail
                         {
-                            OrderDetailId = (nextOrderDetailId++).ToString(),
+                            OrderDetailId = Guid.NewGuid().ToString(),
                             OrderId = order.OrderId,
                             Order = order,
                             ProductId = item.ProductId,
@@ -237,7 +229,7 @@ namespace Menu.Controllers
                             ProductId = item.ProductId,
                             Product = product,
                             Quantity = item.Quantity,
-                            UnitPrice = product.Price
+                            UnitPrice = product.Price  
                         };
                         _context.OrderDetails.Add(orderDetail);
                     }
@@ -264,12 +256,5 @@ namespace Menu.Controllers
             ViewBag.PublishableKey = _configuration["Stripe:PublishableKey"];
             return View();
         }
-    }
-
-    // DTOs
-    public class CreateCheckoutRequest
-    {
-        public decimal TotalAmount { get; set; }
-        public List<OrderItemRequest> Items { get; set; } = new List<OrderItemRequest>();
     }
 }

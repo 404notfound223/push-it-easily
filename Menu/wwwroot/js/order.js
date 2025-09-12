@@ -325,6 +325,13 @@ function viewOrderDetails(orderId) {
     window.location.href = `/Order/OrderDetails/${orderId}`
 }
 
+function clearOrder() {
+    localStorage.removeItem("orderItems")
+    renderOrder()
+    updateOrderCount()
+    showNotification("Order cleared!", "info")
+}
+
 // clear orders when non-members wanted to exit menu page or login, register. but prompt a message to notify customer
 //function clearOrdersOnMenuExit() {
 //    const isLoggedIn = document.querySelector(".user-welcome") !== null
@@ -345,3 +352,61 @@ document.addEventListener("DOMContentLoaded", () => {
     updateOrderCount()
     //clearOrdersOnMenuExit()
 })
+
+async function processOnlinePayment() {
+    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
+    const payload = {
+        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
+        Items: order.map(item => ({
+            ProductId: item.id,
+            Quantity: item.quantity
+        }))
+    };
+
+    try {
+        const response = await fetch("/Payment/CreateCheckoutSession", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.success) {
+            const stripe = Stripe("@ViewBag.PublishableKey");
+            stripe.redirectToCheckout({ sessionId: result.sessionId });
+        } else {
+            showNotification("Error: " + result.error, "error");
+        }
+    } catch (error) {
+        showNotification("Error processing online payment: " + error.message, "error");
+    }
+}
+
+async function processCounterPayment() {
+    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
+    const payload = {
+        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
+        Items: order.map(item => ({
+            ProductId: item.id,
+            Quantity: item.quantity
+        }))
+    };
+
+    try {
+        const response = await fetch("/Payment/CreateCounterPayment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            showNotification(`Order placed successfully! Payment Number: #${result.paymentNumber}\nPlease pay at counter with this number.`, "success");
+            localStorage.removeItem("orderItems");
+            window.location.href = "/Order/History";
+        } else {
+            showNotification("Error creating counter payment: " + result.error, "error");
+        }
+    } catch (error) {
+        showNotification("Error processing counter payment: " + error.message, "error");
+    }
+}
