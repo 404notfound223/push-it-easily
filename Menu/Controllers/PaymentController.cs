@@ -4,245 +4,272 @@ using Menu.Models;
 using Stripe;
 using Stripe.Checkout;
 
-public class PaymentController : Controller
+namespace Menu.Controllers
 {
-    private readonly DB _context;
-    private readonly IConfiguration _configuration;
-
-    public PaymentController(DB context, IConfiguration configuration)
+    public class PaymentController : Controller
     {
-        _context = context;
-        _configuration = configuration;
-        StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
-    }
+        private readonly DB _context;
+        private readonly IConfiguration _configuration;
+        private readonly StripeClient _stripeClient;
 
-    [HttpPost]
-    public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutRequest request)
-    {
-        var userId = HttpContext.Session.GetString("UserId");
-        if (string.IsNullOrEmpty(userId))
+        // Inject StripeClient from Program.cs
+        public PaymentController(DB context, IConfiguration configuration, StripeClient stripeClient)
         {
-            return Json(new { success = false, error = "User not logged in" });
+            _context = context;
+            _configuration = configuration;
+            _stripeClient = stripeClient;
         }
 
-        using var transaction = await _context.Database.BeginTransactionAsync();
-
-        try
+        // Stripe Checkout Session
+        [HttpPost]
+        public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutRequest request)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
+            if (request == null)
             {
-                return Json(new { success = false, error = "User not found" });
+                return Json(new { success = false, error = "Invalid or missing request body." });
             }
 
-            // Create order first
-            var order = new Order
+            var userId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userId))
             {
-                OrderId = await IdGenerator.GenerateOrderId(_context),
-                UserId = userId,
-                User = user,
-                TotalAmount = request.TotalAmount,
-                Status = "Pending Payment",
-                OrderDate = DateTime.Now
-            };
+                return Json(new { success = false, error = "User not logged in" });
+            }
 
-            _context.Orders.Add(order);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            // Add order details
-            var lineItems = new List<SessionLineItemOptions>();
-            foreach (var item in request.Items)
+            try
             {
-                var product = await _context.Products.FindAsync(item.ProductId);
-                if (product != null)
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
                 {
-                    var orderDetail = new OrderDetail
-                    {
-                        OrderDetailId = await IdGenerator.GenerateOrderDetailId(_context),
-                        OrderId = order.OrderId,
-                        Order = order,
-                        ProductId = item.ProductId,
-                        Product = product,
-                        Quantity = item.Quantity,
-                        UnitPrice = product.Price
-                    };
-                    _context.OrderDetails.Add(orderDetail);
+                    return Json(new { success = false, error = "User not found" });
+                }
 
-                    // Create Stripe line item
-                    lineItems.Add(new SessionLineItemOptions
+                // Create order
+                var order = new Order
+                {
+                    OrderId = await IdGenerator.GenerateOrderId(_context),
+                    UserId = userId,
+                    User = user,
+                    TotalAmount = request.TotalAmount,
+                    Status = "Pending Payment",
+                    OrderDate = DateTime.Now
+                };
+                _context.Orders.Add(order);
+
+                // Build line items for Stripe
+                var lineItems = new List<SessionLineItemOptions>();
+                var lastOrderDetailId = await _context.OrderDetails
+                    .OrderByDescending(o => o.OrderDetailId)
+                    .Select(o => o.OrderDetailId)
+                    .FirstOrDefaultAsync();
+
+                int nextOrderDetailId = string.IsNullOrEmpty(lastOrderDetailId)
+                    ? 1
+                    : int.Parse(lastOrderDetailId) + 1;
+
+                foreach (var item in request.Items)
+                {
+                    var product = await _context.Products.FindAsync(item.ProductId);
+                    if (product != null)
                     {
-                        PriceData = new SessionLineItemPriceDataOptions
+                        var orderDetail = new OrderDetail
                         {
-                            UnitAmount = (long)(product.Price * 100), // Stripe uses cents
-                            Currency = "MYR",
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            OrderDetailId = (nextOrderDetailId++).ToString(),
+                            OrderId = order.OrderId,
+                            Order = order,
+                            ProductId = item.ProductId,
+                            Product = product,
+                            Quantity = item.Quantity,
+                            UnitPrice = product.Price
+                        };
+                        _context.OrderDetails.Add(orderDetail);
+
+                        lineItems.Add(new SessionLineItemOptions
+                        {
+                            PriceData = new SessionLineItemPriceDataOptions
                             {
-                                Name = product.Name,
-                                Description = product.Description,
+                                UnitAmount = (long)(product.Price * 100), // Stripe uses cents
+                                Currency = "MYR",
+                                ProductData = new SessionLineItemPriceDataProductDataOptions
+                                {
+                                    Name = product.Name,
+                                    Description = product.Description,
+                                },
                             },
-                        },
-                        Quantity = item.Quantity,
-                    });
+                            Quantity = item.Quantity,
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Create Stripe session
+                var options = new SessionCreateOptions
+                {
+                    PaymentMethodTypes = new List<string> { "card" },
+                    LineItems = lineItems,
+                    Mode = "payment",
+                    SuccessUrl = $"{Request.Scheme}://{Request.Host}/Payment/Success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.OrderId}",
+                    CancelUrl = $"{Request.Scheme}://{Request.Host}/Payment/Cancel?order_id={order.OrderId}",
+                    CustomerEmail = user.Email,
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "order_id", order.OrderId },
+                        { "user_id", userId }
+                    }
+                };
+
+                var service = new SessionService(_stripeClient);
+                Session session = await service.CreateAsync(options);
+
+                await transaction.CommitAsync();
+
+                return Json(new { success = true, sessionId = session.Id, checkoutUrl = session.Url });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        // Stripe Success
+        [HttpGet]
+        public async Task<IActionResult> Success(string session_id, string order_id)
+        {
+            try
+            {
+                var service = new SessionService(_stripeClient);
+                Session session = service.Get(session_id);
+
+                if (session.PaymentStatus == "paid")
+                {
+                    var order = await _context.Orders.FindAsync(order_id);
+                    if (order != null)
+                    {
+                        order.Status = "Paid";
+                        await _context.SaveChangesAsync();
+                    }
+
+                    ViewBag.OrderId = order_id;
+                    ViewBag.SessionId = session_id;
+                    ViewBag.PaymentIntentId = session.PaymentIntentId;
+                    return View();
+                }
+                else
+                {
+                    return RedirectToAction("Cancel", new { order_id });
                 }
             }
-
-            await _context.SaveChangesAsync();
-
-            // Create Stripe checkout session
-            var options = new SessionCreateOptions
+            catch (Exception ex)
             {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = lineItems,
-                Mode = "payment",
-                SuccessUrl = $"{Request.Scheme}://{Request.Host}/Payment/Success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.OrderId}",
-                CancelUrl = $"{Request.Scheme}://{Request.Host}/Payment/Cancel?order_id={order.OrderId}",
-                CustomerEmail = user.Email,
-                Metadata = new Dictionary<string, string>
-                {
-                    { "order_id", order.OrderId },
-                    { "user_id", userId }
-                }
-            };
-
-            var service = new SessionService();
-            Session session = service.Create(options);
-
-            await transaction.CommitAsync();
-
-            return Json(new { success = true, sessionId = session.Id, checkoutUrl = session.Url });
+                ViewBag.Error = ex.Message;
+                return View("Error");
+            }
         }
-        catch (Exception ex)
+
+        // Stripe Cancel
+        [HttpGet]
+        public async Task<IActionResult> Cancel(string order_id)
         {
-            await transaction.RollbackAsync();
-
-            return Json(new { success = false, error = ex.Message });
-        }
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Success(string session_id, string order_id)
-    {
-        try
-        {
-            var service = new SessionService();
-            Session session = service.Get(session_id);
-
-            if (session.PaymentStatus == "paid")
+            try
             {
                 var order = await _context.Orders.FindAsync(order_id);
                 if (order != null)
                 {
-                    order.Status = "Paid";
+                    order.Status = "Cancelled";
                     await _context.SaveChangesAsync();
                 }
 
                 ViewBag.OrderId = order_id;
-                ViewBag.SessionId = session_id;
-                ViewBag.PaymentIntentId = session.PaymentIntentId;
                 return View();
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("Cancel", new { order_id = order_id });
+                ViewBag.Error = ex.Message;
+                return View("Error");
             }
         }
-        catch (Exception ex)
-        {
-            ViewBag.Error = ex.Message;
-            return View("Error");
-        }
-    }
 
-    [HttpGet]
-    public async Task<IActionResult> Cancel(string order_id)
-    {
-        try
+        // Counter (manual) payment
+        [HttpPost]
+        public async Task<IActionResult> CreateCounterPayment([FromBody] CreateOrderRequest request)
         {
-            var order = await _context.Orders.FindAsync(order_id);
-            if (order != null)
+            var userId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userId))
             {
-                order.Status = "Cancelled";
+                return Json(new { success = false, error = "User not logged in" });
+            }
+
+            try
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return Json(new { success = false, error = "User not found" });
+                }
+
+                var paymentNumber = new Random().Next(100000, 999999);
+
+                var order = new Order
+                {
+                    OrderId = await IdGenerator.GenerateOrderId(_context),
+                    UserId = userId,
+                    User = user,
+                    TotalAmount = request.TotalAmount,
+                    Status = $"Pay at Counter - #{paymentNumber}",
+                    OrderDate = DateTime.Now
+                };
+
+                _context.Orders.Add(order);
+
+                foreach (var item in request.Items)
+                {
+                    var product = await _context.Products.FindAsync(item.ProductId);
+                    if (product != null)
+                    {
+                        var orderDetail = new OrderDetail
+                        {
+                            OrderDetailId = Guid.NewGuid().ToString(),
+                            OrderId = order.OrderId,
+                            Order = order,
+                            ProductId = item.ProductId,
+                            Product = product,
+                            Quantity = item.Quantity,
+                            UnitPrice = product.Price
+                        };
+                        _context.OrderDetails.Add(orderDetail);
+                    }
+                }
+
                 await _context.SaveChangesAsync();
-            }
 
-            ViewBag.OrderId = order_id;
+                return Json(new
+                {
+                    success = true,
+                    orderId = order.OrderId,
+                    paymentNumber
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        // Checkout view
+        public IActionResult Checkout()
+        {
+            ViewBag.PublishableKey = _configuration["Stripe:PublishableKey"];
             return View();
         }
-        catch (Exception ex)
-        {
-            ViewBag.Error = ex.Message;
-            return View("Error");
-        }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateCounterPayment([FromBody] CreateOrderRequest request)
+    // DTOs
+    public class CreateCheckoutRequest
     {
-        var userId = HttpContext.Session.GetString("UserId");
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Json(new { success = false, error = "User not logged in" });
-        }
-
-        try
-        {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-            {
-                return Json(new { success = false, error = "User not found" });
-            }
-
-            // Generate payment number
-            var paymentNumber = new Random().Next(100000, 999999);
-
-            var order = new Order
-            {
-                OrderId = await IdGenerator.GenerateOrderId(_context),
-                UserId = userId,
-                User = user,
-                TotalAmount = request.TotalAmount,
-                Status = $"Pay at Counter - #{paymentNumber}",
-                OrderDate = DateTime.Now
-            };
-
-            _context.Orders.Add(order);
-
-            // Add order details
-            foreach (var item in request.Items)
-            {
-                var product = await _context.Products.FindAsync(item.ProductId);
-                if (product != null)
-                {
-                    var orderDetail = new OrderDetail
-                    {
-                        OrderDetailId = await IdGenerator.GenerateOrderDetailId(_context),
-                        OrderId = order.OrderId,
-                        Order = order,
-                        ProductId = item.ProductId,
-                        Product = product,
-                        Quantity = item.Quantity,
-                        UnitPrice = product.Price
-                    };
-                    _context.OrderDetails.Add(orderDetail);
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Json(new { 
-                success = true, 
-                orderId = order.OrderId, 
-                paymentNumber = paymentNumber 
-            });
-        }
-        catch (Exception ex)
-        {
-            return Json(new { success = false, error = ex.Message });
-        }
+        public decimal TotalAmount { get; set; }
+        public List<OrderItemRequest> Items { get; set; } = new List<OrderItemRequest>();
     }
-}
-
-public class CreateCheckoutRequest
-{
-    public decimal TotalAmount { get; set; }
-    public List<OrderItemRequest> Items { get; set; } = new List<OrderItemRequest>();
 }

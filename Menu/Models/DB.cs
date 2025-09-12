@@ -107,3 +107,15 @@ public class OrderItemRequest
     public string ProductId { get; set; } = string.Empty;
     public int Quantity { get; set; }
 }
+
+public class CreateCheckoutRequest
+{
+    public decimal TotalAmount { get; set; }
+    public List<CartItem> Items { get; set; } = new();
+}
+
+public class CartItem
+{
+    public string ProductId { get; set; }
+    public int Quantity { get; set; }
+}
