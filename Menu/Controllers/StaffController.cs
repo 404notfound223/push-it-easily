@@ -155,7 +155,6 @@ public async Task<IActionResult> Dashboard()
             return Json(new { success = false, error = ex.Message });
         }
     }
-<<<<<<< HEAD
 
     [HttpPost]
     public async Task<IActionResult> AddProduct([FromBody] Product product)
@@ -238,25 +237,5 @@ public async Task<IActionResult> Dashboard()
             return Json(new { success = false, error = ex.Message });
         }
     }
-
 }
 
-public class StaffDashboardViewModel
-{
-    public string UserRole { get; set; } = string.Empty;
-    public List<Order> Orders { get; set; } = new List<Order>();
-    public List<User> Users { get; set; } = new List<User>();
-    public List<Product> Products { get; set; } = new List<Product>();
-}
-
-public class UpdateUserRequest
-{
-    public string UserId { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
-}
-
-=======
-}
->>>>>>> be62eb2ea2c0a91bcfe7c60e5049ad2b14ce0956

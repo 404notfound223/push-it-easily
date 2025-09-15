@@ -114,6 +114,7 @@ public class StaffDashboardViewModel
     public string UserRole { get; set; } = string.Empty;
     public List<Order> Orders { get; set; } = new List<Order>();
     public List<User> Users { get; set; } = new List<User>();
+    public List<Product> Products { get; set; } = new List<Product>();
 }
 
 public class UpdateUserRequest
