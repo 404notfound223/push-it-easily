@@ -60,7 +60,7 @@
                     {
                         <tr class="order-row" data-order-id="@order.OrderId">
                             <td>@order.OrderId.Substring(0, Math.Min(8, order.OrderId.Length)).ToUpper()</td>
-                            <td>@order.User.Name</td>
+                            <td>@(order.User?.Name ?? "Guest")</td>
                             <td>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
                             <td>$@order.TotalAmount.ToString("F2")</td>
                             <td>
