@@ -19,18 +19,18 @@ namespace Menu.Controllers
             return View();
         }
 
-        //        public IActionResult LiveSearch(string term)
-        //        {
-        //            var items = new List<string> {
-        //                "Grilled Chicken", "Beef Steak", "Spaghetti Carbonara", "Cheeseburger", "Fish and Chips",
-        //                "Mac and Cheese", "Chicken Alfredo", "Garlic Bread", "Tuna Sandwich"
-        //            };
+        public IActionResult LiveSearch(string term)
+        {
+            var items = new List<string> {
+                        "Grilled Chicken", "Beef Steak", "Spaghetti Carbonara", "Cheeseburger", "Fish and Chips",
+                        "Mac and Cheese", "Chicken Alfredo", "Garlic Bread", "Tuna Sandwich"
+                    };
 
-        //            var results = items
-        //                .Where(x => x.Contains(term, StringComparison.OrdinalIgnoreCase))
-        //                .Select(x => $"<div style='padding:6px 12px; border-bottom:1px solid #eee;'>{x}</div>");
+            var results = items
+                .Where(x => x.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Select(x => $"<div style='padding:6px 12px; border-bottom:1px solid #eee;'>{x}</div>");
 
-        //            return Content(string.Join("", results));
-        //        }
+            return Content(string.Join("", results));
+        }
     }
 }

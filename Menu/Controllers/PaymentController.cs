@@ -25,39 +25,41 @@ namespace Menu.Controllers
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateOrderRequest request)
         {
             if (request == null)
-            {
                 return Json(new { success = false, error = "Invalid or missing request body." });
-            }
 
             var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            User? user = null;
+            string? customerEmail = null;
+
+            if (!string.IsNullOrEmpty(userId))
             {
-                return Json(new { success = false, error = "User not logged in" });
+                user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                    return Json(new { success = false, error = "User not found" });
+                customerEmail = user.Email;
+            }
+            else
+            {
+                // Optionally, get guest email from request (add Email property to CreateOrderRequest if needed)
+                customerEmail = request.Email; // You must add Email to your CreateOrderRequest DTO for this to work
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null)
-                {
-                    return Json(new { success = false, error = "User not found" });
-                }
-
-                // Create order
                 var order = new Order
                 {
-                    OrderId = await IdGenerator.GenerateOrderId(_context),
+                    OrderId = Guid.NewGuid().ToString(),
                     UserId = userId,
                     User = user,
                     TotalAmount = request.TotalAmount,
                     Status = "Pending Payment",
-                    OrderDate = DateTime.Now
+                    OrderDate = DateTime.Now,
                 };
+
                 _context.Orders.Add(order);
 
-                // Build line items for Stripe
                 var lineItems = new List<SessionLineItemOptions>();
 
                 foreach (var item in request.Items)
@@ -81,7 +83,7 @@ namespace Menu.Controllers
                         {
                             PriceData = new SessionLineItemPriceDataOptions
                             {
-                                UnitAmount = (long)(product.Price * 100), // Stripe uses cents
+                                UnitAmount = (long)(product.Price * 100),
                                 Currency = "MYR",
                                 ProductData = new SessionLineItemPriceDataProductDataOptions
                                 {
@@ -96,7 +98,6 @@ namespace Menu.Controllers
 
                 await _context.SaveChangesAsync();
 
-                // Create Stripe session
                 var options = new SessionCreateOptions
                 {
                     PaymentMethodTypes = new List<string> { "card" },
@@ -104,11 +105,11 @@ namespace Menu.Controllers
                     Mode = "payment",
                     SuccessUrl = $"{Request.Scheme}://{Request.Host}/Payment/Success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.OrderId}",
                     CancelUrl = $"{Request.Scheme}://{Request.Host}/Payment/Cancel?order_id={order.OrderId}",
-                    CustomerEmail = user.Email,
+                    CustomerEmail = customerEmail,
                     Metadata = new Dictionary<string, string>
                     {
                         { "order_id", order.OrderId },
-                        { "user_id", userId }
+                        { "user_id", userId ?? "guest" }
                     }
                 };
 
@@ -189,30 +190,31 @@ namespace Menu.Controllers
         public async Task<IActionResult> CreateCounterPayment([FromBody] CreateOrderRequest request)
         {
             var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Json(new { success = false, error = "User not logged in" });
-            }
+            User? user = null;
 
-            try
+            if (!string.IsNullOrEmpty(userId))
             {
-                var user = await _context.Users.FindAsync(userId);
+                user = await _context.Users.FindAsync(userId);
                 if (user == null)
                 {
                     return Json(new { success = false, error = "User not found" });
                 }
+            }
 
+            try
+            {
                 var paymentNumber = new Random().Next(100000, 999999);
 
                 var order = new Order
                 {
-                    OrderId = await IdGenerator.GenerateOrderId(_context),
+                    OrderId = Guid.NewGuid().ToString(),
                     UserId = userId,
                     User = user,
                     TotalAmount = request.TotalAmount,
-                    Status = $"Pay at Counter - #{paymentNumber}",
-                    OrderDate = DateTime.Now
+                    Status = "Pending Payment",
+                    OrderDate = DateTime.Now,
                 };
+
 
                 _context.Orders.Add(order);
 
@@ -229,7 +231,7 @@ namespace Menu.Controllers
                             ProductId = item.ProductId,
                             Product = product,
                             Quantity = item.Quantity,
-                            UnitPrice = product.Price  
+                            UnitPrice = product.Price
                         };
                         _context.OrderDetails.Add(orderDetail);
                     }
@@ -249,6 +251,7 @@ namespace Menu.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
+
 
         // Checkout view
         public IActionResult Checkout()

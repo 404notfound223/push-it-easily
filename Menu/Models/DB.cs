@@ -35,7 +35,7 @@ public class Product
 public class Order
 {
     [Key]
-    public required string OrderId { get; set; }
+    public string OrderId { get; set; } = null!;
     public DateTime OrderDate { get; set; } = DateTime.Now;
 
     [Precision(10, 2)]
@@ -43,8 +43,8 @@ public class Order
     public required string Status { get; set; }
 
     // Foreign key
-    public required string UserId { get; set; }
-    public required User User { get; set; }
+    public string? UserId { get; set; }
+    public User? User { get; set; }
 
     // Relationships
     public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
@@ -100,6 +100,7 @@ public class CreateOrderRequest
 {
     public decimal TotalAmount { get; set; }
     public List<OrderItemRequest> Items { get; set; } = new List<OrderItemRequest>();
+    public string? Email { get; set; } // Add this for guest checkout
 }
 
 public class OrderItemRequest
