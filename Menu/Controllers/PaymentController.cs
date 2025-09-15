@@ -43,8 +43,8 @@ namespace Menu.Controllers
                 if (user.Role.ToLower() == "member")
                 {
                     isMember = true;
-                    memberDiscount = request.TotalAmount * 0.10m; // 10% discount
-                    request.TotalAmount = request.TotalAmount - memberDiscount;
+                    var subtotal = request.TotalAmount;
+                    memberDiscount = subtotal * 0.10m; // 10% discount
                 }
             }
             else
@@ -88,12 +88,18 @@ namespace Menu.Controllers
                         };
                         _context.OrderDetails.Add(orderDetail);
 
+                        var unitAmount = (long)Math.Round(Math.Abs(product.Price) * 100);
+                        if (unitAmount <= 0)
+                        {
+                            throw new Exception($"Invalid price for product {product.Name}: {product.Price}");
+                        }
+
                         lineItems.Add(new SessionLineItemOptions
                         {
                             PriceData = new SessionLineItemPriceDataOptions
                             {
-                                UnitAmount = (long)(product.Price * 100),
-                                Currency = "MYR",
+                                UnitAmount = unitAmount,
+                                Currency = "myr",
                                 ProductData = new SessionLineItemPriceDataProductDataOptions
                                 {
                                     Name = product.Name,
@@ -103,24 +109,6 @@ namespace Menu.Controllers
                             Quantity = item.Quantity,
                         });
                     }
-                }
-
-                if (isMember && memberDiscount > 0)
-                {
-                    lineItems.Add(new SessionLineItemOptions
-                    {
-                        PriceData = new SessionLineItemPriceDataOptions
-                        {
-                            UnitAmount = (long)(-memberDiscount * 100), // Negative amount for discount
-                            Currency = "MYR",
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = "Member Discount (10%)",
-                                Description = "Exclusive discount for members",
-                            },
-                        },
-                        Quantity = 1,
-                    });
                 }
 
                 await _context.SaveChangesAsync();
@@ -140,6 +128,26 @@ namespace Menu.Controllers
                         { "member_discount", memberDiscount.ToString() }
                     }
                 };
+
+                if (isMember && memberDiscount > 0)
+                {
+                    var couponService = new CouponService(_stripeClient);
+                    var coupon = await couponService.CreateAsync(new CouponCreateOptions
+                    {
+                        PercentOff = 10,
+                        Duration = "once",
+                        Name = "Member Discount",
+                        Id = $"member-discount-{order.OrderId}" // Unique ID for this order
+                    });
+
+                    options.Discounts = new List<SessionDiscountOptions>
+                    {
+                        new SessionDiscountOptions
+                        {
+                            Coupon = coupon.Id
+                        }
+                    };
+                }
 
                 var service = new SessionService(_stripeClient);
                 Session session = await service.CreateAsync(options);
@@ -231,8 +239,8 @@ namespace Menu.Controllers
 
                 if (user.Role.ToLower() == "member")
                 {
-                    memberDiscount = request.TotalAmount * 0.10m; // 10% discount
-                    request.TotalAmount = request.TotalAmount - memberDiscount;
+                    var subtotal = request.TotalAmount;
+                    memberDiscount = subtotal * 0.10m; // 10% discount
                 }
             }
 
@@ -249,7 +257,6 @@ namespace Menu.Controllers
                     Status = "Pending Payment",
                     OrderDate = DateTime.Now,
                 };
-
 
                 _context.Orders.Add(order);
 

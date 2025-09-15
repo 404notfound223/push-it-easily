@@ -1,85 +1,83 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
-    const sidebarItems = document.querySelectorAll('.sidebar-item');
+﻿document.addEventListener("DOMContentLoaded", () => {
+    const sidebarItems = document.querySelectorAll(".sidebar-item")
 
-    sidebarItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const dropdown = item.nextElementSibling;
-            if (dropdown && dropdown.classList.contains('dropdown')) {
-                dropdown.classList.toggle('open');
+    sidebarItems.forEach((item) => {
+        item.addEventListener("click", () => {
+            const dropdown = item.nextElementSibling
+            if (dropdown && dropdown.classList.contains("dropdown")) {
+                dropdown.classList.toggle("open")
 
-                const arrow = item.querySelector('.arrow');
+                const arrow = item.querySelector(".arrow")
                 if (arrow) {
-                    arrow.style.transform = dropdown.classList.contains('open') ? 'rotate(90deg)' : 'rotate(0deg)';
+                    arrow.style.transform = dropdown.classList.contains("open") ? "rotate(90deg)" : "rotate(0deg)"
                 }
             }
-        });
-    });
+        })
+    })
 
-    const backToTopBtn = document.querySelector('.backToTopBtn');
+    const backToTopBtn = document.querySelector(".backToTopBtn")
     if (backToTopBtn) {
-        window.addEventListener('scroll', () => {
-            backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-        });
+        window.addEventListener("scroll", () => {
+            backToTopBtn.style.display = window.scrollY > 300 ? "block" : "none"
+        })
     }
-});
+
+    // Update order count on page load
+    if (typeof window.updateOrderCount === "function") {
+        window.updateOrderCount()
+    }
+})
 
 function navigateTo(url) {
-    window.location.href = url;
-    }
+    window.location.href = url
+}
 
 function showProfile() {
-    document.getElementById('profile-modal').style.display = 'block';
-    }
+    document.getElementById("profile-modal").style.display = "block"
+}
 
 function closeProfile() {
-    document.getElementById('profile-modal').style.display = 'none';
-    }
+    document.getElementById("profile-modal").style.display = "none"
+}
 
 function viewOrderHistory() {
-    window.location.href = '/Order/OrderHistory';
-    }
+    window.location.href = "/Order/OrderHistory"
+}
 
 function logout() {
-        if (confirm('Are you sure you want to logout?')) {
-        fetch('/Login/Logout', {
-            method: 'POST',
+    if (confirm("Are you sure you want to logout?")) {
+        fetch("/Login/Logout", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-            }
+                "Content-Type": "application/json",
+            },
         }).then(() => {
-            window.location.href = '/Login/Login';
-        });
-        }
+            window.location.href = "/Login/Login"
+        })
     }
-
-// Update order count on page load
-document.addEventListener('DOMContentLoaded', function() {
-        if (typeof updateOrderCount === 'function') {
-            updateOrderCount();
-        }
-});
+}
 
 function toggleProfileDropdown(event) {
-    event.stopPropagation();
-    const dropdown = document.getElementById('profileDropdown');
+    event.stopPropagation()
+    const dropdown = document.getElementById("profileDropdown")
     if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block"
     }
 }
 
 // Hide dropdown when clicking outside
-document.addEventListener('click', function (e) {
-    const dropdown = document.getElementById('profileDropdown');
-    if (dropdown && dropdown.style.display === 'block') {
-        if (!e.target.closest('.profile-container')) {
-            dropdown.style.display = 'none';
+document.addEventListener("click", (e) => {
+    const dropdown = document.getElementById("profileDropdown")
+    if (dropdown && dropdown.style.display === "block") {
+        if (!e.target.closest(".profile-container")) {
+            dropdown.style.display = "none"
         }
     }
-});
+})
 
-//function scrollToTop() {
-//    window.scrollTo({ top: 0, behavior: 'smooth' });
-//}
+// function scrollToTop() {
+//     window.scrollTo({ top: 0, behavior: 'smooth' });
+// }
 
 function resetPassword() {
     closeProfile()
@@ -112,7 +110,17 @@ function saveUsername() {
         },
         body: JSON.stringify({ newUsername: newUsername }),
     })
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const contentType = response.headers.get("content-type")
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return response.json()
+            } else {
+                throw new Error("Server did not return JSON response")
+            }
+        })
         .then((data) => {
             if (data.success) {
                 document.getElementById("username-display").textContent = newUsername
@@ -123,7 +131,8 @@ function saveUsername() {
             }
         })
         .catch((error) => {
-            alert("Error updating username: " + error)
+            console.error("Error updating username:", error)
+            alert("Error updating username: " + error.message)
         })
 }
 

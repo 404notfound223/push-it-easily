@@ -19,18 +19,64 @@ namespace Menu.Controllers
             return View();
         }
 
-        public IActionResult LiveSearch(string term)
+        [HttpGet]
+        public async Task<IActionResult> LiveSearch(string term)
         {
-            var items = new List<string> {
-                        "Grilled Chicken", "Beef Steak", "Spaghetti Carbonara", "Cheeseburger", "Fish and Chips",
-                        "Mac and Cheese", "Chicken Alfredo", "Garlic Bread", "Tuna Sandwich"
-                    };
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                return Json(new { success = false, results = new List<object>() });
+            }
 
-            var results = items
-                .Where(x => x.Contains(term, StringComparison.OrdinalIgnoreCase))
-                .Select(x => $"<div style='padding:6px 12px; border-bottom:1px solid #eee;'>{x}</div>");
+            try
+            {
+                var products = await db.Products
+                    .Where(p => EF.Functions.Like(p.Name, $"%{term}%") ||
+                               EF.Functions.Like(p.Description, $"%{term}%") ||
+                               EF.Functions.Like(p.Category, $"%{term}%"))
+                    .Select(p => new {
+                        id = p.Id,
+                        name = p.Name,
+                        description = p.Description,
+                        price = p.Price,
+                        category = p.Category,
+                        imageUrl = p.ImagePath
+                    })
+                    .Take(10) // Limit results to 10 items
+                    .ToListAsync();
 
-            return Content(string.Join("", results));
+                return Json(new { success = true, results = products });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message, results = new List<object>() });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return RedirectToAction("All", "Menu");
+            }
+
+            try
+            {
+                var products = await db.Products
+                    .Where(p => EF.Functions.Like(p.Name, $"%{query}%") ||
+                               EF.Functions.Like(p.Description, $"%{query}%") ||
+                               EF.Functions.Like(p.Category, $"%{query}%"))
+                    .ToListAsync();
+
+                ViewBag.SearchQuery = query;
+                ViewBag.ResultCount = products.Count;
+                return View("SearchResults", products);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                return View("SearchResults", new List<Product>());
+            }
         }
     }
 }

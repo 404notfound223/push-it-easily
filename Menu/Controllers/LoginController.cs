@@ -331,6 +331,37 @@ public class LoginController : Controller
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> UpdateUsername([FromBody] UpdateUsernameRequest request)
+    {
+        var userId = HttpContext.Session.GetString("UserId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Json(new { success = false, error = "User not logged in" });
+        }
+
+        try
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return Json(new { success = false, error = "User not found" });
+            }
+
+            user.Name = request.NewUsername;
+            await _context.SaveChangesAsync();
+
+            // Update session with new name
+            HttpContext.Session.SetString("UserName", user.Name);
+
+            return Json(new { success = true, message = "Username updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
     private string HashPassword(string password)
     {
         using (var sha256 = System.Security.Cryptography.SHA256.Create())
@@ -353,4 +384,9 @@ public class LoginController : Controller
         int lastNumber = int.Parse(lastUser.UserId.Substring(1));
         return "M" + (lastNumber + 1).ToString("D3");
     }
+}
+
+public class UpdateUsernameRequest
+{
+    public string NewUsername { get; set; } = string.Empty;
 }

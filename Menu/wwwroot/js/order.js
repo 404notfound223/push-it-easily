@@ -38,6 +38,13 @@ function updateQuantity(id, newQuantity) {
     }
 }
 
+function checkUserMemberStatus() {
+    // Check if user is logged in and is a member
+    const userRole =
+        document.querySelector('meta[name="user-role"]')?.content || sessionStorage.getItem("userRole") || "guest"
+    return userRole.toLowerCase() === "member"
+}
+
 function renderOrder() {
     const order = JSON.parse(localStorage.getItem("orderItems")) || []
     const orderListElement = document.getElementById("order-list")
@@ -82,19 +89,32 @@ function renderOrder() {
 
     orderListElement.innerHTML = html
 
-    // Calculate tax and total
+    // Calculate tax and member discount
     const taxRate = 0.085 // 8.5% tax
     const tax = subtotal * taxRate
-    const total = subtotal + tax
+    const isMember = checkUserMemberStatus()
+    const memberDiscount = isMember ? (subtotal + tax) * 0.1 : 0 // 10% member discount
+    const total = subtotal + tax - memberDiscount
 
     // Update summary
     const subtotalElement = document.getElementById("order-subtotal")
     const taxElement = document.getElementById("order-tax")
     const totalElement = document.getElementById("order-total")
+    const memberDiscountElement = document.getElementById("member-discount")
+    const memberDiscountRow = document.getElementById("member-discount-row")
 
     if (subtotalElement) subtotalElement.textContent = `$${subtotal.toFixed(2)}`
     if (taxElement) taxElement.textContent = `$${tax.toFixed(2)}`
     if (totalElement) totalElement.textContent = `$${total.toFixed(2)}`
+
+    if (memberDiscountElement && memberDiscountRow) {
+        if (isMember && memberDiscount > 0) {
+            memberDiscountElement.textContent = `-$${memberDiscount.toFixed(2)}`
+            memberDiscountRow.style.display = "flex"
+        } else {
+            memberDiscountRow.style.display = "none"
+        }
+    }
 }
 
 function updateOrderCount() {
@@ -120,6 +140,9 @@ function showPaymentOptions() {
     const tax = Number.parseFloat(document.getElementById("order-tax").textContent.replace("$", ""))
     const total = Number.parseFloat(document.getElementById("order-total").textContent.replace("$", ""))
 
+    const isMember = checkUserMemberStatus()
+    const memberDiscount = isMember ? (subtotal + tax) * 0.1 : 0
+
     const paymentModal = `
     <div id="payment-modal" class="modal">
       <div class="modal-content payment-modal-content">
@@ -130,6 +153,15 @@ function showPaymentOptions() {
             <span>Subtotal:</span>
             <span>$${subtotal.toFixed(2)}</span>
           </div>
+          ${memberDiscount > 0
+            ? `
+          <div class="summary-row member-discount-row">
+            <span>Member Discount (10%):</span>
+            <span class="discount-amount">-$${memberDiscount.toFixed(2)}</span>
+          </div>
+          `
+            : ""
+        }
           <div class="summary-row">
             <span>Tax (8.5%):</span>
             <span>$${tax.toFixed(2)}</span>
@@ -210,25 +242,7 @@ function processPayment(method) {
 
                     showNotification(message, "info", 10000)
 
-                    setTimeout(() => {
-                        // Check if user is logged in (member)
-                        const isLoggedIn = document.querySelector(".user-welcome") !== null
-
-                        if (isLoggedIn) {
-                            if (confirm("Would you like to create another order?")) {
-                                window.location.href = "/Menu/All"
-                            } else {
-                                window.location.href = "/Order/OrderHistory"
-                            }
-                        } else {
-                            // Guest user - just ask if they want to create another order
-                            if (confirm("Would you like to create another order?")) {
-                                window.location.href = "/Menu/All"
-                            } else {
-                                window.location.href = "/"
-                            }
-                        }
-                    }, 3000)
+                    showPaymentNumberModal(data.paymentNumber, data.orderId, data.memberDiscount || 0)
                 } else {
                     showNotification("Error creating order: " + data.error, "error")
                 }
@@ -375,61 +389,203 @@ document.addEventListener("DOMContentLoaded", () => {
     clearOrdersOnMenuExit()
 })
 
+function showPaymentNumberModal(paymentNumber, orderId, memberDiscount) {
+    const currentDate = new Date().toLocaleDateString()
+    const currentTime = new Date().toLocaleTimeString()
 
-//async function processOnlinePayment() {
-//    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
-//    const payload = {
-//        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
-//        Items: order.map(item => ({
-//            ProductId: item.id,
-//            Quantity: item.quantity
-//        }))
-//    };
+    const modal = `
+    <div id="payment-number-modal" class="modal" style="display: block;">
+      <div class="modal-content payment-number-modal-content">
+        <div class="payment-receipt" id="payment-receipt">
+          <div class="receipt-header">
+            <h2>The Secret Restaurant</h2>
+            <p>Payment Receipt</p>
+            <hr>
+          </div>
+          <div class="receipt-body">
+            <div class="receipt-row">
+              <span>Date:</span>
+              <span>${currentDate}</span>
+            </div>
+            <div class="receipt-row">
+              <span>Time:</span>
+              <span>${currentTime}</span>
+            </div>
+            <div class="receipt-row">
+              <span>Order ID:</span>
+              <span>${orderId}</span>
+            </div>
+            <div class="receipt-row payment-number-row">
+              <span><strong>Payment Number:</strong></span>
+              <span class="payment-number"><strong>${paymentNumber}</strong></span>
+            </div>
+            ${memberDiscount > 0
+            ? `
+            <div class="receipt-row discount-row">
+              <span>Member Discount:</span>
+              <span class="discount-amount">-$${memberDiscount.toFixed(2)}</span>
+            </div>
+            `
+            : ""
+        }
+            <hr>
+            <p class="receipt-instructions">
+              Please present this payment number at the counter to complete your payment.
+              Keep this receipt for your records.
+            </p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button onclick="printPaymentNumber()" class="btn btn-primary">
+            <i class="fas fa-print"></i> Print Receipt
+          </button>
+          <button onclick="closePaymentNumberModalAndContinue()" class="btn btn-secondary">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  `
 
-//    try {
-//        const response = await fetch("/Payment/CreateCheckoutSession", {
-//            method: "POST",
-//            headers: { "Content-Type": "application/json" },
-//            body: JSON.stringify(payload)
-//        });
-//        const result = await response.json();
-//        if (result.success) {
-//            const stripe = Stripe("@ViewBag.PublishableKey");
-//            stripe.redirectToCheckout({ sessionId: result.sessionId });
-//        } else {
-//            showNotification("Error: " + result.error, "error");
-//        }
-//    } catch (error) {
-//        showNotification("Error processing online payment: " + error.message, "error");
-//    }
-//}
+    document.body.insertAdjacentHTML("beforeend", modal)
+}
 
-//async function processCounterPayment() {
-//    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
-//    const payload = {
-//        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
-//        Items: order.map(item => ({
-//            ProductId: item.id,
-//            Quantity: item.quantity
-//        }))
-//    };
+function closePaymentNumberModalAndContinue() {
+    const modal = document.getElementById("payment-number-modal")
+    if (modal) {
+        modal.remove()
+    }
 
-//    try {
-//        const response = await fetch("/Payment/CreateCounterPayment", {
-//            method: "POST",
-//            headers: { "Content-Type": "application/json" },
-//            body: JSON.stringify(payload)
-//        });
-//        const result = await response.json();
+    // Show continue order prompt after modal is closed
+    setTimeout(() => {
+        showContinueOrderPrompt()
+    }, 500)
+}
 
-//        if (result.success) {
-//            showNotification(`Order placed successfully! Payment Number: #${result.paymentNumber}\nPlease pay at counter with this number.`, "success");
-//            localStorage.removeItem("orderItems");
-//            window.location.href = "/Order/History";
-//        } else {
-//            showNotification("Error creating counter payment: " + result.error, "error");
-//        }
-//    } catch (error) {
-//        showNotification("Error processing counter payment: " + error.message, "error");
-//    }
-//}
+function closePaymentNumberModal() {
+    const modal = document.getElementById("payment-number-modal")
+    if (modal) {
+        modal.remove()
+    }
+}
+
+function showContinueOrderPrompt() {
+    const isLoggedIn = checkIfUserIsLoggedIn()
+
+    if (isLoggedIn) {
+        if (confirm("Would you like to create another order?")) {
+            window.location.href = "/Menu/All"
+        } else {
+            window.location.href = "/Order/OrderHistory"
+        }
+    } else {
+        // Guest user - just ask if they want to create another order
+        if (confirm("Would you like to create another order?")) {
+            window.location.href = "/Menu/All"
+        } else {
+            window.location.href = "/"
+        }
+    }
+}
+
+function checkIfUserIsLoggedIn() {
+    // Check multiple indicators of logged in status
+    const profileButton = document.querySelector(".btn-profile")
+    const userWelcome = document.querySelector(".user-welcome")
+    const logoutButton = document.querySelector(".btn-logout")
+
+    return profileButton !== null || userWelcome !== null || logoutButton !== null
+}
+
+function printPaymentNumber() {
+    const receiptContent = document.getElementById("payment-receipt").innerHTML
+    const printWindow = window.open("", "_blank")
+
+    printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Payment Receipt</title>
+      <style>
+        body {
+          font-family: 'Courier New', monospace;
+          max-width: 300px;
+          margin: 0 auto;
+          padding: 20px;
+          line-height: 1.4;
+        }
+        .receipt-header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .receipt-header h2 {
+          margin: 0;
+          font-size: 18px;
+          font-weight: bold;
+        }
+        .receipt-header p {
+          margin: 5px 0;
+          font-size: 14px;
+        }
+        .receipt-row {
+          display: flex;
+          justify-content: space-between;
+          margin: 8px 0;
+          font-size: 12px;
+        }
+        .payment-number-row {
+          font-size: 14px;
+          font-weight: bold;
+          background: #f0f0f0;
+          padding: 8px;
+          margin: 15px 0;
+        }
+        .discount-row {
+          color: #28a745;
+          font-weight: bold;
+        }
+        .receipt-instructions {
+          font-size: 11px;
+          text-align: center;
+          margin-top: 15px;
+          padding: 10px;
+          border: 1px dashed #ccc;
+        }
+        hr {
+          border: none;
+          border-top: 1px dashed #333;
+          margin: 15px 0;
+        }
+        @media print {
+          body {
+            margin: 0;
+            padding: 10px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      ${receiptContent}
+    </body>
+    </html>
+  `)
+
+    printWindow.document.close()
+    printWindow.focus()
+    printWindow.print()
+
+    printWindow.onafterprint = () => {
+        printWindow.close()
+        // Small delay to ensure print dialog is fully closed
+        setTimeout(() => {
+            showContinueOrderPrompt()
+        }, 1000)
+    }
+
+    // Fallback for browsers that don't support onafterprint
+    setTimeout(() => {
+        if (!printWindow.closed) {
+            printWindow.close()
+        }
+    }, 5000)
+}

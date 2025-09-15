@@ -28,11 +28,19 @@
                         <span class="status-badge status-@Model.Status.ToLower().Replace(" ", "-")">@Model.Status</span>
                     </div>
                 </div>
-                
+
                 <div class="customer-info">
                     <h3>Customer Information</h3>
-                    <p><strong>Name:</strong> @Model.User.Name</p>
-                    <p><strong>Email:</strong> @Model.User.Email</p>
+                    @if (Model.User != null)
+                    {
+                        <p><strong>Name:</strong> @Model.User.Name</p>
+                        <p><strong>Email:</strong> @Model.User.Email</p>
+                        <p><strong>Member ID:</strong> @Model.User.UserId</p>
+                    }
+                    else
+                    {
+                        <p><em>Guest Order</em></p>
+                    }
                 </div>
             </div>
 
@@ -58,15 +66,33 @@
                         </div>
                     }
                 </div>
-                
+
                 <div class="order-totals">
+                    @{
+                        var subtotal = Model.OrderDetails.Sum(od => od.UnitPrice * od.Quantity);
+                        var tax = subtotal * 0.085m;
+                        var memberDiscount = 0m;
+
+                        if (Model.User?.Role == "member")
+                        {
+                            memberDiscount = (subtotal + tax) * 0.10m;
+                        }
+                    }
+
                     <div class="totals-row">
                         <span>Subtotal:</span>
-                        <span>$@((Model.TotalAmount / 1.085m).ToString("F2"))</span>
+                        <span>$@subtotal.ToString("F2")</span>
                     </div>
+                    @if (memberDiscount > 0)
+                    {
+                        <div class="totals-row member-discount">
+                            <span>Member Discount (10%):</span>
+                            <span>-$@memberDiscount.ToString("F2")</span>
+                        </div>
+                    }
                     <div class="totals-row">
                         <span>Tax (8.5%):</span>
-                        <span>$@((Model.TotalAmount - (Model.TotalAmount / 1.085m)).ToString("F2"))</span>
+                        <span>$@tax.ToString("F2")</span>
                     </div>
                     <div class="totals-row total-row">
                         <span>Total:</span>

@@ -16,7 +16,7 @@
     <link rel="icon" type="image/jpeg" href="~/images/logoCSharp.jpg" asp-append-version="true" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
     <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/js/app.js" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/js/app.js" asp-append-version="true" />
 
     @RenderSection("head", required: false)
 </head>
@@ -32,9 +32,9 @@
             <img src="~/images/logoCSharp.jpg" alt="Logo" />
             <h1 class="logo-caption">The Secret Restaurant</h1>
         </div>
-        
-        <form class="search-form">
-            <input type="text" placeholder="Search..." />
+
+        <form class="search-form" style="position: relative;">
+            <input type="text" placeholder="Search menu items..." />
             <button type="submit">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -43,7 +43,7 @@
             </button>
         </form>
 
-        
+
         <div class="top-right">
             @if (isLoggedIn)
             {
@@ -61,7 +61,7 @@
                     </div>
 
                 }
-                
+
                 @if (userRole == "admin" || userRole == "staff")
                 {
                     <button onclick="window.location.href='/Staff/Dashboard'" class="btn btn-move" title="Staff Dashboard">
@@ -72,7 +72,7 @@
                         Dashboard
                     </button>
                 }
-                
+
                 <button onclick="logout()" class="btn btn-logout" title="Logout">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -155,65 +155,33 @@
         </div>
     </div>
 
-    @* <div id="forgot-password-modal" class="modal" style="display: none;">
+    <!-- Added forgot password modal for password reset functionality -->
+    <div id="forgot-password-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close" onclick="closeForgotPassword()">&times;</span>
             <h2>Reset Password</h2>
-            <div id="forgot-step-1">
-                <p>Enter your email address to receive a password reset code:</p>
-                <input type="email" id="forgot-email" placeholder="Enter your email" />
-                <button onclick="sendResetCode()" class="btn btn-primary">Send Reset Code</button>
-            </div>
-            <div id="forgot-step-2" style="display: none;">
-                <p>Enter the reset code sent to your email:</p>
-                <input type="text" id="reset-code" placeholder="Enter reset code" />
-                <p>Enter your new password:</p>
-                <input type="password" id="new-password" placeholder="New password" />
-                <input type="password" id="confirm-password" placeholder="Confirm new password" />
-                <button onclick="resetPasswordWithCode()" class="btn btn-primary">Reset Password</button>
-            </div>
             <div id="forgot-message"></div>
+
+            <div id="password-reset-form">
+                <div class="form-group">
+                    <label for="current-password">Current Password:</label>
+                    <input type="password" id="current-password" required />
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password:</label>
+                    <input type="password" id="new-password" required />
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password:</label>
+                    <input type="password" id="confirm-password" required />
+                </div>
+                <div class="form-actions">
+                    <button onclick="closeForgotPassword()" class="btn btn-secondary">Cancel</button>
+                    <button onclick="changePassword()" class="btn btn-primary">Change Password</button>
+                </div>
+            </div>
         </div>
-    </div> *@
-
-    @* @{
-        var role = Context.Session.GetString("UserRole") ?? "guest";
-        var userName = Context.Session.GetString("UserName") ?? "Guest";
-    } *@
-
-@*     <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>@ViewData["Title"] - The Secret Restaurant</title>
-        <link rel="stylesheet" href="~/css/app.css" />
-    </head>
-    <body>
-        <header>
-            <h1>The Secret Restaurant</h1>
-            <nav>
-                <ul>
-                    <li><a asp-controller="Menu" asp-action="All">Menu</a></li>
-                    <li><a asp-controller="Menu" asp-action="Cart">Cart</a></li>
-                    @if (role == "member")
-                    {
-                        <li><a asp-controller="Order" asp-action="History">My Orders</a></li>
-                    }
-                    <li><a asp-controller="Login" asp-action="Logout">Logout (@userName)</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-
-        <footer>
-            <p>&copy; 2025 - The Secret Restaurant</p>
-        </footer>
-    </body>
-</html> *@
-
+    </div>
 
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
@@ -221,7 +189,8 @@
     <script src="~/js/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/js/app.js" asp-append-version="true"></script>
     <script src="~/js/order.js" asp-append-version="true"></script>
+    <script src="~/js/search.js" asp-append-version="true"></script>
+    <script src="~/js/forgot-password.js" asp-append-version="true"></script>
     @RenderSection("foot", required: false)
 </body>
-</html> 
-
+</html>

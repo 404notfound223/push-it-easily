@@ -1,0 +1,135 @@
+﻿@model Menu.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>Order Details
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(ViewBag.Error))
+                    {
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
+                        </div>
+                    }
+                    else if (Model != null)
+                    {
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Order Information</h6>
+                                <p><strong>Order ID:</strong> @Model.OrderId</p>
+                                <p><strong>Order Date:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                                <p>
+                                    <strong>Status:</strong>
+                                    <span class="badge @(Model.Status == "Paid" ? "bg-success" : Model.Status == "Pending Payment" ? "bg-warning" : "bg-secondary")">
+                                        @Model.Status
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Customer Information</h6>
+                                @if (Model.User != null)
+                                {
+                                    <p><strong>Name:</strong> @Model.User.Name</p>
+                                    <p><strong>Email:</strong> @Model.User.Email</p>
+                                    <p><strong>Member ID:</strong> @Model.User.UserId</p>
+                                }
+                                else
+                                {
+                                    <p><em>Guest Order</em></p>
+                                }
+                            </div>
+                        </div>
+
+                        <h6 class="text-muted mb-3">Order Items</h6>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Unit Price</th>
+                                        <th>Quantity</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var detail in Model.OrderDetails)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@detail.Product.Name</strong>
+                                                @if (!string.IsNullOrEmpty(detail.Product.Description))
+                                                {
+                                                    <br>
+                                        
+                                                    <small class="text-muted">@detail.Product.Description</small>
+                                                }
+                                            </td>
+                                            <td>RM @detail.UnitPrice.ToString("F2")</td>
+                                            <td>@detail.Quantity</td>
+                                            <td>RM @((detail.UnitPrice * detail.Quantity).ToString("F2"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6 offset-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Order Summary</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Subtotal:</span>
+                                            <span>RM @ViewBag.Subtotal?.ToString("F2")</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Tax (8.5%):</span>
+                                            <span>RM @ViewBag.Tax?.ToString("F2")</span>
+                                        </div>
+                                        @if (ViewBag.MemberDiscount != null && (decimal)ViewBag.MemberDiscount > 0)
+                                        {
+                                            <div class="d-flex justify-content-between text-success">
+                                                <span><strong>Member Discount (10%):</strong></span>
+                                                <span><strong>-RM @ViewBag.MemberDiscount?.ToString("F2")</strong></span>
+                                            </div>
+                                        }
+                                        <hr>
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Total Amount:</strong>
+                                            <strong>RM @Model.TotalAmount.ToString("F2")</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <a href="@Url.Action("OrderHistory", "Order")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Order History
+                            </a>
+                            <button onclick="window.print()" class="btn btn-primary ms-2">
+                                <i class="fas fa-print me-2"></i>Print Order
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Order not found.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

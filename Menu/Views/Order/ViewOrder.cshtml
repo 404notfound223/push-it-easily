@@ -34,6 +34,11 @@
                 <span>Subtotal:</span>
                 <span id="order-subtotal">$0.00</span>
             </div>
+            <!-- Added member discount display row -->
+            <div class="summary-row member-discount-row" id="member-discount-row" style="display: none;">
+                <span>Member Discount (10%):</span>
+                <span id="member-discount" class="discount-amount">-$0.00</span>
+            </div>
             <div class="summary-row">
                 <span>Tax (8.5%):</span>
                 <span id="order-tax">$0.00</span>
@@ -60,6 +65,11 @@
                 <div class="summary-row">
                     <span>Subtotal:</span>
                     <span id="modal-subtotal">$0.00</span>
+                </div>
+                <!-- Added member discount display in payment modal -->
+                <div class="summary-row member-discount-row" id="modal-member-discount-row" style="display: none;">
+                    <span>Member Discount (10%):</span>
+                    <span id="modal-member-discount" class="discount-amount">-$0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>Tax (8.5%):</span>
@@ -280,6 +290,17 @@
         justify-content: space-between;
         margin-bottom: 10px;
         font-size: 16px;
+    }
+
+    /* Added styling for member discount row */
+    .member-discount-row {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .discount-amount {
+        color: #28a745;
+        font-weight: 600;
     }
 
     .total-row {
