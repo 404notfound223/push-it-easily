@@ -11,30 +11,33 @@ public class StaffController : Controller
         _context = context;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Dashboard()
+[HttpGet]
+public async Task<IActionResult> Dashboard()
+{
+    var userRole = HttpContext.Session.GetString("UserRole");
+    if (userRole != "admin" && userRole != "staff")
     {
-        var userRole = HttpContext.Session.GetString("UserRole");
-        if (userRole != "admin" && userRole != "staff")
-        {
-            return RedirectToAction("Login", "Login");
-        }
-
-        var model = new StaffDashboardViewModel
-        {
-            UserRole = userRole,
-            Orders = await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync(),
-            
-            Users = userRole == "admin" ? await _context.Users.ToListAsync() : new List<User>()
-        };
-
-        return View(model);
+        return RedirectToAction("Login", "Login");
     }
+
+    var model = new StaffDashboardViewModel
+    {
+        UserRole = userRole,
+        Orders = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.Product)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync(),
+
+        Users = userRole == "admin" ? await _context.Users.ToListAsync() : new List<User>(),
+
+        Products = await _context.Products.ToListAsync() 
+    };
+
+    return View(model);
+}
+
 
     [HttpPost]
     public async Task<IActionResult> UpdateOrderStatus(string orderId, string status)
@@ -152,4 +155,108 @@ public class StaffController : Controller
             return Json(new { success = false, error = ex.Message });
         }
     }
+<<<<<<< HEAD
+
+    [HttpPost]
+    public async Task<IActionResult> AddProduct([FromBody] Product product)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            product.Id = Guid.NewGuid().ToString();
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, product });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateProduct([FromBody] Product product)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var existing = await _context.Products.FindAsync(product.Id);
+            if (existing == null)
+            {
+                return Json(new { success = false, error = "Product not found" });
+            }
+
+            existing.Name = product.Name;
+            existing.Price = product.Price;
+            existing.Description = product.Description;
+            existing.Category = product.Category;
+            existing.ImagePath = product.ImagePath;
+            existing.Stock = product.Stock;
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, product = existing });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteProduct(string id)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return Json(new { success = false, error = "Product not found" });
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
 }
+
+public class StaffDashboardViewModel
+{
+    public string UserRole { get; set; } = string.Empty;
+    public List<Order> Orders { get; set; } = new List<Order>();
+    public List<User> Users { get; set; } = new List<User>();
+    public List<Product> Products { get; set; } = new List<Product>();
+}
+
+public class UpdateUserRequest
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+}
+
+=======
+}
+>>>>>>> be62eb2ea2c0a91bcfe7c60e5049ad2b14ce0956

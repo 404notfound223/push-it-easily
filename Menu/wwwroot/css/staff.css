@@ -1,5 +1,10 @@
-﻿body {
-    background-color: #e8f0e0;   
+﻿/* ----------------- GLOBAL STYLES ----------------- */
+body {
+    background-color: #e8f0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #212529;
 }
 
 .staff-dashboard {
@@ -8,6 +13,7 @@
     padding: 20px;
 }
 
+/* ---------------- DASHBOARD HEADER ---------------- */
 .dashboard-header {
     display: flex;
     justify-content: space-between;
@@ -43,6 +49,7 @@
     color: white;
 }
 
+/* ---------------- DASHBOARD TABS ---------------- */
 .dashboard-tabs {
     display: flex;
     margin-bottom: 20px;
@@ -66,14 +73,20 @@
         border-bottom-color: #007bff;
     }
 
+/* ---------------- TAB CONTENT ---------------- */
 .tab-content {
     display: none;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
     .tab-content.active {
         display: block;
     }
 
+/* ---------------- SECTION HEADER ---------------- */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -81,6 +94,7 @@
     margin-bottom: 20px;
 }
 
+/* ---------------- STATS CARDS ---------------- */
 .order-stats {
     display: flex;
     gap: 15px;
@@ -108,19 +122,27 @@
     text-transform: uppercase;
 }
 
-.orders-table-container, .users-table-container {
+/* ---------------- TABLES ---------------- */
+.orders-table-container,
+.users-table-container,
+.products-table-container {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     overflow: hidden;
+    margin-bottom: 20px;
 }
 
-.orders-table, .users-table {
+.orders-table,
+.users-table,
+.products-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-    .orders-table th, .users-table th {
+    .orders-table th,
+    .users-table th,
+    .products-table th {
         background-color: #f8f9fa;
         padding: 15px;
         text-align: left;
@@ -129,13 +151,17 @@
         border-bottom: 1px solid #dee2e6;
     }
 
-    .orders-table td, .users-table td {
+    .orders-table td,
+    .users-table td,
+    .products-table td {
         padding: 15px;
         border-bottom: 1px solid #dee2e6;
     }
 
-    .orders-table tr:hover, .users-table tr:hover {
-        background-color: #f8f9fa;
+    .orders-table tr:hover,
+    .users-table tr:hover,
+    .products-table tr:hover {
+        background-color: #f1f3f5;
     }
 
 .status-select {
@@ -145,9 +171,13 @@
     font-size: 14px;
 }
 
+/* ---------------- BUTTONS ---------------- */
 .btn-sm {
     padding: 6px 12px;
     font-size: 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 .btn-info {
@@ -165,6 +195,12 @@
     color: white;
 }
 
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+/* ---------------- FORMS ---------------- */
 .form-group {
     margin-bottom: 15px;
 }
@@ -175,7 +211,8 @@
         font-weight: 500;
     }
 
-    .form-group input, .form-group select {
+    .form-group input,
+    .form-group select {
         width: 100%;
         padding: 8px 12px;
         border: 1px solid #ced4da;
@@ -190,13 +227,31 @@
     margin-top: 20px;
 }
 
+.btn-open-popout {
+    padding: 8px 16px;
+    margin-left: 10px;
+    border-radius: 6px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+    .btn-open-popout:hover {
+        background: #0056b3;
+    }
+
+/* ---------------- ORDER ITEMS TABLE ---------------- */
 .order-items-table {
     width: 100%;
     margin-top: 15px;
     border-collapse: collapse;
 }
 
-    .order-items-table th, .order-items-table td {
+    .order-items-table th,
+    .order-items-table td {
         padding: 8px 12px;
         border: 1px solid #dee2e6;
         text-align: left;
@@ -207,6 +262,7 @@
         font-weight: 600;
     }
 
+/* ---------------- NOTIFICATIONS ---------------- */
 .notification {
     position: fixed;
     top: 20px;
@@ -239,7 +295,7 @@
     }
 }
 
-/* Reuse same popout base styles */
+/* ---------------- POP-OUT PANELS ---------------- */
 .popout-panel {
     position: fixed;
     right: -420px;
@@ -280,20 +336,4 @@
         padding-bottom: 8px;
         border-bottom: 1px solid #e9ecef;
         margin-bottom: 12px;
-    }
-
-.btn-open-popout {
-    padding: 8px 16px;
-    margin-left: 10px;
-    border-radius: 6px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-
-    .btn-open-popout:hover {
-        background: #0056b3;
     }

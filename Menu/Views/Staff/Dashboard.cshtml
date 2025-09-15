@@ -12,177 +12,120 @@
     </div>
 
     <div class="dashboard-tabs">
-        <button class="tab-button active" onclick="showTab('orders')">Order Management</button>
+        <button class="tab-button active" onclick="showTab('orders', event)">Order Management</button>
         @if (Model.UserRole?.ToLower() == "admin")
         {
-            <button class="tab-button" onclick="showTab('users')">User Management</button>
+            <button class="tab-button" onclick="showTab('users', event)">User Management</button>
         }
+        <button class="tab-button" onclick="showTab('products', event)">Product Management</button>
     </div>
 
-    @* ---------------- ORDER MANAGEMENT TAB ---------------- *@
+    <!-- ---------------- ORDER MANAGEMENT TAB ---------------- -->
     <div id="orders-tab" class="tab-content active">
-        <div class="section-header">
-            <h2>Customer Orders</h2>
-            <div class="order-stats">
-                <div class="stat-card">
-                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Pending")</span>
-                    <span class="stat-label">Pending</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Preparing")</span>
-                    <span class="stat-label">Preparing</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Ready")</span>
-                    <span class="stat-label">Ready</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">@Model.Orders.Count(o => o.Status == "Completed")</span>
-                    <span class="stat-label">Completed</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="orders-table-container">
-            <table class="orders-table">
-                <thead>
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
                     <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Date</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <td>@order.OrderId[..Math.Min(order.OrderId.Length, 8)].ToUpper()</td>
+                        <td>@(order.User?.Name ?? "Guest")</td>
+                        <td>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
+                        <td>$@order.TotalAmount.ToString("F2")</td>
+                        <td>
+                            <select class="status-select" onchange="updateOrderStatus('@order.OrderId', this.value)">
+                                <option value="Pending" selected="@(order.Status == "Pending")">Pending</option>
+                                <option value="Preparing" selected="@(order.Status == "Preparing")">Preparing</option>
+                                <option value="Ready" selected="@(order.Status == "Ready")">Ready</option>
+                                <option value="Completed" selected="@(order.Status == "Completed")">Completed</option>
+                                <option value="Cancelled" selected="@(order.Status == "Cancelled")">Cancelled</option>
+                            </select>
+                        </td>
+                        <td><button class="btn btn-sm btn-info" onclick="openPopout('orderDetailPanel','@order.OrderId')">View Order</button></td>
                     </tr>
-                </thead>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ---------------- USER MANAGEMENT TAB ---------------- -->
+    @if (Model.UserRole?.ToLower() == "admin")
+    {
+        <div id="users-tab" class="tab-content">
+            <table class="users-table">
+                <thead><tr><th>User ID</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
                 <tbody>
-                    @foreach (var order in Model.Orders)
+                    @foreach (var user in Model.Users)
                     {
-                        <tr class="order-row" data-order-id="@order.OrderId">
-                            <td>@order.OrderId.Substring(0, Math.Min(8, order.OrderId.Length)).ToUpper()</td>
-                            <td>@(order.User?.Name ?? "Guest")</td>
-                            <td>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
-                            <td>$@order.TotalAmount.ToString("F2")</td>
+                        <tr>
+                            <td>@user.UserId[..Math.Min(user.UserId.Length, 8)].ToUpper()</td>
+                            <td>@user.Name</td>
+                            <td>@user.Email</td>
+                            <td><span class="role-badge role-@user.Role.ToLower()">@user.Role</span></td>
                             <td>
-                                <select class="status-select"
-                                        onchange="updateOrderStatus('@order.OrderId', this.value)"
-                                        asp-for="@order.Status"
-                                        asp-items="@(new SelectList(new[] { "Pending", "Preparing", "Ready", "Completed", "Cancelled" }, order.Status))">
-                                </select>
-                            </td>
-                            <td>
-                                <button onclick="openPopout('orderDetailPanel', '@order.OrderId')"
-                                        class="btn btn-sm btn-info">
-                                    View Order
-                                </button>
+                                <button class="btn btn-sm btn-warning" onclick="openPopout('editUserPanel','@user.UserId')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser('@user.UserId')">Delete</button>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-    </div>
-
-    @* ---------------- USER MANAGEMENT TAB (ADMIN ONLY) ---------------- *@
-    @if (Model.UserRole?.ToLower() == "admin")
-    {
-        <div id="users-tab" class="tab-content">
-            <div class="section-header">
-                <h2>User Management</h2>
-                <button onclick="openPopout('editUserPanel')" class="btn btn-primary">Add New User</button>
-            </div>
-
-            <div class="users-table-container">
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var user in Model.Users)
-                        {
-                            <tr data-user-id="@user.UserId">
-                                <td>@user.UserId.Substring(0, Math.Min(8, user.UserId.Length)).ToUpper()</td>
-                                <td>@user.Name</td>
-                                <td>@user.Email</td>
-                                <td>
-                                    <span class="role-badge role-@user.Role.ToLower()">@user.Role</span>
-                                </td>
-                                <td>
-                                    <!-- ✅ Edit User -->
-                                    <button onclick="openPopout('editUserPanel', '@user.UserId')"
-                                            class="btn btn-sm btn-warning">
-                                        Edit User
-                                    </button>
-
-                                    <!-- ✅ View Orders for this User -->
-                                    <button onclick="openPopout('orderDetailPanel', '@user.UserId')"
-                                            class="btn btn-sm btn-info">
-                                        View Orders
-                                    </button>
-
-                                    <!-- ✅ Delete User -->
-                                    <button onclick="deleteUser('@user.UserId')"
-                                            class="btn btn-sm btn-danger">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
     }
+
+    <!-- ---------------- PRODUCT MANAGEMENT TAB ---------------- -->
+    <div id="products-tab" class="tab-content">
+        <table class="products-table">
+            <thead><tr><th>Product ID</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+            <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td>@product.Id[..Math.Min(product.Id.Length, 8)].ToUpper()</td>
+                        <td>@product.Name</td>
+                        <td>@product.Category</td>
+                        <td>$@product.Price.ToString("F2")</td>
+                        <td>@product.Stock</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="openPopout('editProductPanel','@product.Id')">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteProduct('@product.Id')">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
-
-@* ---------------- POP-OUT PANELS ---------------- *@
-
-<!-- Edit User Panel -->
+<!-- ---------------- POP-OUT PANELS ---------------- -->
 <div id="editUserPanel" class="popout-panel">
     <button class="close-popout" data-close="editUserPanel">&times;</button>
-    <div class="popout-header">
-        <h3>Edit User</h3>
-    </div>
-    <div class="popout-body">
-        <form id="editUserForm">
-            <input type="hidden" id="user-id" />
-            <label>Name</label>
-            <input type="text" id="user-name" placeholder="Enter name" />
-
-            <label>Email</label>
-            <input type="email" id="user-email" placeholder="Enter email" />
-
-            <label>Role</label>
-            <select id="user-role">
-                <option value="member">Member</option>
-                <option value="staff">Staff</option>
-                <option value="admin">Admin</option>
-            </select>
-
-            <div class="form-actions">
-                <button type="button" onclick="saveUser()" class="btn-open-popout">Save</button>
-                <button type="button" class="btn btn-secondary" data-close="editUserPanel">Cancel</button>
-            </div>
-        </form>
-    </div>
 </div>
-
-<!-- Order Detail Panel -->
+<div id="editProductPanel" class="popout-panel">
+    <button class="close-popout" data-close="editProductPanel">&times;</button>
+</div>
 <div id="orderDetailPanel" class="popout-panel">
     <button class="close-popout" data-close="orderDetailPanel">&times;</button>
-    <div class="popout-header">
-        <h3>Order Details</h3>
-    </div>
-    <div class="popout-body" id="order-details-content">
-        <!-- Filled dynamically from staff.js -->
-    </div>
 </div>
 
-<script src="~/js/staff.js" defer></script>
+<script>
+    function showTab(tab, e){
+        document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+        document.getElementById(tab+'-tab').classList.add('active');
+        e.currentTarget.classList.add('active');
+    }
+    document.querySelectorAll('.close-popout').forEach(b=>{
+        b.addEventListener('click',()=>{ document.getElementById(b.dataset.close).classList.remove('open'); });
+    });
+    function openPopout(panelId,id=null){ const p=document.getElementById(panelId); if(id)p.dataset.id=id; p.classList.add('open'); }
+</script>
