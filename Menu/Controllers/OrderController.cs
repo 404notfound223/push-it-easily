@@ -1,12 +1,6 @@
 using Menu.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Stripe.Climate;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 public class OrderController : Controller
 {
@@ -21,79 +15,6 @@ public class OrderController : Controller
     public IActionResult ViewOrder()
     {
         return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
-    {
-        var userId = HttpContext.Session.GetString("UserId");
-        var isGuest = string.IsNullOrEmpty(userId);
-
-        try
-        {
-            User? user = null;
-            if (!isGuest)
-            {
-                user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
-            }
-
-            var order = new Menu.Models.Order
-            {
-                OrderId = await IdGenerator.GenerateOrderId(_context),
-                UserId = isGuest ? null : userId,
-                User = user,
-                TotalAmount = request.TotalAmount,
-                Status = "Pending",
-                OrderDate = DateTime.Now
-            };
-
-            _context.Orders.Add(order);
-
-            // Get the last OrderDetailId number once
-            var lastDetail = await _context.OrderDetails
-                .OrderByDescending(od => od.OrderDetailId)
-                .FirstOrDefaultAsync();
-
-            int lastNumber = 0;
-            if (lastDetail != null && lastDetail.OrderDetailId.Length > 3)
-            {
-                int.TryParse(lastDetail.OrderDetailId.Substring(3), out lastNumber);
-            }
-
-            // Add order details
-            foreach (var item in request.Items)
-            {
-                var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == item.ProductId);
-                if (product != null)
-                {
-                    var orderDetail = new OrderDetail
-                    {
-                        OrderDetailId = await IdGenerator.GenerateOrderDetailId(_context),
-                        OrderId = order.OrderId,
-                        Order = order,
-                        ProductId = item.ProductId,
-                        Product = product,
-                        Quantity = item.Quantity,
-                        UnitPrice = product.Price
-                    };
-                    _context.OrderDetails.Add(orderDetail);
-
-                    var trackedProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == item.ProductId);
-                    if (trackedProduct != null)
-                    {
-                        trackedProduct.Sold += item.Quantity;
-                    }
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, orderId = order.OrderId, isGuest = isGuest });
-        }
-        catch (Exception ex)
-        {
-            return Json(new { success = false, error = ex.Message });
-        }
     }
 
     [HttpGet]

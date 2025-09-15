@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Menu.Models;
 using Stripe;
 using Stripe.Checkout;

@@ -90,7 +90,7 @@ public class User
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }
 
-
+// need to move all the method below to separate files later
 public class VerificationRequest
 {
     public required string Email { get; set; }
@@ -109,14 +109,17 @@ public class OrderItemRequest
     public int Quantity { get; set; }
 }
 
-//public class CreateCheckoutRequest
-//{
-//    public decimal TotalAmount { get; set; }
-//    public List<CartItem> Items { get; set; } = new();
-//}
+public class StaffDashboardViewModel
+{
+    public string UserRole { get; set; } = string.Empty;
+    public List<Order> Orders { get; set; } = new List<Order>();
+    public List<User> Users { get; set; } = new List<User>();
+}
 
-//public class CartItem
-//{
-//    public string ProductId { get; set; }
-//    public int Quantity { get; set; }
-//}
+public class UpdateUserRequest
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+}

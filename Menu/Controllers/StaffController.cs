@@ -153,18 +153,3 @@ public class StaffController : Controller
         }
     }
 }
-
-public class StaffDashboardViewModel
-{
-    public string UserRole { get; set; } = string.Empty;
-    public List<Order> Orders { get; set; } = new List<Order>();
-    public List<User> Users { get; set; } = new List<User>();
-}
-
-public class UpdateUserRequest
-{
-    public string UserId { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
-}
