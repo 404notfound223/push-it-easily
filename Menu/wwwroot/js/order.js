@@ -202,11 +202,13 @@ function processPayment(method) {
                     localStorage.removeItem("orderItems")
                     updateOrderCount()
 
-                    showNotification(
-                        `Order Number: ${data.orderNumber}. Payment Number: ${data.paymentNumber}. Please present this number at the counter to complete your payment.`,
-                        "info",
-                        10000,
-                    )
+                    let message = `Order placed successfully! Payment Number: ${data.paymentNumber}. Please present this number at the counter to complete your payment.`
+
+                    if (data.memberDiscount && data.memberDiscount > 0) {
+                        message += ` You saved $${data.memberDiscount.toFixed(2)} with your member discount!`
+                    }
+
+                    showNotification(message, "info", 10000)
 
                     setTimeout(() => {
                         // Check if user is logged in (member)
@@ -216,11 +218,7 @@ function processPayment(method) {
                             if (confirm("Would you like to create another order?")) {
                                 window.location.href = "/Menu/All"
                             } else {
-                                if (confirm("Would you like to logout and return to the main menu?")) {
-                                    window.location.href = "/Login/Logout"
-                                } else {
-                                    window.location.href = "/Menu/All"
-                                }
+                                window.location.href = "/Order/OrderHistory"
                             }
                         } else {
                             // Guest user - just ask if they want to create another order
@@ -322,7 +320,7 @@ function updateOrderStatus(orderId, status) {
 }
 
 function viewOrderDetails(orderId) {
-    window.location.href = `/Order/OrderDetails/${orderId}`
+    window.location.href = `/Order/MemberOrderView/${orderId}`
 }
 
 function clearOrder() {
@@ -332,81 +330,106 @@ function clearOrder() {
     showNotification("Order cleared!", "info")
 }
 
-// clear orders when non-members wanted to exit menu page or login, register. but prompt a message to notify customer
-//function clearOrdersOnMenuExit() {
-//    const isLoggedIn = document.querySelector(".user-welcome") !== null
+function clearOrdersOnMenuExit() {
+    const isLoggedIn = document.querySelector(".user-welcome") !== null
+    if (!isLoggedIn) {
+        // Clear orders when navigating to login page
+        document.body.addEventListener("click", (e) => {
+            const target = e.target.closest("a")
+            if (target && target.getAttribute("href")) {
+                const href = target.getAttribute("href").toLowerCase()
+                if (href.includes("/login") || href.includes("/register")) {
+                    const orderItems = localStorage.getItem("orderItems")
+                    if (orderItems && JSON.parse(orderItems).length > 0) {
+                        if (
+                            confirm(
+                                "You have items in your order. Proceeding to login will clear your current order. Do you want to continue?",
+                            )
+                        ) {
+                            localStorage.removeItem("orderItems")
+                            updateOrderCount()
+                        } else {
+                            e.preventDefault()
+                            return false
+                        }
+                    }
+                }
+            }
+        })
 
-//    if (!isLoggedIn) {
-//        // Only clear orders for non-members when leaving menu pages
-//        window.addEventListener("beforeunload", () => {
-//            const currentPath = window.location.pathname
-//            if (currentPath.includes("/Menu/")) {
-//                localStorage.removeItem("orderItems")
-//            }
-//        })
-//    }
-//}
+        // Also clear orders when login page loads (in case user navigated directly)
+        if (window.location.pathname.toLowerCase().includes("/login")) {
+            const orderItems = localStorage.getItem("orderItems")
+            if (orderItems && JSON.parse(orderItems).length > 0) {
+                localStorage.removeItem("orderItems")
+                updateOrderCount()
+                showNotification("Your previous order has been cleared.", "info")
+            }
+        }
+    }
+}
 
 // Initialize order count on page load
 document.addEventListener("DOMContentLoaded", () => {
     updateOrderCount()
-    //clearOrdersOnMenuExit()
+    clearOrdersOnMenuExit()
 })
 
-async function processOnlinePayment() {
-    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
-    const payload = {
-        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
-        Items: order.map(item => ({
-            ProductId: item.id,
-            Quantity: item.quantity
-        }))
-    };
 
-    try {
-        const response = await fetch("/Payment/CreateCheckoutSession", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        const result = await response.json();
-        if (result.success) {
-            const stripe = Stripe("@ViewBag.PublishableKey");
-            stripe.redirectToCheckout({ sessionId: result.sessionId });
-        } else {
-            showNotification("Error: " + result.error, "error");
-        }
-    } catch (error) {
-        showNotification("Error processing online payment: " + error.message, "error");
-    }
-}
+//async function processOnlinePayment() {
+//    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
+//    const payload = {
+//        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
+//        Items: order.map(item => ({
+//            ProductId: item.id,
+//            Quantity: item.quantity
+//        }))
+//    };
 
-async function processCounterPayment() {
-    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
-    const payload = {
-        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
-        Items: order.map(item => ({
-            ProductId: item.id,
-            Quantity: item.quantity
-        }))
-    };
+//    try {
+//        const response = await fetch("/Payment/CreateCheckoutSession", {
+//            method: "POST",
+//            headers: { "Content-Type": "application/json" },
+//            body: JSON.stringify(payload)
+//        });
+//        const result = await response.json();
+//        if (result.success) {
+//            const stripe = Stripe("@ViewBag.PublishableKey");
+//            stripe.redirectToCheckout({ sessionId: result.sessionId });
+//        } else {
+//            showNotification("Error: " + result.error, "error");
+//        }
+//    } catch (error) {
+//        showNotification("Error processing online payment: " + error.message, "error");
+//    }
+//}
 
-    try {
-        const response = await fetch("/Payment/CreateCounterPayment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        const result = await response.json();
+//async function processCounterPayment() {
+//    const order = JSON.parse(localStorage.getItem("orderItems")) || [];
+//    const payload = {
+//        TotalAmount: parseFloat(document.getElementById("modal-total").innerText.replace("$", "").trim()),
+//        Items: order.map(item => ({
+//            ProductId: item.id,
+//            Quantity: item.quantity
+//        }))
+//    };
 
-        if (result.success) {
-            showNotification(`Order placed successfully! Payment Number: #${result.paymentNumber}\nPlease pay at counter with this number.`, "success");
-            localStorage.removeItem("orderItems");
-            window.location.href = "/Order/History";
-        } else {
-            showNotification("Error creating counter payment: " + result.error, "error");
-        }
-    } catch (error) {
-        showNotification("Error processing counter payment: " + error.message, "error");
-    }
-}
+//    try {
+//        const response = await fetch("/Payment/CreateCounterPayment", {
+//            method: "POST",
+//            headers: { "Content-Type": "application/json" },
+//            body: JSON.stringify(payload)
+//        });
+//        const result = await response.json();
+
+//        if (result.success) {
+//            showNotification(`Order placed successfully! Payment Number: #${result.paymentNumber}\nPlease pay at counter with this number.`, "success");
+//            localStorage.removeItem("orderItems");
+//            window.location.href = "/Order/History";
+//        } else {
+//            showNotification("Error creating counter payment: " + result.error, "error");
+//        }
+//    } catch (error) {
+//        showNotification("Error processing counter payment: " + error.message, "error");
+//    }
+//}

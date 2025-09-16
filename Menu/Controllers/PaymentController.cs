@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Menu.Models;
 using Stripe;
 using Stripe.Checkout;
+using Microsoft.EntityFrameworkCore;
 
 namespace Menu.Controllers
 {
@@ -29,6 +30,8 @@ namespace Menu.Controllers
             var userId = HttpContext.Session.GetString("UserId");
             User? user = null;
             string? customerEmail = null;
+            decimal memberDiscount = 0;
+            bool isMember = false;
 
             if (!string.IsNullOrEmpty(userId))
             {
@@ -36,6 +39,13 @@ namespace Menu.Controllers
                 if (user == null)
                     return Json(new { success = false, error = "User not found" });
                 customerEmail = user.Email;
+
+                if (user.Role.ToLower() == "member")
+                {
+                    isMember = true;
+                    memberDiscount = request.TotalAmount * 0.10m; // 10% discount
+                    request.TotalAmount = request.TotalAmount - memberDiscount;
+                }
             }
             else
             {
@@ -95,6 +105,24 @@ namespace Menu.Controllers
                     }
                 }
 
+                if (isMember && memberDiscount > 0)
+                {
+                    lineItems.Add(new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(-memberDiscount * 100), // Negative amount for discount
+                            Currency = "MYR",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = "Member Discount (10%)",
+                                Description = "Exclusive discount for members",
+                            },
+                        },
+                        Quantity = 1,
+                    });
+                }
+
                 await _context.SaveChangesAsync();
 
                 var options = new SessionCreateOptions
@@ -108,7 +136,8 @@ namespace Menu.Controllers
                     Metadata = new Dictionary<string, string>
                     {
                         { "order_id", order.OrderId },
-                        { "user_id", userId ?? "guest" }
+                        { "user_id", userId ?? "guest" },
+                        { "member_discount", memberDiscount.ToString() }
                     }
                 };
 
@@ -117,7 +146,7 @@ namespace Menu.Controllers
 
                 await transaction.CommitAsync();
 
-                return Json(new { success = true, sessionId = session.Id, checkoutUrl = session.Url });
+                return Json(new { success = true, sessionId = session.Id, checkoutUrl = session.Url, memberDiscount = memberDiscount });
             }
             catch (Exception ex)
             {
@@ -190,6 +219,7 @@ namespace Menu.Controllers
         {
             var userId = HttpContext.Session.GetString("UserId");
             User? user = null;
+            decimal memberDiscount = 0;
 
             if (!string.IsNullOrEmpty(userId))
             {
@@ -197,6 +227,12 @@ namespace Menu.Controllers
                 if (user == null)
                 {
                     return Json(new { success = false, error = "User not found" });
+                }
+
+                if (user.Role.ToLower() == "member")
+                {
+                    memberDiscount = request.TotalAmount * 0.10m; // 10% discount
+                    request.TotalAmount = request.TotalAmount - memberDiscount;
                 }
             }
 
@@ -242,7 +278,8 @@ namespace Menu.Controllers
                 {
                     success = true,
                     orderId = order.OrderId,
-                    paymentNumber
+                    paymentNumber,
+                    memberDiscount = memberDiscount
                 });
             }
             catch (Exception ex)
@@ -257,6 +294,22 @@ namespace Menu.Controllers
         {
             ViewBag.PublishableKey = _configuration["Stripe:PublishableKey"];
             return View();
+        }
+
+        // Invoice view
+        [HttpGet]
+        public async Task<IActionResult> Invoice(string orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+                return NotFound();
+
+            return View(order);
         }
     }
 }

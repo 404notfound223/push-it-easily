@@ -22,6 +22,7 @@ public class LoginController : Controller
     [HttpGet]
     public IActionResult Login()
     {
+        ViewBag.ClearOrders = true;
         return View();
     }
 
@@ -235,6 +236,99 @@ public class LoginController : Controller
     {
         HttpContext.Session.Clear();
         return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var userId = HttpContext.Session.GetString("UserId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            return RedirectToAction("Login");
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        return View(user);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateProfile(string name, string email)
+    {
+        var userId = HttpContext.Session.GetString("UserId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Json(new { success = false, error = "User not logged in" });
+        }
+
+        try
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return Json(new { success = false, error = "User not found" });
+            }
+
+            // Check if email is already taken by another user
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.UserId != userId);
+            if (existingUser != null)
+            {
+                return Json(new { success = false, error = "Email is already taken by another user" });
+            }
+
+            user.Name = name;
+            user.Email = email;
+            await _context.SaveChangesAsync();
+
+            // Update session with new name
+            HttpContext.Session.SetString("UserName", user.Name);
+
+            return Json(new { success = true, message = "Profile updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword)
+    {
+        var userId = HttpContext.Session.GetString("UserId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Json(new { success = false, error = "User not logged in" });
+        }
+
+        try
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return Json(new { success = false, error = "User not found" });
+            }
+
+            // Verify current password
+            var hashedCurrentPassword = HashPassword(currentPassword);
+            if (user.Password != hashedCurrentPassword)
+            {
+                return Json(new { success = false, error = "Current password is incorrect" });
+            }
+
+            // Update password
+            user.Password = HashPassword(newPassword);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Password changed successfully" });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
     }
 
     private string HashPassword(string password)
