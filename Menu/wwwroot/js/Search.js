@@ -1,22 +1,26 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
     const searchForm = document.querySelector(".search-form")
-    const searchInput = searchForm.querySelector('input[type="text"]')
+    const searchInput = searchForm.querySelector('input[name="query"]') // Updated selector to use name attribute
     const searchButton = searchForm.querySelector('button[type="submit"]')
 
     let searchTimeout
     let searchResults = null
-    let query = "" // Declare query variable
+    let query = ""
 
     // Handle form submission
     searchForm.addEventListener("submit", (e) => {
-        e.preventDefault()
-        performSearch()
+        query = searchInput.value.trim()
+        if (!query) {
+            e.preventDefault()
+            return false
+        }
+        // Form will submit naturally to /Home/Search with query parameter
     })
 
     // Handle live search as user types
     searchInput.addEventListener("input", function () {
         clearTimeout(searchTimeout)
-        query = this.value.trim() // Assign value to query variable
+        query = this.value.trim()
 
         if (query.length >= 2) {
             searchTimeout = setTimeout(() => {
@@ -36,7 +40,8 @@
 
     function performSearch() {
         if (query) {
-            window.location.href = `/Home/Search?query=${encodeURIComponent(query)}`
+            searchInput.value = query
+            searchForm.submit()
         }
     }
 
