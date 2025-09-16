@@ -182,7 +182,7 @@ public class OrderController : Controller
 
             if (order.User?.Role == "member")
             {
-                memberDiscount = (subtotal + tax) * 0.10m; // 10% member discount
+                memberDiscount = subtotal * 0.10m; // 10% member discount on subtotal only
             }
 
             ViewBag.Subtotal = subtotal;

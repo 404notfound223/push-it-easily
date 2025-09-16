@@ -63,19 +63,17 @@ namespace Menu.Controllers
             try
             {
                 var products = await db.Products
-                    .Where(p => EF.Functions.Like(p.Name, $"%{query}%") ||
-                               EF.Functions.Like(p.Description, $"%{query}%") ||
-                               EF.Functions.Like(p.Category, $"%{query}%"))
+                    .Where(p => EF.Functions.Like(p.Name, $"%{query}%"))
                     .ToListAsync();
 
                 ViewBag.SearchQuery = query;
                 ViewBag.ResultCount = products.Count;
-                return View("SearchResults", products);
+                return View("SearchResult", products);
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
-                return View("SearchResults", new List<Product>());
+                return View("SearchResult", new List<Product>());
             }
         }
     }

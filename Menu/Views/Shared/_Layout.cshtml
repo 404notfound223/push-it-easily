@@ -33,8 +33,9 @@
             <h1 class="logo-caption">The Secret Restaurant</h1>
         </div>
 
-        <form class="search-form" method="get" action="/Home/Search" style="position: relative;">
-            <input type="text" name="query" placeholder="Search menu items..." />
+        <form class="search-form" style="position: relative;">
+            <!-- Added autocomplete="off" to disable browser autocomplete dropdown -->
+            <input type="text" placeholder="Search menu items..." autocomplete="off" />
             <button type="submit">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -42,7 +43,6 @@
                 </svg>
             </button>
         </form>
-
 
         <div class="top-right">
             @if (isLoggedIn)
@@ -59,7 +59,6 @@
                             <button onclick="viewOrderHistory()" class="btn btn-primary">Order History</button>
                         </div>
                     </div>
-
                 }
 
                 @if (userRole == "admin" || userRole == "staff")
@@ -128,7 +127,6 @@
     <footer>
         Developed by <b>The Secret Restaurant</b> &middot; © @year
     </footer>
-
 
     <div id="profile-modal" class="modal" style="display: none;">
         <div class="modal-content">
