@@ -32,6 +32,22 @@
             </div>
         }
 
+        @* Display password reset success message from TempData *@
+        @if (TempData["PasswordResetSuccess"] != null)
+        {
+            <div class="success-message">
+                @TempData["PasswordResetSuccess"]
+            </div>
+        }
+
+        @* Display registration success message from TempData *@
+        @if (TempData["RegistrationSuccess"] != null)
+        {
+            <div class="success-message">
+                @TempData["RegistrationSuccess"]
+            </div>
+        }
+
         <form method="post" asp-action="Login">
             <div class="form-group">
                 <i class="fas fa-envelope form-icon"></i>
@@ -53,9 +69,10 @@
             <a asp-action="Register" asp-controller="Login">Register</a>
         </div>
 
-        @* <div class="links">
-            <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
-        </div> *@
+        @* Added forgot password link *@
+        <div class="links">
+            <a asp-action="ForgotPassword" asp-controller="Login">Forgot Password?</a>
+        </div>
 
         <div class="links">
             <p>Customer Ordering Menu. </p>
@@ -63,28 +80,6 @@
         </div>
     </div>
 
-    @* <div id="forgot-password-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="closeForgotPassword()">&times;</span>
-            <h2>Reset Password</h2>
-            <div id="forgot-step-1">
-                <p>Enter your email address to receive a password reset code:</p>
-                <input type="email" id="forgot-email" placeholder="Enter your email" />
-                <button onclick="sendResetCode()" class="btn btn-primary">Send Reset Code</button>
-            </div>
-            <div id="forgot-step-2" style="display: none;">
-                <p>Enter the reset code sent to your email:</p>
-                <input type="text" id="reset-code" placeholder="Enter reset code" />
-                <p>Enter your new password:</p>
-                <input type="password" id="new-password" placeholder="New password" />
-                <p>Confirm your new password:</p>
-                <input type="password" id="confirm-password" placeholder="Confirm new password" />
-                <button onclick="resetPasswordWithCode()" class="btn btn-primary">Reset Password</button>
-            </div>
-            <div id="forgot-message"></div>
-        </div>
-    </div> *@
-
-    <script src="~/js/forgot-password.js" asp-append-version="true"></script>
+    @* Removed commented out modal and script reference *@
 </body>
 </html>

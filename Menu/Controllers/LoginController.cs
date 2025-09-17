@@ -108,7 +108,7 @@ public class LoginController : Controller
             HttpContext.Session.Remove("VerificationCode");
             HttpContext.Session.Remove("VerificationEmail");
 
-            ViewBag.Success = "Registration successful! You can now login.";
+            TempData["RegistrationSuccess"] = "Registration successful! You can now login with your new account.";
             return RedirectToAction("Login");
         }
         catch (Exception ex)
@@ -185,12 +185,10 @@ public class LoginController : Controller
             {
                 From = new MailAddress(fromEmail, "The Secret Restaurant"),
                 Subject = "Your Verification Code - The Secret Restaurant",
-                Body = $@"
-                    <h2>Welcome to The Secret Restaurant!</h2>
+                Body = $@"<h2>Welcome to The Secret Restaurant!</h2>
                     <p>Your verification code is: <strong>{code}</strong></p>
                     <p>Please enter this code to complete your registration.</p>
-                    <p>This code will expire in 10 minutes.</p>
-                ",
+                    <p>This code will expire in 10 minutes.</p>",
                 IsBodyHtml = true,
             };
             mailMessage.To.Add(toEmail);
@@ -362,6 +360,128 @@ public class LoginController : Controller
         }
     }
 
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendPasswordResetCode([FromBody] PasswordResetRequest request)
+    {
+        if (request == null || string.IsNullOrEmpty(request.Email))
+            return Json(new { success = false, error = "Invalid email." });
+
+        try
+        {
+            // Check if user exists
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+            {
+                return Json(new { success = false, error = "No account found with this email address." });
+            }
+
+            // Generate reset code
+            var resetCode = new Random().Next(100000, 999999).ToString();
+            HttpContext.Session.SetString("PasswordResetCode", resetCode);
+            HttpContext.Session.SetString("PasswordResetEmail", request.Email);
+
+            // Send reset code email
+            SendPasswordResetEmail(request.Email, resetCode);
+            return Json(new { success = true, message = "Password reset code sent to " + request.Email });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = "Failed to send reset code: " + ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(string email, string resetCode, string newPassword)
+    {
+        try
+        {
+            // Verify reset code
+            var expectedCode = HttpContext.Session.GetString("PasswordResetCode");
+            var resetEmail = HttpContext.Session.GetString("PasswordResetEmail");
+
+            if (string.IsNullOrEmpty(resetCode) || resetCode != expectedCode || email != resetEmail)
+            {
+                ViewBag.Error = "Invalid or expired reset code.";
+                return View("ForgotPassword");
+            }
+
+            // Find user and update password
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                ViewBag.Error = "User not found.";
+                return View("ForgotPassword");
+            }
+
+            // Update password
+            user.Password = HashPassword(newPassword);
+            await _context.SaveChangesAsync();
+
+            // Clear session data
+            HttpContext.Session.Remove("PasswordResetCode");
+            HttpContext.Session.Remove("PasswordResetEmail");
+
+            // Redirect to login with success message
+            TempData["PasswordResetSuccess"] = "Password changed successfully! You can now login with your new password.";
+            return RedirectToAction("Login");
+        }
+        catch (Exception ex)
+        {
+            ViewBag.Error = "Password reset failed: " + ex.Message;
+            return View("ForgotPassword");
+        }
+    }
+
+    private void SendPasswordResetEmail(string toEmail, string resetCode)
+    {
+        try
+        {
+            var smtpHost = _configuration["EmailSettings:SmtpHost"] ?? "smtp.gmail.com";
+            var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+            var smtpUsername = _configuration["EmailSettings:Username"];
+            var smtpPassword = _configuration["EmailSettings:Password"];
+            var fromEmail = _configuration["EmailSettings:FromEmail"];
+
+            if (string.IsNullOrEmpty(smtpUsername) || string.IsNullOrEmpty(smtpPassword) || string.IsNullOrEmpty(fromEmail))
+            {
+                throw new Exception("Email configuration is incomplete. Please configure SMTP settings in appsettings.json");
+            }
+
+            using var smtpClient = new SmtpClient(smtpHost)
+            {
+                Port = smtpPort,
+                Credentials = new NetworkCredential(smtpUsername, smtpPassword),
+                EnableSsl = true,
+            };
+
+            using var mailMessage = new MailMessage
+            {
+                From = new MailAddress(fromEmail, "The Secret Restaurant"),
+                Subject = "Password Reset Code - The Secret Restaurant",
+                Body = $@"<h2>Password Reset Request</h2>
+                    <p>You have requested to reset your password for The Secret Restaurant.</p>
+                    <p>Your password reset code is: <strong>{resetCode}</strong></p>
+                    <p>Please enter this code to reset your password.</p>
+                    <p>This code will expire in 10 minutes.</p>
+                    <p>If you did not request this password reset, please ignore this email.</p>",
+                IsBodyHtml = true,
+            };
+            mailMessage.To.Add(toEmail);
+
+            smtpClient.Send(mailMessage);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to send password reset email: {ex.Message}");
+        }
+    }
+
     private string HashPassword(string password)
     {
         using (var sha256 = System.Security.Cryptography.SHA256.Create())
@@ -389,4 +509,14 @@ public class LoginController : Controller
 public class UpdateUsernameRequest
 {
     public string NewUsername { get; set; } = string.Empty;
+}
+
+public class PasswordResetRequest
+{
+    public string Email { get; set; } = string.Empty;
+}
+
+public class VerificationRequest
+{
+    public string Email { get; set; } = string.Empty;
 }

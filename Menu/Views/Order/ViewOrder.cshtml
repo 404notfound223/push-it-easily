@@ -1,8 +1,12 @@
 @{
     ViewData["Title"] = "Your Order";
+    var userRole = Context.Session.GetString("UserRole") ?? "guest";
 }
 
 <link rel="stylesheet" href="~/css/order.css" asp-append-version="true" />
+<!-- Add meta tag to pass user role to JavaScript -->
+<meta name="user-role" content="@userRole" />
+
 <div class="order-page">
     <div class="order-header">
         <h2>Your Order</h2>

@@ -89,14 +89,13 @@ function renderOrder() {
 
     orderListElement.innerHTML = html
 
-    // Calculate tax and member discount
-    const currentUserRole = "@User.FindFirst('Role')?.Value"; 
-    const isMember = currentUserRole === "Member";
+    const userRole = document.querySelector('meta[name="user-role"]')?.content || "guest"
+    const isMember = userRole.toLowerCase() === "member"
 
-    const taxRate = 0.085;
-    const tax = subtotal * taxRate;
-    const memberDiscount = isMember ? subtotal * 0.1 : 0;
-    const total = subtotal + tax - memberDiscount;
+    const taxRate = 0.085
+    const tax = subtotal * taxRate
+    const memberDiscount = isMember ? subtotal * 0.1 : 0
+    const total = subtotal + tax - memberDiscount
 
     // Update summary
     const subtotalElement = document.getElementById("order-subtotal")
@@ -104,10 +103,6 @@ function renderOrder() {
     const totalElement = document.getElementById("order-total")
     const memberDiscountElement = document.getElementById("member-discount")
     const memberDiscountRow = document.getElementById("member-discount-row")
-    //testing
-    console.log("User role from Razor:", currentUserRole);
-    console.log("IsMember check:", isMember);
-    //testing 
 
     if (subtotalElement) subtotalElement.textContent = `$${subtotal.toFixed(2)}`
     if (taxElement) taxElement.textContent = `$${tax.toFixed(2)}`
@@ -146,8 +141,9 @@ function showPaymentOptions() {
     const tax = Number.parseFloat(document.getElementById("order-tax").textContent.replace("$", ""))
     const total = Number.parseFloat(document.getElementById("order-total").textContent.replace("$", ""))
 
-    const isMember = checkUserMemberStatus()
-    const memberDiscount = isMember ? (subtotal + tax) * 0.1 : 0
+    const userRole = document.querySelector('meta[name="user-role"]')?.content || "guest"
+    const isMember = userRole.toLowerCase() === "member"
+    const memberDiscount = isMember ? subtotal * 0.1 : 0
 
     const paymentModal = `
     <div id="payment-modal" class="modal">
@@ -160,7 +156,7 @@ function showPaymentOptions() {
             <span>$${subtotal.toFixed(2)}</span>
           </div>
           ${memberDiscount > 0
-            ? `
+            ? `  
           <div class="summary-row member-discount-row">
             <span>Member Discount (10%):</span>
             <span class="discount-amount">-$${memberDiscount.toFixed(2)}</span>
@@ -426,7 +422,7 @@ function showPaymentNumberModal(paymentNumber, orderId, memberDiscount) {
               <span class="payment-number"><strong>${paymentNumber}</strong></span>
             </div>
             ${memberDiscount > 0
-            ? `
+            ? `  
             <div class="receipt-row discount-row">
               <span>Member Discount:</span>
               <span class="discount-amount">-$${memberDiscount.toFixed(2)}</span>
@@ -507,7 +503,7 @@ function printPaymentNumber() {
     const receiptContent = document.getElementById("payment-receipt").innerHTML
     const printWindow = window.open("", "_blank")
 
-    printWindow.document.write(`
+    printWindow.document.write(`  
     <!DOCTYPE html>
     <html>
     <head>
