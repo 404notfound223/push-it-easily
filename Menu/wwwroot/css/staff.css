@@ -752,12 +752,14 @@
     opacity: 0;
     visibility: hidden;
     overflow-y: auto;
+    display: none;
 }
 
     .popout-panel.open {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
         visibility: visible;
+        display: block;
     }
 
     .popout-panel .close-popout {

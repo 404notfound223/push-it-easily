@@ -14,12 +14,14 @@
 
 // ================= POPOUT MANAGEMENT =================
 function openPopout(panelId, itemId) {
+    console.log("Opening:", panelId, "ItemId:", itemId)
     const panel = document.getElementById(panelId)
     if (!panel) return
 
     const backdrop = document.getElementById("popout-backdrop")
     if (backdrop) {
         backdrop.classList.add("open")
+        console.log("Panel after add:", panel.className)
     }
 
     // Load data based on panel type
@@ -59,14 +61,14 @@ function closeAllPopouts() {
 }
 
 // Close popout when clicking outside
-document.addEventListener("click", (event) => {
-    const popouts = document.querySelectorAll(".popout-panel.open")
-    popouts.forEach((popout) => {
-        if (!popout.contains(event.target) && !event.target.closest('[onclick*="openPopout"]')) {
-            popout.classList.remove("open")
-        }
-    })
-})
+//document.addEventListener("click", (event) => {
+//    const popouts = document.querySelectorAll(".popout-panel.open")
+//    popouts.forEach((popout) => {
+//        if (!popout.contains(event.target) && !event.target.closest('[onclick*="openPopout"]')) {
+//            popout.classList.remove("open")
+//        }
+//    })
+//})
 
 // ================= ORDERS =================
 function updateOrderStatus(orderId, status) {
@@ -503,14 +505,11 @@ function loadProductData(productId) {
 }
 
 function showAddProductPanel() {
-    // Reset the form and clear product ID for new product
     document.getElementById("product-form").reset()
     document.getElementById("product-id").value = ""
-
-    // Set title for add mode
     document.getElementById("editProductPanelTitle").textContent = "Add New Product"
 
-    // Use the same openPopout pattern as edit function but without itemId
+    const panel = document.getElementById("editProductPanel")
     openPopout("editProductPanel")
 }
 
