@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Menu.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -100,7 +102,93 @@ public class StaffController : Controller
                 return Json(new { success = false, error = "Order not found" });
             }
 
-            return Json(new { success = true, order });
+            var result = new
+            {
+                orderId = order.OrderId,
+                orderDate = order.OrderDate,
+                status = order.Status,
+                totalAmount = order.TotalAmount,
+                user = order.User != null ? new
+                {
+                    userId = order.User.UserId,
+                    name = order.User.Name,
+                    email = order.User.Email,
+                    role = order.User.Role
+                } : null,
+                orderDetails = order.OrderDetails.Select(od => new
+                {
+                    id = od.OrderDetailId,
+                    orderDetailId = od.OrderDetailId,
+                    productId = od.ProductId,
+                    product = new
+                    {
+                        name = od.Product.Name
+                    },
+                    quantity = od.Quantity,
+                    unitPrice = od.UnitPrice
+                }).ToList()
+            };
+
+            return Json(new { success = true, order = result });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateOrder([FromBody] UpdateOrderRequest request)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.OrderId == request.OrderId);
+
+            if (order == null)
+            {
+                return Json(new { success = false, error = "Order not found" });
+            }
+
+            // Update order details
+            foreach (var item in request.Items)
+            {
+                var orderDetail = order.OrderDetails.FirstOrDefault(od => od.OrderDetailId.ToString() == item.ItemId);
+                if (orderDetail != null)
+                {
+                    orderDetail.Quantity = item.Quantity;
+                    // Unit price remains the same unless specifically changed
+                    if (item.UnitPrice > 0)
+                    {
+                        orderDetail.UnitPrice = item.UnitPrice;
+                    }
+                }
+            }
+
+            // Remove items that are no longer in the request (quantity = 0 or removed)
+            var itemsToRemove = order.OrderDetails
+                .Where(od => !request.Items.Any(item => item.ItemId == od.OrderDetailId.ToString()) ||
+                            request.Items.Any(item => item.ItemId == od.OrderDetailId.ToString() && item.Quantity <= 0))
+                .ToList();
+
+            foreach (var item in itemsToRemove)
+            {
+                _context.OrderDetails.Remove(item);
+            }
+
+            // Recalculate total amount
+            order.TotalAmount = request.TotalAmount;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
         }
         catch (Exception ex)
         {
@@ -119,13 +207,21 @@ public class StaffController : Controller
 
         try
         {
-            var order = await _context.Orders.FindAsync(orderId);
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
             if (order == null)
             {
                 return Json(new { success = false, error = "Order not found" });
             }
 
+            // Remove related OrderDetails first
+            _context.OrderDetails.RemoveRange(order.OrderDetails);
+
+            // Remove the order
             _context.Orders.Remove(order);
+
             await _context.SaveChangesAsync();
             return Json(new { success = true });
         }
@@ -194,14 +290,6 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetProductById(string id)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null) return Json(new { success = false, error = "Product not found" });
-        return Json(new { success = true, product });
-    }
-
     [HttpPost]
     public async Task<IActionResult> AddProduct([FromBody] Product product)
     {
@@ -213,7 +301,10 @@ public class StaffController : Controller
 
         try
         {
-            product.Id = Guid.NewGuid().ToString();
+            string categoryPrefix = GetCategoryPrefix(product.Category);
+            string newId = await GenerateNextProductId(categoryPrefix);
+            product.Id = newId;
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
             return Json(new { success = true, product });
@@ -273,7 +364,15 @@ public class StaffController : Controller
                 return Json(new { success = false, error = "Product not found" });
             }
 
+            // Remove related OrderDetails first
+            var relatedOrderDetails = await _context.OrderDetails
+                .Where(od => od.ProductId == id)
+                .ToListAsync();
+            _context.OrderDetails.RemoveRange(relatedOrderDetails);
+
+            // Remove the product
             _context.Products.Remove(product);
+
             await _context.SaveChangesAsync();
             return Json(new { success = true });
         }
@@ -381,5 +480,515 @@ public class StaffController : Controller
         {
             return Json(new { success = false, error = ex.Message });
         }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddProductWithImage([FromForm] AddProductRequest request, IFormFile? imageFile)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            string imagePath = "/images/default-product.jpg"; // Default image
+
+            // Handle image upload if provided
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    return Json(new { success = false, error = "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed." });
+                }
+
+                if (imageFile.Length > 5 * 1024 * 1024) // 5MB limit
+                {
+                    return Json(new { success = false, error = "File size must be less than 5MB" });
+                }
+
+                // Create uploads directory if it doesn't exist
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
+                if (!Directory.Exists(uploadsPath))
+                {
+                    Directory.CreateDirectory(uploadsPath);
+                }
+
+                // Generate unique filename
+                var fileName = Guid.NewGuid().ToString() + fileExtension;
+                var filePath = Path.Combine(uploadsPath, fileName);
+
+                // Save file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                imagePath = $"/uploads/products/{fileName}";
+            }
+
+            string categoryPrefix = GetCategoryPrefix(request.Category);
+            string newId = await GenerateNextProductId(categoryPrefix);
+
+            var product = new Product
+            {
+                Id = newId,
+                Name = request.Name,
+                Price = request.Price,
+                Description = request.Description,
+                Category = request.Category,
+                ImagePath = imagePath,
+                Sold = 0,
+                IsDisabled = false
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, product });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateProductWithImage([FromForm] UpdateProductRequest request, IFormFile? imageFile)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var existing = await _context.Products.FindAsync(request.Id);
+            if (existing == null)
+            {
+                return Json(new { success = false, error = "Product not found" });
+            }
+
+            // Handle image upload if provided
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    return Json(new { success = false, error = "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed." });
+                }
+
+                if (imageFile.Length > 5 * 1024 * 1024) // 5MB limit
+                {
+                    return Json(new { success = false, error = "File size must be less than 5MB" });
+                }
+
+                // Delete old image if it exists and is not the default
+                if (!string.IsNullOrEmpty(existing.ImagePath) && !existing.ImagePath.Contains("default-product"))
+                {
+                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existing.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                // Create uploads directory if it doesn't exist
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
+                if (!Directory.Exists(uploadsPath))
+                {
+                    Directory.CreateDirectory(uploadsPath);
+                }
+
+                // Generate unique filename
+                var fileName = Guid.NewGuid().ToString() + fileExtension;
+                var filePath = Path.Combine(uploadsPath, fileName);
+
+                // Save file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                existing.ImagePath = $"/uploads/products/{fileName}";
+            }
+
+            // Update other properties
+            existing.Name = request.Name;
+            existing.Price = request.Price;
+            existing.Description = request.Description;
+            existing.Category = request.Category;
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, product = existing });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOrdersData(int page = 1, int pageSize = 20, string sortBy = "orderDate", string sortOrder = "desc", string status = "", string dateFrom = "", string dateTo = "")
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var query = _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .AsQueryable();
+
+            // Filter by status if specified
+            if (!string.IsNullOrEmpty(status) && status != "all")
+            {
+                query = query.Where(o => o.Status.ToLower() == status.ToLower());
+            }
+
+            // Filter by date range if specified
+            if (!string.IsNullOrEmpty(dateFrom) && DateTime.TryParse(dateFrom, out var fromDate))
+            {
+                query = query.Where(o => o.OrderDate >= fromDate);
+            }
+
+            if (!string.IsNullOrEmpty(dateTo) && DateTime.TryParse(dateTo, out var toDate))
+            {
+                query = query.Where(o => o.OrderDate <= toDate.AddDays(1)); // Include the entire day
+            }
+
+            // Apply sorting
+            query = sortBy.ToLower() switch
+            {
+                "orderdate" => sortOrder == "desc" ? query.OrderByDescending(o => o.OrderDate) : query.OrderBy(o => o.OrderDate),
+                "totalamount" => sortOrder == "desc" ? query.OrderByDescending(o => o.TotalAmount) : query.OrderBy(o => o.TotalAmount),
+                "status" => sortOrder == "desc" ? query.OrderByDescending(o => o.Status) : query.OrderBy(o => o.Status),
+                "customer" => sortOrder == "desc" ? query.OrderByDescending(o => o.User != null ? o.User.Name : "Guest") : query.OrderBy(o => o.User != null ? o.User.Name : "Guest"),
+                _ => query.OrderByDescending(o => o.OrderDate)
+            };
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            var orders = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(o => new
+                {
+                    o.OrderId,
+                    o.OrderDate,
+                    o.TotalAmount,
+                    o.Status,
+                    CustomerName = o.User != null ? o.User.Name : "Guest",
+                    CustomerEmail = o.User != null ? o.User.Email : "N/A",
+                    ItemCount = o.OrderDetails.Sum(od => od.Quantity),
+                    OrderDetails = o.OrderDetails.Select(od => new
+                    {
+                        od.OrderDetailId,
+                        od.ProductId,
+                        ProductName = od.Product.Name,
+                        od.Quantity,
+                        od.UnitPrice,
+                        Total = od.Quantity * od.UnitPrice
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return Json(new
+            {
+                success = true,
+                orders = orders,
+                currentPage = page,
+                totalPages = totalPages,
+                totalCount = totalCount,
+                pageSize = pageSize
+            });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOrderStatistics()
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var today = DateTime.Today;
+            var thisWeek = today.AddDays(-(int)today.DayOfWeek);
+            var thisMonth = new DateTime(today.Year, today.Month, 1);
+
+            var stats = new
+            {
+                TotalOrders = await _context.Orders.CountAsync(),
+                TodayOrders = await _context.Orders.CountAsync(o => o.OrderDate >= today),
+                WeekOrders = await _context.Orders.CountAsync(o => o.OrderDate >= thisWeek),
+                MonthOrders = await _context.Orders.CountAsync(o => o.OrderDate >= thisMonth),
+
+                TotalRevenue = await _context.Orders.SumAsync(o => o.TotalAmount),
+                TodayRevenue = await _context.Orders.Where(o => o.OrderDate >= today).SumAsync(o => o.TotalAmount),
+                WeekRevenue = await _context.Orders.Where(o => o.OrderDate >= thisWeek).SumAsync(o => o.TotalAmount),
+                MonthRevenue = await _context.Orders.Where(o => o.OrderDate >= thisMonth).SumAsync(o => o.TotalAmount),
+
+                PendingOrders = await _context.Orders.CountAsync(o => o.Status == "Pending"),
+                ProcessingOrders = await _context.Orders.CountAsync(o => o.Status == "Processing"),
+                CompletedOrders = await _context.Orders.CountAsync(o => o.Status == "Completed"),
+                CancelledOrders = await _context.Orders.CountAsync(o => o.Status == "Cancelled"),
+
+                TopProducts = await _context.Products
+                    .OrderByDescending(p => p.Sold)
+                    .Take(5)
+                    .Select(p => new { p.Name, p.Sold, p.Price })
+                    .ToListAsync()
+            };
+
+            return Json(new { success = true, stats });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> BulkUpdateOrderStatus([FromBody] BulkOrderStatusRequest request)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var orders = await _context.Orders
+                .Where(o => request.OrderIds.Contains(o.OrderId))
+                .ToListAsync();
+
+            if (orders.Count == 0)
+            {
+                return Json(new { success = false, error = "No orders found" });
+            }
+
+            foreach (var order in orders)
+            {
+                order.Status = request.NewStatus;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, updatedCount = orders.Count });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> BulkDeleteOrders([FromBody] BulkDeleteOrdersRequest request)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin")
+        {
+            return Json(new { success = false, error = "Only admin can bulk delete orders" });
+        }
+
+        try
+        {
+            var orders = await _context.Orders
+                .Where(o => request.OrderIds.Contains(o.OrderId))
+                .ToListAsync();
+
+            if (orders.Count == 0)
+            {
+                return Json(new { success = false, error = "No orders found" });
+            }
+
+            _context.Orders.RemoveRange(orders);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, deletedCount = orders.Count });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExportOrders(string format = "csv", string status = "", string dateFrom = "", string dateTo = "")
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var query = _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(status) && status != "all")
+            {
+                query = query.Where(o => o.Status.ToLower() == status.ToLower());
+            }
+
+            if (!string.IsNullOrEmpty(dateFrom) && DateTime.TryParse(dateFrom, out var fromDate))
+            {
+                query = query.Where(o => o.OrderDate >= fromDate);
+            }
+
+            if (!string.IsNullOrEmpty(dateTo) && DateTime.TryParse(dateTo, out var toDate))
+            {
+                query = query.Where(o => o.OrderDate <= toDate.AddDays(1));
+            }
+
+            var orders = await query.OrderByDescending(o => o.OrderDate).ToListAsync();
+
+            if (format.ToLower() == "csv")
+            {
+                var csv = new System.Text.StringBuilder();
+                csv.AppendLine("Order ID,Order Date,Customer Name,Customer Email,Status,Total Amount,Items");
+
+                foreach (var order in orders)
+                {
+                    var items = string.Join("; ", order.OrderDetails.Select(od => $"{od.Product.Name} x{od.Quantity}"));
+                    csv.AppendLine($"{order.OrderId},{order.OrderDate:yyyy-MM-dd HH:mm},{order.User?.Name ?? "Guest"},{order.User?.Email ?? "N/A"},{order.Status},{order.TotalAmount:C},\"{items}\"");
+                }
+
+                var bytes = System.Text.Encoding.UTF8.GetBytes(csv.ToString());
+                return File(bytes, "text/csv", $"orders_{DateTime.Now:yyyyMMdd}.csv");
+            }
+
+            return Json(new { success = false, error = "Unsupported format" });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUsersData(int page = 1, int pageSize = 20, string sortBy = "name", string sortOrder = "asc", string role = "")
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var query = _context.Users.AsQueryable();
+
+            // Filter by role if specified
+            if (!string.IsNullOrEmpty(role) && role != "all")
+            {
+                query = query.Where(u => u.Role.ToLower() == role.ToLower());
+            }
+
+            // Apply sorting
+            query = sortBy.ToLower() switch
+            {
+                "name" => sortOrder == "desc" ? query.OrderByDescending(u => u.Name) : query.OrderBy(u => u.Name),
+                "email" => sortOrder == "desc" ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+                "role" => sortOrder == "desc" ? query.OrderByDescending(u => u.Role) : query.OrderBy(u => u.Role),
+                _ => query.OrderBy(u => u.Name)
+            };
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            var users = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Json(new
+            {
+                success = true,
+                users = users,
+                currentPage = page,
+                totalPages = totalPages,
+                totalCount = totalCount,
+                pageSize = pageSize
+            });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    // Helper method to get category prefix
+    private string GetCategoryPrefix(string category)
+    {
+        return category.ToLower() switch
+        {
+            "burgers" => "BG",
+            "beverages" => "BV",
+            "desserts" => "DS",
+            "pasta" => "PA",
+            "pizza" => "PZ",
+            "seafood" => "SF",
+            "specials" => "SP",
+            _ => "GN" // General for unknown categories
+        };
+    }
+
+    // Helper method to generate next sequential ID
+    private async Task<string> GenerateNextProductId(string prefix)
+    {
+        // Find the highest existing ID with this prefix
+        var existingIds = await _context.Products
+            .Where(p => p.Id.StartsWith(prefix))
+            .Select(p => p.Id)
+            .ToListAsync();
+
+        int maxNumber = 0;
+        foreach (var id in existingIds)
+        {
+            if (id.Length == 5 && int.TryParse(id.Substring(2), out int number))
+            {
+                maxNumber = Math.Max(maxNumber, number);
+            }
+        }
+
+        // Generate next number with leading zeros
+        int nextNumber = maxNumber + 1;
+        return $"{prefix}{nextNumber:D3}";
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProductById(string id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        if (product == null) return Json(new { success = false, error = "Product not found" });
+        return Json(new { success = true, product });
     }
 }

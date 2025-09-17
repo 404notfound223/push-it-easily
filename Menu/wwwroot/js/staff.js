@@ -488,7 +488,10 @@ function showAddProductPanel() {
     document.getElementById("product-form").reset()
     document.getElementById("product-id").value = ""
 
-    openPopout("editProductPanel")
+    const panel = document.getElementById("editProductPanel")
+    if (panel) {
+        panel.classList.add("open")
+    }
     document.getElementById("editProductPanelTitle").textContent = "Add New Product"
 }
 
@@ -745,7 +748,6 @@ function updatePagination(currentPage, totalPages, totalCount) {
     if (pageNumbers) {
         pageNumbers.innerHTML = ""
 
-        // Show page numbers with better visual design
         const startPage = Math.max(1, currentPage - 2)
         const endPage = Math.min(totalPages, startPage + 4)
 
@@ -883,7 +885,6 @@ function updateOrdersTable(orders) {
             </td>
             <td>
                 <button class="btn btn-sm btn-info" onclick="openPopout('orderDetailPanel','${order.orderId}')">View</button>
-                <button class="btn btn-sm btn-warning" onclick="editOrder('${order.orderId}')">Edit</button>
                 <button class="btn btn-sm btn-danger" onclick="confirmDelete('order', '${order.orderId}')">Delete</button>
             </td>
         `

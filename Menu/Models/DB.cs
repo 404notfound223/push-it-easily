@@ -136,3 +136,54 @@ public class ToggleDisableRequest
     public string ProductId { get; set; } = string.Empty;
     public bool Disable { get; set; }
 }
+
+public class AddUserRequest
+{
+    public required string UserId { get; set; }
+    public required string Name { get; set; }
+    public required string Email { get; set; }
+    public required string Password { get; set; }
+    public required string Role { get; set; }
+}
+
+public class AddProductRequest
+{
+    public required string Name { get; set; }
+    public required decimal Price { get; set; }
+    public string? Description { get; set; }
+    public required string Category { get; set; }
+}
+
+public class UpdateProductRequest
+{
+    public required string Id { get; set; }
+    public required string Name { get; set; }
+    public required decimal Price { get; set; }
+    public string? Description { get; set; }
+    public required string Category { get; set; }
+}
+
+public class UpdateOrderRequest
+{
+    public required string OrderId { get; set; }
+    public List<UpdateOrderItemRequest> Items { get; set; } = new List<UpdateOrderItemRequest>();
+    public decimal TotalAmount { get; set; }
+}
+
+public class UpdateOrderItemRequest
+{
+    public required string ItemId { get; set; }
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+}
+
+public class BulkOrderStatusRequest
+{
+    public List<string> OrderIds { get; set; } = new List<string>();
+    public required string NewStatus { get; set; }
+}
+
+public class BulkDeleteOrdersRequest
+{
+    public List<string> OrderIds { get; set; } = new List<string>();
+}

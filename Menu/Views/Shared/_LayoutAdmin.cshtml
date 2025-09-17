@@ -9,22 +9,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/css/staff.css" />
-
 </head>
 <body>
     <header class="admin-header">
         <nav class="admin-nav">
             <div class="nav-left">
-                <a href="@Url.Action("Dashboard", "Staff")" class="admin-logo">
-                    Staff Dashboard
-                </a>
+                <!-- Removed Dashboard button and updated logo to be non-clickable -->
+                <div class="admin-logo">
+                    Staff Management
+                </div>
 
+                <!-- Added management sections to toolbar -->
                 <ul class="nav-links">
-                    <li><a href="@Url.Action("Dashboard", "Staff")" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Dashboard" ? "active" : "")">Dashboard</a></li>
+                    <li><a href="#" onclick="showTab('orders', event)" class="tab-button">Order Management</a></li>
                     @if (role.ToLower() == "admin")
                     {
-                        <li><a href="#" onclick="showTab('users', event)">Users</a></li>
+                        <li><a href="#" onclick="showTab('users', event)" class="tab-button">User Management</a></li>
                     }
+                    <li><a href="#" onclick="showTab('products', event)" class="tab-button">Product Management</a></li>
                 </ul>
             </div>
 
@@ -54,9 +56,291 @@
     </header>
 
     <main role="main" class="main-content">
+        <!-- Added management content sections directly in layout -->
+        <div class="management-container">
+            <!-- ---------------- ORDER MANAGEMENT TAB ---------------- -->
+            <div id="orders-tab" class="tab-content active">
+                <div class="section-header">
+                    <h3>Order Management</h3>
+                    <div class="order-controls">
+                        <div class="filter-controls">
+                            <select id="statusFilter" onchange="loadOrders()">
+                                <option value="all">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Preparing">Preparing</option>
+                                <option value="Ready">Ready</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+
+                            <select id="orderSortBy" onchange="loadOrders()">
+                                <option value="date">Sort by Date</option>
+                                <option value="status">Sort by Status</option>
+                                <option value="customer">Sort by Customer</option>
+                                <option value="total">Sort by Total</option>
+                            </select>
+
+                            <select id="orderSortOrder" onchange="loadOrders()">
+                                <option value="desc">Newest First</option>
+                                <option value="asc">Oldest First</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <!-- Orders will be loaded via AJAX -->
+                        </tbody>
+                    </table>
+
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <span id="order-pagination-info">Loading...</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="order-prev-page" onclick="changeOrderPage(-1)" disabled>Previous</button>
+                            <span id="order-page-numbers"></span>
+                            <button id="order-next-page" onclick="changeOrderPage(1)" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ---------------- USER MANAGEMENT TAB ---------------- -->
+            @if (role.ToLower() == "admin")
+            {
+                <div id="users-tab" class="tab-content">
+                    <div class="section-header">
+                        <h3>User Management</h3>
+                        <div class="user-controls">
+                            <div class="filter-controls">
+                                <select id="roleFilter" onchange="loadUsers()">
+                                    <option value="all">All Roles</option>
+                                    <option value="member">Members</option>
+                                    <option value="staff">Staff</option>
+                                    <option value="admin">Admins</option>
+                                </select>
+
+                                <select id="userSortBy" onchange="loadUsers()">
+                                    <option value="name">Sort by Name</option>
+                                    <option value="email">Sort by Email</option>
+                                    <option value="role">Sort by Role</option>
+                                </select>
+
+                                <select id="userSortOrder" onchange="loadUsers()">
+                                    <option value="asc">A-Z</option>
+                                    <option value="desc">Z-A</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Users will be loaded via AJAX -->
+                            </tbody>
+                        </table>
+
+                        <div class="pagination-container">
+                            <div class="pagination-info">
+                                <span id="user-pagination-info">Loading...</span>
+                            </div>
+                            <div class="pagination-controls">
+                                <button id="user-prev-page" onclick="changeUserPage(-1)" disabled>Previous</button>
+                                <span id="user-page-numbers"></span>
+                                <button id="user-next-page" onclick="changeUserPage(1)" disabled>Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- ---------------- PRODUCT MANAGEMENT TAB ---------------- -->
+            <div id="csrfTokenContainer" style="display:none;">
+                @Html.AntiForgeryToken()
+            </div>
+
+            <div id="products-tab" class="tab-content">
+                <div class="section-header">
+                    <h3>Product Management</h3>
+                    <div class="product-controls">
+                        <div class="filter-controls">
+                            <select id="categoryFilter" onchange="loadProducts()">
+                                <option value="all">All Categories</option>
+                                <option value="Pizza">Pizza</option>
+                                <option value="Pasta">Pasta</option>
+                                <option value="Seafood">Seafood</option>
+                                <option value="Burgers">Burgers</option>
+                                <option value="Beverages">Beverages</option>
+                                <option value="Desserts">Desserts</option>
+                                <option value="Specials">Specials</option>
+                            </select>
+
+                            <select id="sortBy" onchange="loadProducts()">
+                                <option value="name">Sort by Name</option>
+                                <option value="category">Sort by Category</option>
+                                <option value="price">Sort by Price</option>
+                            </select>
+
+                            <select id="sortOrder" onchange="loadProducts()">
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="showAddProductPanel()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add New Product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Category</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <!-- Products will be loaded via AJAX -->
+                        </tbody>
+                    </table>
+
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <span id="pagination-info">Loading...</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="prev-page" onclick="changePage(-1)" disabled>Previous</button>
+                            <span id="page-numbers"></span>
+                            <button id="next-page" onclick="changePage(1)" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ---------------- POP-OUT PANELS ---------------- -->
+        <!-- Enhanced edit user panel with proper form structure -->
+        <div id="editUserPanel" class="popout-panel">
+            <button class="close-popout" onclick="closePopout('editUserPanel')">&times;</button>
+            <div class="popout-header">
+                <h3 id="editUserPanelTitle">Edit User</h3>
+            </div>
+            <form id="user-form" onsubmit="saveUser(event)">
+                <input type="hidden" id="user-id" />
+                <div class="form-group">
+                    <label for="user-name">Name:</label>
+                    <input type="text" id="user-name" required />
+                </div>
+                <div class="form-group">
+                    <label for="user-email">Email:</label>
+                    <input type="email" id="user-email" required />
+                </div>
+                <div class="form-group">
+                    <label for="user-role">Role:</label>
+                    <select id="user-role" required>
+                        <option value="member">Member</option>
+                        <option value="staff">Staff</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePopout('editUserPanel')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Enhanced edit product panel with proper form structure -->
+        <div id="editProductPanel" class="popout-panel">
+            <button class="close-popout" onclick="closePopout('editProductPanel')">&times;</button>
+            <div class="popout-header">
+                <h3 id="editProductPanelTitle">Edit Product</h3>
+            </div>
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-id" />
+                <div class="form-group">
+                    <label for="product-name">Name:</label>
+                    <input type="text" id="product-name" required />
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Price:</label>
+                    <input type="number" id="product-price" step="0.01" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Description:</label>
+                    <textarea id="product-description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-category">Category:</label>
+                    <select id="product-category" required>
+                        <option value="Pizza">Pizza</option>
+                        <option value="Pasta">Pasta</option>
+                        <option value="Seafood">Seafood</option>
+                        <option value="Burgers">Burgers</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Desserts">Desserts</option>
+                        <option value="Specials">Specials</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-imagePath">Image Path:</label>
+                    <input type="text" id="product-imagePath" />
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePopout('editProductPanel')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Enhanced order detail panel -->
+        <div id="orderDetailPanel" class="popout-panel">
+            <button class="close-popout" onclick="closePopout('orderDetailPanel')">&times;</button>
+            <div class="popout-header">
+                <h3>Order Details</h3>
+            </div>
+            <div id="order-details-content">
+                <!-- Order details will be loaded here -->
+            </div>
+        </div>
+
         @RenderBody()
     </main>
 
+    <script src="~/js/staff.js" asp-append-version="true"></script>
     <script>
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
@@ -72,6 +356,35 @@
                 });
             }
         }
+
+        function showTab(tabName, event) {
+            // Remove active class from all tabs and buttons
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab and mark button as active
+            document.getElementById(tabName + '-tab').classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // Load data for the selected tab
+            if (tabName === 'orders') {
+                loadOrders();
+            } else if (tabName === 'users') {
+                loadUsers();
+            } else if (tabName === 'products') {
+                loadProducts();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('orders');
+        });
     </script>
 </body>
 </html>
