@@ -5,10 +5,41 @@
 
 <link rel="stylesheet" href="~/css/staff.css" asp-append-version="true" />
 
-<div class="staff-dashboard">
+@* <div class="staff-dashboard">
+    <!-- Updated header layout: Return button (left) || Staff Dashboard (center-left) || Staff (round button) (right) || Logout (right) -->
     <div class="dashboard-header">
-        <h1>Staff Dashboard</h1>
-        <div class="role-badge role-@Model.UserRole.ToLower()">@Model.UserRole.ToUpper()</div>
+        <div class="header-left">
+            <a href="@Url.Action("All", "Menu")" class="return-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H6m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Return
+            </a>
+        </div>
+
+        <div class="header-center">
+            <h1 class="dashboard-title">Staff Dashboard</h1>
+        </div>
+
+        <div class="header-right">
+            <div class="staff-badge">
+                <div class="staff-avatar">@Model.UserRole.Substring(0, 1).ToUpper()</div>
+                <span class="staff-label">@Model.UserRole</span>
+            </div>
+            <button onclick="logout()" class="logout-btn" title="Logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16,17 21,12 16,7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </div> *@
+
+    <!-- Enhanced navigation with better return button positioning -->
+    <div class="dashboard-nav">
+        <!-- Return button moved to header -->
     </div>
 
     <div class="dashboard-tabs">
@@ -22,110 +53,289 @@
 
     <!-- ---------------- ORDER MANAGEMENT TAB ---------------- -->
     <div id="orders-tab" class="tab-content active">
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Model.Orders)
-                {
+        <!-- Added sorting and filtering controls for orders -->
+        <div class="section-header">
+            <h3>Order Management</h3>
+            <div class="order-controls">
+                <div class="filter-controls">
+                    <select id="statusFilter" onchange="loadOrders()">
+                        <option value="all">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Preparing">Preparing</option>
+                        <option value="Ready">Ready</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+
+                    <select id="orderSortBy" onchange="loadOrders()">
+                        <option value="date">Sort by Date</option>
+                        <option value="status">Sort by Status</option>
+                        <option value="customer">Sort by Customer</option>
+                        <option value="total">Sort by Total</option>
+                    </select>
+
+                    <select id="orderSortOrder" onchange="loadOrders()">
+                        <option value="desc">Newest First</option>
+                        <option value="asc">Oldest First</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Updated table structure for AJAX loading -->
+        <div class="table-container">
+            <table class="orders-table">
+                <thead>
                     <tr>
-                        <td>@order.OrderId[..Math.Min(order.OrderId.Length, 40)].ToUpper()</td>
-                        <td>@(order.User?.Name ?? "Guest")</td>
-                        <td>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
-                        <td>$@order.TotalAmount.ToString("F2")</td>
-                        <td>
-                            <select class="status-select" onchange="updateOrderStatus('@order.OrderId', this.value)">
-                                <option value="Pending" selected="@(order.Status == "Pending")">Pending</option>
-                                <option value="Preparing" selected="@(order.Status == "Preparing")">Preparing</option>
-                                <option value="Ready" selected="@(order.Status == "Ready")">Ready</option>
-                                <option value="Completed" selected="@(order.Status == "Completed")">Completed</option>
-                                <option value="Cancelled" selected="@(order.Status == "Cancelled")">Cancelled</option>
-                            </select>
-                        </td>
-                        <td><button class="btn btn-sm btn-info" onclick="openPopout('orderDetailPanel','@order.OrderId')">View Order</button></td>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- Orders will be loaded via AJAX -->
+                </tbody>
+            </table>
+
+            <!-- Added pagination controls for orders -->
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    <span id="order-pagination-info">Loading...</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="order-prev-page" onclick="changeOrderPage(-1)" disabled>Previous</button>
+                    <span id="order-page-numbers"></span>
+                    <button id="order-next-page" onclick="changeOrderPage(1)" disabled>Next</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ---------------- USER MANAGEMENT TAB ---------------- -->
     @if (Model.UserRole?.ToLower() == "admin")
     {
         <div id="users-tab" class="tab-content">
-            <table class="users-table">
-                <thead><tr><th>User ID</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
-                <tbody>
-                    @foreach (var user in Model.Users)
-                    {
+            <!-- Added sorting and filtering controls for users, removed add new user button -->
+            <div class="section-header">
+                <h3>User Management</h3>
+                <div class="user-controls">
+                    <div class="filter-controls">
+                        <select id="roleFilter" onchange="loadUsers()">
+                            <option value="all">All Roles</option>
+                            <option value="member">Members</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admins</option>
+                        </select>
+
+                        <select id="userSortBy" onchange="loadUsers()">
+                            <option value="name">Sort by Name</option>
+                            <option value="email">Sort by Email</option>
+                            <option value="role">Sort by Role</option>
+                        </select>
+
+                        <select id="userSortOrder" onchange="loadUsers()">
+                            <option value="asc">A-Z</option>
+                            <option value="desc">Z-A</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Updated table structure for AJAX loading -->
+            <div class="table-container">
+                <table class="users-table">
+                    <thead>
                         <tr>
-                            <td>@user.UserId[..Math.Min(user.UserId.Length, 8)].ToUpper()</td>
-                            <td>@user.Name</td>
-                            <td>@user.Email</td>
-                            <td><span class="role-badge role-@user.Role.ToLower()">@user.Role</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-warning" onclick="openPopout('editUserPanel','@user.UserId')">Edit</button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteUser('@user.UserId')">Delete</button>
-                            </td>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Users will be loaded via AJAX -->
+                    </tbody>
+                </table>
+
+                <!-- Added pagination controls for users -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        <span id="user-pagination-info">Loading...</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button id="user-prev-page" onclick="changeUserPage(-1)" disabled>Previous</button>
+                        <span id="user-page-numbers"></span>
+                        <button id="user-next-page" onclick="changeUserPage(1)" disabled>Next</button>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 
     <!-- ---------------- PRODUCT MANAGEMENT TAB ---------------- -->
+    <div id="csrfTokenContainer" style="display:none;">
+        @Html.AntiForgeryToken()
+    </div>
+
     <div id="products-tab" class="tab-content">
-        <table class="products-table">
-            <thead><tr><th>Product ID</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
-            <tbody>
-                @foreach (var product in Model.Products)
-                {
+        <div class="section-header">
+            <h3>Product Management</h3>
+            <div class="product-controls">
+                <div class="filter-controls">
+                    <select id="categoryFilter" onchange="loadProducts()">
+                        <option value="all">All Categories</option>
+                        <option value="Pizza">Pizza</option>
+                        <option value="Pasta">Pasta</option>
+                        <option value="Seafood">Seafood</option>
+                        <option value="Burgers">Burgers</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Desserts">Desserts</option>
+                        <option value="Specials">Specials</option>
+                    </select>
+
+                    <select id="sortBy" onchange="loadProducts()">
+                        <option value="name">Sort by Name</option>
+                        <option value="category">Sort by Category</option>
+                        <option value="price">Sort by Price</option>
+                    </select>
+
+                    <select id="sortOrder" onchange="loadProducts()">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="showAddProductPanel()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add New Product
+                </button>
+            </div>
+        </div>
+
+        <!-- Updated table structure for AJAX loading -->
+        <div class="table-container">
+            <table class="products-table">
+                <thead>
                     <tr>
-                        <td>@product.Id[..Math.Min(product.Id.Length, 8)].ToUpper()</td>
-                        <td>@product.Name</td>
-                        <td>@product.Category</td>
-                        <td>$@product.Price.ToString("F2")</td>
-                        <td>@product.Stock</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning" onclick="openPopout('editProductPanel','@product.Id')">Edit</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteProduct('@product.Id')">Delete</button>
-                        </td>
+                        <th>Product ID</th>
+                        <th>Category</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="products-table-body">
+                    <!-- Products will be loaded via AJAX -->
+                </tbody>
+            </table>
+
+            <!-- Added pagination controls -->
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    <span id="pagination-info">Loading...</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="prev-page" onclick="changePage(-1)" disabled>Previous</button>
+                    <span id="page-numbers"></span>
+                    <button id="next-page" onclick="changePage(1)" disabled>Next</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- ---------------- POP-OUT PANELS ---------------- -->
+<!-- Enhanced edit user panel with proper form structure -->
 <div id="editUserPanel" class="popout-panel">
-    <button class="close-popout" data-close="editUserPanel">&times;</button>
-</div>
-<div id="editProductPanel" class="popout-panel">
-    <button class="close-popout" data-close="editProductPanel">&times;</button>
-</div>
-<div id="orderDetailPanel" class="popout-panel">
-    <button class="close-popout" data-close="orderDetailPanel">&times;</button>
+    <button class="close-popout" onclick="closePopout('editUserPanel')">&times;</button>
+    <div class="popout-header">
+        <h3 id="editUserPanelTitle">Edit User</h3>
+    </div>
+    <form id="user-form" onsubmit="saveUser(event)">
+        <input type="hidden" id="user-id" />
+        <div class="form-group">
+            <label for="user-name">Name:</label>
+            <input type="text" id="user-name" required />
+        </div>
+        <div class="form-group">
+            <label for="user-email">Email:</label>
+            <input type="email" id="user-email" required />
+        </div>
+        <div class="form-group">
+            <label for="user-role">Role:</label>
+            <select id="user-role" required>
+                <option value="member">Member</option>
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closePopout('editUserPanel')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save User</button>
+        </div>
+    </form>
 </div>
 
-<script>
-    function showTab(tab, e){
-        document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-        document.getElementById(tab+'-tab').classList.add('active');
-        e.currentTarget.classList.add('active');
-    }
-    document.querySelectorAll('.close-popout').forEach(b=>{
-        b.addEventListener('click',()=>{ document.getElementById(b.dataset.close).classList.remove('open'); });
-    });
-    function openPopout(panelId,id=null){ const p=document.getElementById(panelId); if(id)p.dataset.id=id; p.classList.add('open'); }
-</script>
+<!-- Enhanced edit product panel with proper form structure -->
+<div id="editProductPanel" class="popout-panel">
+    <button class="close-popout" onclick="closePopout('editProductPanel')">&times;</button>
+    <div class="popout-header">
+        <h3 id="editProductPanelTitle">Edit Product</h3>
+    </div>
+    <form id="product-form" onsubmit="saveProduct(event)">
+        <input type="hidden" id="product-id" />
+        <div class="form-group">
+            <label for="product-name">Name:</label>
+            <input type="text" id="product-name" required />
+        </div>
+        <div class="form-group">
+            <label for="product-price">Price:</label>
+            <input type="number" id="product-price" step="0.01" min="0" required />
+        </div>
+        <div class="form-group">
+            <label for="product-description">Description:</label>
+            <textarea id="product-description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="product-category">Category:</label>
+            <select id="product-category" required>
+                <option value="Pizza">Pizza</option>
+                <option value="Pasta">Pasta</option>
+                <option value="Seafood">Seafood</option>
+                <option value="Burgers">Burgers</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Desserts">Desserts</option>
+                <option value="Specials">Specials</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="product-imagePath">Image Path:</label>
+            <input type="text" id="product-imagePath" />
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closePopout('editProductPanel')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Product</button>
+        </div>
+    </form>
+</div>
+
+<!-- Enhanced order detail panel -->
+<div id="orderDetailPanel" class="popout-panel">
+    <button class="close-popout" onclick="closePopout('orderDetailPanel')">&times;</button>
+    <div class="popout-header">
+        <h3>Order Details</h3>
+    </div>
+    <div id="order-details-content">
+        <!-- Order details will be loaded here -->
+    </div>
+</div>
+
+<script src="~/js/staff.js" asp-append-version="true"></script>

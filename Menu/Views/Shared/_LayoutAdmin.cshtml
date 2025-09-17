@@ -7,32 +7,71 @@
 <html>
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/css/staff.css" />
+
 </head>
 <body>
-    <header>
-        <button onclick="window.history.back()" class="btn btn-return" title="Return">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15,18 9,12 15,6"></polyline>
-            </svg>
-            Return
-        </button>
+    <header class="admin-header">
+        <nav class="admin-nav">
+            <div class="nav-left">
+                <a href="@Url.Action("Dashboard", "Staff")" class="admin-logo">
+                    Staff Dashboard
+                </a>
 
-        <nav>
-            <ul>
-                <li><a asp-controller="Staff" asp-action="Dashboard">Dashboard</a></li>
+                <ul class="nav-links">
+                    <li><a href="@Url.Action("Dashboard", "Staff")" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Dashboard" ? "active" : "")">Dashboard</a></li>
+                    @if (role.ToLower() == "admin")
+                    {
+                        <li><a href="#" onclick="showTab('users', event)">Users</a></li>
+                    }
+                </ul>
+            </div>
 
-                @if (role.ToLower() == "admin")
-                {
-                }
+            <div class="nav-right">
+                <div class="user-info">
+                    <div class="user-avatar">@userName.Substring(0, 1).ToUpper()</div>
+                    <div>
+                        <div style="font-weight: 500;">@userName</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">@role.ToUpper()</div>
+                    </div>
+                </div>
 
-            </ul>
+                <button onclick="window.history.back()" class="btn-return" title="Go Back">
+                    &larr; Back
+                </button>
+
+                <button onclick="logout()" class="btn btn-logout" title="Logout">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16,17 21,12 16,7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </div>
         </nav>
     </header>
 
-    <main role="main" class="pb-3">
+    <main role="main" class="main-content">
         @RenderBody()
     </main>
 
+    <script>
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch('/Staff/Logout', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                })
+                .then(() => {
+                    window.location.href = '/Login/Login';
+                })
+                .catch(() => {
+                    window.location.href = '/Login/Login';
+                });
+            }
+        }
+    </script>
 </body>
 </html>

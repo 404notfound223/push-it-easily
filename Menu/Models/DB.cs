@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;   
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Menu.Models;
 
@@ -8,7 +8,7 @@ public class DB : DbContext
 {
     public DB(DbContextOptions options) : base(options) { }
 
-    public DbSet<User> Users { get; set; }    
+    public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderDetail> OrderDetails { get; set; }
@@ -29,7 +29,7 @@ public class Product
     public required string Category { get; set; }
     public required string ImagePath { get; set; }
     public int Sold { get; set; } = 0;
-    public int Stock { get; set; } = 0;
+    public bool IsDisabled { get; set; } = false;
 }
 
 public class Order
@@ -123,4 +123,16 @@ public class UpdateUserRequest
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+}
+
+public class ToggleStatusRequest
+{
+    public int Id { get; set; }
+    public bool Disable { get; set; }
+}
+
+public class ToggleDisableRequest
+{
+    public string ProductId { get; set; } = string.Empty;
+    public bool Disable { get; set; }
 }

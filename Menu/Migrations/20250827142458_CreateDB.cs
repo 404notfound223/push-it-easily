@@ -21,7 +21,6 @@ namespace Menu.Migrations
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Sold = table.Column<int>(type: "int", nullable: false),
-                    Stock = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
