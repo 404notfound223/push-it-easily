@@ -5,131 +5,117 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-receipt me-2"></i>Order Details
-                    </h4>
-                </div>
-                <div class="card-body">
-                    @if (!string.IsNullOrEmpty(ViewBag.Error))
-                    {
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
-                        </div>
-                    }
-                    else if (Model != null)
-                    {
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Order Information</h6>
-                                <p><strong>Order ID:</strong> @Model.OrderId</p>
-                                <p><strong>Order Date:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
-                                <p>
-                                    <strong>Status:</strong>
-                                    <span class="badge @(Model.Status == "Paid" ? "bg-success" : Model.Status == "Pending Payment" ? "bg-warning" : "bg-secondary")">
-                                        @Model.Status
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Customer Information</h6>
-                                @if (Model.User != null)
-                                {
-                                    <p><strong>Name:</strong> @Model.User.Name</p>
-                                    <p><strong>Email:</strong> @Model.User.Email</p>
-                                    <p><strong>Member ID:</strong> @Model.User.UserId</p>
-                                }
-                                else
-                                {
-                                    <p><em>Guest Order</em></p>
-                                }
-                            </div>
-                        </div>
+<link rel="stylesheet" href="~/css/order.css" />
+@* <link rel="stylesheet" href="~/css/order.css" asp-append-version="true" /> *@
+<div class="order-details-page">
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-receipt me-2"></i>Order Details
+        </h1>
+    </div>
 
-                        <h6 class="text-muted mb-3">Order Items</h6>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Unit Price</th>
-                                        <th>Quantity</th>
-                                        <th>Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var detail in Model.OrderDetails)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <strong>@detail.Product.Name</strong>
-                                                @if (!string.IsNullOrEmpty(detail.Product.Description))
-                                                {
-                                                    <br>
-                                        
-                                                    <small class="text-muted">@detail.Product.Description</small>
-                                                }
-                                            </td>
-                                            <td>RM @detail.UnitPrice.ToString("F2")</td>
-                                            <td>@detail.Quantity</td>
-                                            <td>RM @((detail.UnitPrice * detail.Quantity).ToString("F2"))</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="row mt-4">
-                            <div class="col-md-6 offset-md-6">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h6 class="card-title">Order Summary</h6>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Subtotal:</span>
-                                            <span>RM @ViewBag.Subtotal?.ToString("F2")</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Tax (8.5%):</span>
-                                            <span>RM @ViewBag.Tax?.ToString("F2")</span>
-                                        </div>
-                                        @if (ViewBag.MemberDiscount != null && (decimal)ViewBag.MemberDiscount > 0)
-                                        {
-                                            <div class="d-flex justify-content-between text-success">
-                                                <span><strong>Member Discount (10%):</strong></span>
-                                                <span><strong>-RM @ViewBag.MemberDiscount?.ToString("F2")</strong></span>
-                                            </div>
-                                        }
-                                        <hr>
-                                        <div class="d-flex justify-content-between">
-                                            <strong>Total Amount:</strong>
-                                            <strong>RM @Model.TotalAmount.ToString("F2")</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 text-center">
-                            <a href="@Url.Action("OrderHistory", "Order")" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Order History
-                            </a>
-                            <button onclick="window.print()" class="btn btn-primary ms-2">
-                                <i class="fas fa-print me-2"></i>Print Order
-                            </button>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Order not found.
-                        </div>
-                    }
+    <div class="order-details-container">
+        @if (!string.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
+            </div>
+        }
+        else if (Model != null)
+        {
+            <!-- Replaced Bootstrap card with order-summary-card from order.css -->
+            <div class="order-summary-card">
+                <div class="order-header">
+                    <div class="order-number">
+                        <h2>Order #@Model.OrderId</h2>
+                        <p class="order-date">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                        <p>
+                            <strong>Status:</strong>
+                            <span class="badge @(Model.Status == "Paid" ? "bg-success" : Model.Status == "Pending Payment" ? "bg-warning" : "bg-secondary")">
+                                @Model.Status
+                            </span>
+                        </p>
+                    </div>
+                    <div class="customer-info">
+                        <h3>Customer Information</h3>
+                        @if (Model.User != null)
+                        {
+                            <p><strong>Name:</strong> @Model.User.Name</p>
+                            <p><strong>Email:</strong> @Model.User.Email</p>
+                            <p><strong>Member ID:</strong> @Model.User.UserId</p>
+                        }
+                        else
+                        {
+                            <p><em>Guest Order</em></p>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Replaced Bootstrap table with order-items-card and item-row structure -->
+            <div class="order-items-card">
+                <h3>Order Items</h3>
+                @foreach (var detail in Model.OrderDetails)
+                {
+                    <div class="item-row">
+                        <div class="item-info">
+                            <h4>@detail.Product.Name</h4>
+                            @if (!string.IsNullOrEmpty(detail.Product.Description))
+                            {
+                                <div class="item-description">@detail.Product.Description</div>
+                            }
+                        </div>
+                        <div class="item-quantity">
+                            <span class="quantity-label">Qty</span>
+                            <span class="quantity-value">@detail.Quantity</span>
+                        </div>
+                        <div class="item-pricing">
+                            <p class="unit-price">RM @detail.UnitPrice.ToString("F2") each</p>
+                            <p class="total-price">RM @((detail.UnitPrice * detail.Quantity).ToString("F2"))</p>
+                        </div>
+                    </div>
+                }
+
+                <!-- Replaced Bootstrap card summary with order-totals structure -->
+                <div class="order-totals">
+                    <div class="totals-row">
+                        <span>Subtotal:</span>
+                        <span>RM @ViewBag.Subtotal?.ToString("F2")</span>
+                    </div>
+                    <div class="totals-row">
+                        <span>Tax (8.5%):</span>
+                        <span>RM @ViewBag.Tax?.ToString("F2")</span>
+                    </div>
+                    @if (ViewBag.MemberDiscount != null && (decimal)ViewBag.MemberDiscount > 0)
+                    {
+                        <div class="totals-row" style="color: #28a745;">
+                            <span><strong>Member Discount (10%):</strong></span>
+                            <span><strong>-RM @ViewBag.MemberDiscount?.ToString("F2")</strong></span>
+                        </div>
+                    }
+                    <div class="totals-row total-row">
+                        <span>Total Amount:</span>
+                        <span>RM @Model.TotalAmount.ToString("F2")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Replaced Bootstrap button group with order-actions-card -->
+            <div class="order-actions-card">
+                <a href="@Url.Action("OrderHistory", "Order")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Order History
+                </a>
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-2"></i>Print Order
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle me-2"></i>Order not found.
+            </div>
+        }
     </div>
 </div>
+

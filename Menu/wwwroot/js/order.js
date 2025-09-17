@@ -90,11 +90,13 @@ function renderOrder() {
     orderListElement.innerHTML = html
 
     // Calculate tax and member discount
-    const taxRate = 0.085 // 8.5% tax
-    const tax = subtotal * taxRate
-    const isMember = checkUserMemberStatus()
-    const memberDiscount = isMember ? (subtotal + tax) * 0.1 : 0 // 10% member discount
-    const total = subtotal + tax - memberDiscount
+    const currentUserRole = "@User.FindFirst('Role')?.Value"; 
+    const isMember = currentUserRole === "Member";
+
+    const taxRate = 0.085;
+    const tax = subtotal * taxRate;
+    const memberDiscount = isMember ? subtotal * 0.1 : 0;
+    const total = subtotal + tax - memberDiscount;
 
     // Update summary
     const subtotalElement = document.getElementById("order-subtotal")
@@ -102,6 +104,10 @@ function renderOrder() {
     const totalElement = document.getElementById("order-total")
     const memberDiscountElement = document.getElementById("member-discount")
     const memberDiscountRow = document.getElementById("member-discount-row")
+    //testing
+    console.log("User role from Razor:", currentUserRole);
+    console.log("IsMember check:", isMember);
+    //testing 
 
     if (subtotalElement) subtotalElement.textContent = `$${subtotal.toFixed(2)}`
     if (taxElement) taxElement.textContent = `$${tax.toFixed(2)}`

@@ -31,7 +31,8 @@ public class OrderController : Controller
             var orders = await _context.Orders
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
-                .Where(o => o.UserId == userId)
+                .Include(o => o.User)
+                .Where(o => o.UserId != null && o.UserId == userId)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
 
@@ -58,13 +59,15 @@ public class OrderController : Controller
             var orders = await _context.Orders
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
-                .Where(o => o.UserId == userId)
+                .Include(o => o.User) 
+                .Where(o => o.UserId != null && o.UserId == userId) 
                 .OrderByDescending(o => o.OrderDate)
                 .Select(o => new {
                     orderId = o.OrderId,
                     orderDate = o.OrderDate,
                     totalAmount = o.TotalAmount,
                     status = o.Status,
+                    customer = o.User != null ? o.User.Name : "Guest",
                     items = o.OrderDetails.Select(od => new {
                         productName = od.Product.Name,
                         quantity = od.Quantity,
@@ -72,6 +75,7 @@ public class OrderController : Controller
                     }).ToList()
                 })
                 .ToListAsync();
+
 
             return Json(new { success = true, orders });
         }
@@ -144,7 +148,7 @@ public class OrderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> MemberOrderView(string orderId)
+    public async Task<IActionResult> MemberOrderView(string Id)
     {
         var userId = HttpContext.Session.GetString("UserId");
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -160,7 +164,7 @@ public class OrderController : Controller
                 .Include(o => o.User)
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
-                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+                .FirstOrDefaultAsync(o => o.OrderId == Id);
 
             if (order == null)
             {
