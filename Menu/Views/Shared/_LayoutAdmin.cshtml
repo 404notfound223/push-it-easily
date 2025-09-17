@@ -252,6 +252,9 @@
         </div>
 
         <!-- ---------------- POP-OUT PANELS ---------------- -->
+        <!-- Added backdrop for better popup visibility -->
+        <div id="popout-backdrop" class="popout-backdrop" onclick="closeAllPopouts()"></div>
+
         <!-- Enhanced edit user panel with proper form structure -->
         <div id="editUserPanel" class="popout-panel">
             <button class="close-popout" onclick="closePopout('editUserPanel')">&times;</button>
@@ -380,6 +383,12 @@
             } else if (tabName === 'products') {
                 loadProducts();
             }
+        }
+
+        function closeAllPopouts() {
+            document.querySelectorAll('.popout-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {

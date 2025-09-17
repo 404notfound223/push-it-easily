@@ -17,6 +17,11 @@ function openPopout(panelId, itemId) {
     const panel = document.getElementById(panelId)
     if (!panel) return
 
+    const backdrop = document.getElementById("popout-backdrop")
+    if (backdrop) {
+        backdrop.classList.add("open")
+    }
+
     // Load data based on panel type
     if (panelId === "editUserPanel" && itemId) {
         loadUserData(itemId)
@@ -33,6 +38,23 @@ function closePopout(panelId) {
     const panel = document.getElementById(panelId)
     if (panel) {
         panel.classList.remove("open")
+    }
+
+    const backdrop = document.getElementById("popout-backdrop")
+    if (backdrop) {
+        backdrop.classList.remove("open")
+    }
+}
+
+function closeAllPopouts() {
+    const popouts = document.querySelectorAll(".popout-panel.open")
+    popouts.forEach((popout) => {
+        popout.classList.remove("open")
+    })
+
+    const backdrop = document.getElementById("popout-backdrop")
+    if (backdrop) {
+        backdrop.classList.remove("open")
     }
 }
 
@@ -145,17 +167,7 @@ function loadOrderDetails(orderId) {
                 `
                 })
 
-                detailsHtml += `
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="order-summary">
-                    <div class="summary-row">
-                        <strong>Order Total: <span id="order-total">$${order.totalAmount.toFixed(2)}</span></strong>
-                    </div>
-                </div>
-            `
+                detailsHtml += `</tbody></table></div><div class="order-summary"><div class="summary-row"><strong>Order Total: <span id="order-total">$${order.totalAmount.toFixed(2)}</span></strong></div></div>`
 
                 document.getElementById("order-details-content").innerHTML = detailsHtml
             } else {
@@ -423,6 +435,12 @@ function showAddUserPanel() {
     document.getElementById("user-form").reset()
     document.getElementById("user-id").value = ""
 
+    // Show backdrop when opening add user panel
+    const backdrop = document.getElementById("popout-backdrop")
+    if (backdrop) {
+        backdrop.classList.add("open")
+    }
+
     openPopout("editUserPanel")
     document.getElementById("editUserPanelTitle").textContent = "Add New User"
 }
@@ -485,14 +503,15 @@ function loadProductData(productId) {
 }
 
 function showAddProductPanel() {
+    // Reset the form and clear product ID for new product
     document.getElementById("product-form").reset()
     document.getElementById("product-id").value = ""
 
-    const panel = document.getElementById("editProductPanel")
-    if (panel) {
-        panel.classList.add("open")
-    }
+    // Set title for add mode
     document.getElementById("editProductPanelTitle").textContent = "Add New Product"
+
+    // Use the same openPopout pattern as edit function but without itemId
+    openPopout("editProductPanel")
 }
 
 function saveProduct(event) {
