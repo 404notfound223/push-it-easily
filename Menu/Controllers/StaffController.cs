@@ -301,9 +301,29 @@ public class StaffController : Controller
 
         try
         {
+            if (string.IsNullOrWhiteSpace(product.Name))
+            {
+                return Json(new { success = false, error = "Product name is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(product.Category))
+            {
+                return Json(new { success = false, error = "Product category is required" });
+            }
+
+            if (product.Price <= 0)
+            {
+                return Json(new { success = false, error = "Product price must be greater than 0" });
+            }
+
             string categoryPrefix = GetCategoryPrefix(product.Category);
             string newId = await GenerateNextProductId(categoryPrefix);
+
             product.Id = newId;
+            product.ImagePath = product.ImagePath ?? "/images/default-product.jpg";
+            product.Description = product.Description ?? "";
+            product.Sold = 0;
+            product.IsDisabled = false;
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -311,7 +331,16 @@ public class StaffController : Controller
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, error = ex.Message });
+            var errorMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errorMessage += " Inner Exception: " + ex.InnerException.Message;
+            }
+
+            // Log the full exception for debugging
+            Console.WriteLine($"[v0] Product save error: {ex}");
+
+            return Json(new { success = false, error = errorMessage });
         }
     }
 
@@ -493,6 +522,21 @@ public class StaffController : Controller
 
         try
         {
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return Json(new { success = false, error = "Product name is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Category))
+            {
+                return Json(new { success = false, error = "Product category is required" });
+            }
+
+            if (request.Price <= 0)
+            {
+                return Json(new { success = false, error = "Product price must be greater than 0" });
+            }
+
             string imagePath = "/images/default-product.jpg"; // Default image
 
             // Handle image upload if provided
@@ -539,7 +583,7 @@ public class StaffController : Controller
                 Id = newId,
                 Name = request.Name,
                 Price = request.Price,
-                Description = request.Description,
+                Description = request.Description ?? "",
                 Category = request.Category,
                 ImagePath = imagePath,
                 Sold = 0,
@@ -553,7 +597,16 @@ public class StaffController : Controller
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, error = ex.Message });
+            var errorMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errorMessage += " Inner Exception: " + ex.InnerException.Message;
+            }
+
+            // Log the full exception for debugging
+            Console.WriteLine($"[v0] Product save error: {ex}");
+
+            return Json(new { success = false, error = errorMessage });
         }
     }
 
@@ -623,7 +676,7 @@ public class StaffController : Controller
             // Update other properties
             existing.Name = request.Name;
             existing.Price = request.Price;
-            existing.Description = request.Description;
+            existing.Description = request.Description ?? "";
             existing.Category = request.Category;
 
             await _context.SaveChangesAsync();
@@ -961,27 +1014,43 @@ public class StaffController : Controller
         };
     }
 
-    // Helper method to generate next sequential ID
     private async Task<string> GenerateNextProductId(string prefix)
     {
-        // Find the highest existing ID with this prefix
-        var existingIds = await _context.Products
-            .Where(p => p.Id.StartsWith(prefix))
-            .Select(p => p.Id)
-            .ToListAsync();
-
-        int maxNumber = 0;
-        foreach (var id in existingIds)
+        try
         {
-            if (id.Length == 5 && int.TryParse(id.Substring(2), out int number))
-            {
-                maxNumber = Math.Max(maxNumber, number);
-            }
-        }
+            // Find the highest existing ID with this prefix
+            var existingIds = await _context.Products
+                .Where(p => p.Id.StartsWith(prefix))
+                .Select(p => p.Id)
+                .ToListAsync();
 
-        // Generate next number with leading zeros
-        int nextNumber = maxNumber + 1;
-        return $"{prefix}{nextNumber:D3}";
+            int maxNumber = 0;
+            foreach (var id in existingIds)
+            {
+                if (id.Length == 5 && int.TryParse(id.Substring(2), out int number))
+                {
+                    maxNumber = Math.Max(maxNumber, number);
+                }
+            }
+
+            // Generate next number with leading zeros
+            int nextNumber = maxNumber + 1;
+            string newId = $"{prefix}{nextNumber:D3}";
+
+            while (await _context.Products.AnyAsync(p => p.Id == newId))
+            {
+                nextNumber++;
+                newId = $"{prefix}{nextNumber:D3}";
+            }
+
+            Console.WriteLine($"[v0] Generated new product ID: {newId}");
+            return newId;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[v0] Error generating product ID: {ex}");
+            throw;
+        }
     }
 
     [HttpGet]
