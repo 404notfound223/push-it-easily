@@ -18,11 +18,17 @@ function openPopout(panelId, itemId) {
     const panel = document.getElementById(panelId)
     if (!panel) return
 
-    const backdrop = document.getElementById("popout-backdrop")
-    if (backdrop) {
-        backdrop.classList.add("open")
-        console.log("Panel after add:", panel.className)
+    // Create backdrop if it doesn't exist
+    let backdrop = document.getElementById("popout-backdrop")
+    if (!backdrop) {
+        backdrop = document.createElement("div")
+        backdrop.id = "popout-backdrop"
+        backdrop.className = "popout-backdrop"
+        backdrop.onclick = () => closePopout(panelId)
+        document.body.appendChild(backdrop)
     }
+
+    backdrop.classList.add("open")
 
     // Load data based on panel type
     if (panelId === "editUserPanel" && itemId) {
@@ -72,22 +78,103 @@ function closeAllPopouts() {
 
 // ================= ORDERS =================
 function updateOrderStatus(orderId, status) {
+    // Close the dropdown
+    const menu = document.getElementById(`status-menu-${orderId}`)
+    if (menu) {
+        menu.classList.remove("open")
+    }
+
+    // Find the status badge and update it
+    const statusBadge = document.querySelector(`tr[data-order-id="${orderId}"] .status-badge-clickable`)
+
+    if (statusBadge) {
+        statusBadge.classList.add("status-updating")
+    }
+
     fetch("/Staff/UpdateOrderStatus", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Requested-With": "XMLHttpRequest",
+        },
         body: `orderId=${orderId}&status=${status}`,
     })
-        .then((res) => res.json())
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`)
+            }
+            return res.json()
+        })
         .then((data) => {
             if (data.success) {
-                showNotification("Order status updated successfully", "success")
+                // Update the status badge with new styling
+                if (statusBadge) {
+                    statusBadge.classList.remove("status-updating")
+                    statusBadge.className = `status-badge-clickable ${status}`
+                    statusBadge.textContent = status.toUpperCase()
+                }
+
+                showNotification(`Order ${orderId.substring(0, 8)} status updated to ${status.toUpperCase()}`, "success")
             } else {
-                showNotification("Error updating order status: " + data.error, "error")
+                showNotification("Failed to update order status: " + (data.error || "Unknown error"), "error")
+                if (statusBadge) {
+                    statusBadge.classList.remove("status-updating")
+                }
             }
         })
-        .catch(() => {
-            showNotification("Error updating order status", "error")
+        .catch((error) => {
+            console.error("Error updating order status:", error)
+            showNotification("Error updating order status. Please try again.", "error")
+            if (statusBadge) {
+                statusBadge.classList.remove("status-updating")
+            }
         })
+}
+
+function updateOrderStats() {
+    fetch("/Staff/GetOrderStats")
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success && data.stats) {
+                // Update stat cards if they exist
+                const statCards = document.querySelectorAll(".stat-card")
+                statCards.forEach((card) => {
+                    const label = card.querySelector(".stat-label").textContent.toLowerCase()
+                    if (data.stats[label] !== undefined) {
+                        const numberElement = card.querySelector(".stat-number")
+                        const currentValue = Number.parseInt(numberElement.textContent)
+                        const newValue = data.stats[label]
+
+                        if (currentValue !== newValue) {
+                            // Animate the number change
+                            animateNumberChange(numberElement, currentValue, newValue)
+                        }
+                    }
+                })
+            }
+        })
+        .catch((error) => {
+            console.error("Failed to update order stats:", error)
+        })
+}
+
+function animateNumberChange(element, from, to) {
+    const duration = 1000 // 1 second
+    const steps = 30
+    const stepValue = (to - from) / steps
+    const stepDuration = duration / steps
+    let currentStep = 0
+
+    const interval = setInterval(() => {
+        currentStep++
+        const currentValue = Math.round(from + stepValue * currentStep)
+        element.textContent = currentValue
+
+        if (currentStep >= steps) {
+            clearInterval(interval)
+            element.textContent = to // Ensure final value is exact
+        }
+    }, stepDuration)
 }
 
 function loadOrderDetails(orderId) {
@@ -116,65 +203,82 @@ function loadOrderDetails(orderId) {
                     </div>
                     <div class="info-row">
                         <strong>Status:</strong> 
-                        <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
+                        <span class="order-status ${order.status.toLowerCase()}">
+                            <span class="status-indicator ${order.status.toLowerCase()}"></span>
+                            ${order.status.toUpperCase()}
+                        </span>
                     </div>
                     <div class="info-row">
                         <strong>Total:</strong> 
-                        <span class="total-amount">$${order.totalAmount.toFixed(2)}</span>
+                        <span style="font-size: 1.2em; font-weight: bold; color: #28a745;">$${order.totalAmount.toFixed(2)}</span>
                     </div>
                 </div>
                 
-                <div class="order-actions">
-                    <button class="btn btn-primary" onclick="enableOrderEdit('${order.orderId}')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                        Edit Order
-                    </button>
-                    <button class="btn btn-success" onclick="saveOrderChanges('${order.orderId}')" id="save-order-btn" style="display: none;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
-                            <polyline points="20,6 9,17 4,12"></polyline>
-                        </svg>
-                        Save Changes
-                    </button>
-                    <button class="btn btn-secondary" onclick="cancelOrderEdit()" id="cancel-edit-btn" style="display: none;">Cancel</button>
+                <div class="order-actions" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <label for="status-select" style="display: block; margin-bottom: 8px; font-weight: 600;">Update Status:</label>
+                    <select id="status-select" class="status-select" onchange="updateOrderStatus('${order.orderId}', this.value)" style="margin-right: 10px;">
+                        <option value="pending" ${order.status === "pending" ? "selected" : ""}>Pending</option>
+                        <option value="preparing" ${order.status === "preparing" ? "selected" : ""}>Preparing</option>
+                        <option value="ready" ${order.status === "ready" ? "selected" : ""}>Ready</option>
+                        <option value="completed" ${order.status === "completed" ? "selected" : ""}>Completed</option>
+                        <option value="cancelled" ${order.status === "cancelled" ? "selected" : ""}>Cancelled</option>
+                    </select>
+                    <button onclick="enableOrderEdit('${order.orderId}')" class="btn btn-info btn-sm">Edit Order</button>
                 </div>
                 
-                <h4>Order Items:</h4>
-                <div id="order-items-container">
-                    <table class="order-items-table" id="order-items-table">
-                        <thead>
-                            <tr>
-                                <th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th><th id="actions-header" style="display: none;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="order-items-tbody">
+                <h4 style="margin-top: 25px; color: #495057; border-bottom: 2px solid #e9ecef; padding-bottom: 8px;">Order Items</h4>
+                <table class="order-items-table" style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th id="actions-header" style="display: none;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-items-tbody">
             `
 
-                order.orderDetails.forEach((item, index) => {
+                order.orderItems.forEach((item) => {
                     detailsHtml += `
-                    <tr data-item-id="${item.id || index}">
-                        <td class="item-name">${item.product.name}</td>
-                        <td class="item-quantity">
-                            <span class="quantity-display">${item.quantity}</span>
-                            <input type="number" class="quantity-edit" value="${item.quantity}" min="1" style="display: none;" onchange="updateItemTotal(this, ${item.unitPrice})">
-                        </td>
+                    <tr data-item-id="${item.id}">
+                        <td>${item.product.name}</td>
                         <td class="item-price">$${item.unitPrice.toFixed(2)}</td>
+                        <td>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <input type="number" class="quantity-edit" value="${item.quantity}" min="1" 
+                                   onchange="updateItemTotal(this, ${item.unitPrice})" style="display: none; width: 60px;">
+                        </td>
                         <td class="item-total">$${(item.quantity * item.unitPrice).toFixed(2)}</td>
                         <td class="item-actions" style="display: none;">
-                            <button class="btn btn-sm btn-danger" onclick="removeOrderItem(this)">Remove</button>
+                            <button onclick="removeOrderItem('${item.id}')" class="btn btn-danger btn-sm">Remove</button>
                         </td>
                     </tr>
                 `
                 })
 
-                detailsHtml += `</tbody></table></div><div class="order-summary"><div class="summary-row"><strong>Order Total: <span id="order-total">$${order.totalAmount.toFixed(2)}</span></strong></div></div>`
+                detailsHtml += `
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold; background-color: #f8f9fa;">
+                            <td colspan="3" style="text-align: right; padding: 15px;">Total:</td>
+                            <td id="order-total" style="font-size: 1.1em; color: #28a745;">$${order.totalAmount.toFixed(2)}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="order-edit-actions" style="margin-top: 20px; text-align: right; display: none;">
+                    <button id="save-order-btn" onclick="saveOrderChanges('${order.orderId}')" class="btn btn-primary" style="display: none;">Save Changes</button>
+                    <button id="cancel-edit-btn" onclick="cancelOrderEdit()" class="btn btn-secondary" style="display: none; margin-left: 10px;">Cancel</button>
+                </div>
+            `
 
-                document.getElementById("order-details-content").innerHTML = detailsHtml
+                document.getElementById("orderDetailContent").innerHTML = detailsHtml
             } else {
                 showNotification("Error loading order details: " + data.error, "error")
-                document.getElementById("order-details-content").innerHTML = `
+                document.getElementById("orderDetailContent").innerHTML = `
             <div style="text-align: center; padding: 40px; color: #dc3545;">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 16px;">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -190,7 +294,7 @@ function loadOrderDetails(orderId) {
         })
         .catch(() => {
             showNotification("Error loading order details", "error")
-            document.getElementById("order-details-content").innerHTML = `
+            document.getElementById("orderDetailContent").innerHTML = `
         <div style="text-align: center; padding: 40px; color: #dc3545;">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 16px;">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -616,13 +720,59 @@ function logout() {
 }
 
 // ================= NOTIFICATION =================
-function showNotification(message, type) {
+function showNotification(message, type = "info") {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll(".notification")
+    existingNotifications.forEach((notification) => {
+        notification.remove()
+    })
+
     const notification = document.createElement("div")
     notification.className = `notification ${type}`
-    notification.textContent = message
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 16px;">
+                ${type.includes("success") ? "✅" : type.includes("error") ? "❌" : "ℹ️"}
+            </span>
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; margin-left: auto;">×</button>
+        </div>
+    `
+
     document.body.appendChild(notification)
-    setTimeout(() => notification.remove(), 4000)
+
+    // Auto-dismiss after 5 seconds for success messages, 8 seconds for errors
+    const dismissTime = type.includes("error") ? 8000 : 5000
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.style.animation = "slideOut 0.3s ease forwards"
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove()
+                }
+            }, 300)
+        }
+    }, dismissTime)
 }
+
+const style = document.createElement("style")
+style.textContent = `
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`
+document.head.appendChild(style)
 
 // ================= CONFIRM DELETE =================
 function confirmDelete(type, id) {
@@ -630,6 +780,7 @@ function confirmDelete(type, id) {
         order: "order",
         user: "user",
         product: "product",
+        category: "category",
     }
 
     const message = `Are you sure you want to delete this ${typeNames[type]}? This action cannot be undone.`
@@ -638,6 +789,7 @@ function confirmDelete(type, id) {
         if (type === "order") deleteOrder(id)
         else if (type === "user") deleteUser(id)
         else if (type === "product") deleteProduct(id)
+        else if (type === "category") deleteCategory(id)
     }
 }
 
@@ -733,83 +885,40 @@ function updateProductsTable(products) {
 
 function updatePagination(currentPage, totalPages, totalCount) {
     const paginationInfo = document.getElementById("pagination-info")
-    const pageNumbers = document.getElementById("page-numbers")
     const prevButton = document.getElementById("prev-page")
     const nextButton = document.getElementById("next-page")
+    const pageNumbers = document.getElementById("page-numbers")
 
     if (paginationInfo) {
         const startItem = (currentPage - 1) * currentPageSize + 1
         const endItem = Math.min(currentPage * currentPageSize, totalCount)
-        paginationInfo.innerHTML = `<strong>Showing ${startItem}-${endItem}</strong> of <strong>${totalCount}</strong> products`
+        paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${totalCount} products`
     }
 
     if (prevButton) {
         prevButton.disabled = currentPage <= 1
-        prevButton.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
-        <polyline points="15,18 9,12 15,6"></polyline>
-      </svg>
-      Previous
-    `
     }
 
     if (nextButton) {
         nextButton.disabled = currentPage >= totalPages
-        nextButton.innerHTML = `
-      Next
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 4px;">
-        <polyline points="9,18 15,12 9,6"></polyline>
-      </svg>
-    `
     }
 
     if (pageNumbers) {
         pageNumbers.innerHTML = ""
+        const maxVisiblePages = 5
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
+        const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
 
-        const startPage = Math.max(1, currentPage - 2)
-        const endPage = Math.min(totalPages, startPage + 4)
-
-        // Add first page and ellipsis if needed
-        if (startPage > 1) {
-            const firstPageBtn = document.createElement("button")
-            firstPageBtn.textContent = "1"
-            firstPageBtn.className = "page-btn"
-            firstPageBtn.onclick = () => loadProducts(1)
-            pageNumbers.appendChild(firstPageBtn)
-
-            if (startPage > 2) {
-                const ellipsis = document.createElement("span")
-                ellipsis.textContent = "..."
-                ellipsis.style.padding = "8px 4px"
-                ellipsis.style.color = "#6c757d"
-                pageNumbers.appendChild(ellipsis)
-            }
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1)
         }
 
-        // Add page numbers
         for (let i = startPage; i <= endPage; i++) {
-            const pageButton = document.createElement("button")
-            pageButton.textContent = i
-            pageButton.className = `page-btn ${i === currentPage ? "active" : ""}`
-            pageButton.onclick = () => loadProducts(i)
-            pageNumbers.appendChild(pageButton)
-        }
-
-        // Add last page and ellipsis if needed
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement("span")
-                ellipsis.textContent = "..."
-                ellipsis.style.padding = "8px 4px"
-                ellipsis.style.color = "#6c757d"
-                pageNumbers.appendChild(ellipsis)
-            }
-
-            const lastPageBtn = document.createElement("button")
-            lastPageBtn.textContent = totalPages
-            lastPageBtn.className = "page-btn"
-            lastPageBtn.onclick = () => loadProducts(totalPages)
-            pageNumbers.appendChild(lastPageBtn)
+            const pageBtn = document.createElement("button")
+            pageBtn.className = `page-btn ${i === currentPage ? "active" : ""}`
+            pageBtn.textContent = i
+            pageBtn.onclick = () => loadProducts(i)
+            pageNumbers.appendChild(pageBtn)
         }
     }
 }
@@ -881,6 +990,8 @@ function updateOrdersTable(orders) {
 
     orders.forEach((order) => {
         const row = document.createElement("tr")
+        row.setAttribute("data-order-id", order.orderId)
+
         row.innerHTML = `
             <td>${order.orderId.substring(0, 8).toUpperCase()}</td>
             <td>${order.user?.name || "Guest"}</td>
@@ -888,22 +999,26 @@ function updateOrdersTable(orders) {
             month: "short",
             day: "numeric",
             year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
         })}</td>
-            <td>$${order.totalAmount.toFixed(2)}</td>
             <td>
-                <select class="status-select" onchange="updateOrderStatus('${order.orderId}', this.value)">
-                    <option value="Pending" ${order.status === "Pending" ? "selected" : ""}>Pending</option>
-                    <option value="Preparing" ${order.status === "Preparing" ? "selected" : ""}>Preparing</option>
-                    <option value="Ready" ${order.status === "Ready" ? "selected" : ""}>Ready</option>
-                    <option value="Completed" ${order.status === "Completed" ? "selected" : ""}>Completed</option>
-                    <option value="Cancelled" ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
-                </select>
+                <div class="status-dropdown">
+                    <div class="status-badge-clickable ${order.status}" onclick="toggleStatusDropdown('${order.orderId}')">
+                        ${order.status.toUpperCase()}
+                    </div>
+                    <div class="status-dropdown-menu" id="status-menu-${order.orderId}">
+                        <div class="status-dropdown-item" onclick="updateOrderStatus('${order.orderId}', 'pending')">Pending</div>
+                        <div class="status-dropdown-item" onclick="updateOrderStatus('${order.orderId}', 'preparing')">Preparing</div>
+                        <div class="status-dropdown-item" onclick="updateOrderStatus('${order.orderId}', 'ready')">Ready</div>
+                        <div class="status-dropdown-item" onclick="updateOrderStatus('${order.orderId}', 'completed')">Completed</div>
+                        <div class="status-dropdown-item" onclick="updateOrderStatus('${order.orderId}', 'cancelled')">Cancelled</div>
+                    </div>
+                </div>
             </td>
+            <td style="font-weight: 600; color: #28a745;">$${order.totalAmount.toFixed(2)}</td>
             <td>
-                <button class="btn btn-sm btn-info" onclick="openPopout('orderDetailPanel','${order.orderId}')">View</button>
-                <button class="btn btn-sm btn-danger" onclick="confirmDelete('order', '${order.orderId}')">Delete</button>
+                <button onclick="openPopout('orderDetailPanel', '${order.orderId}')" class="btn btn-info btn-sm">
+                    View Details
+                </button>
             </td>
         `
         tbody.appendChild(row)
@@ -912,14 +1027,14 @@ function updateOrdersTable(orders) {
 
 function updateOrderPagination(currentPage, totalPages, totalCount) {
     const paginationInfo = document.getElementById("order-pagination-info")
-    const pageNumbers = document.getElementById("order-page-numbers")
     const prevButton = document.getElementById("order-prev-page")
     const nextButton = document.getElementById("order-next-page")
+    const pageNumbers = document.getElementById("order-page-numbers")
 
     if (paginationInfo) {
         const startItem = (currentPage - 1) * currentOrderPageSize + 1
         const endItem = Math.min(currentPage * currentOrderPageSize, totalCount)
-        paginationInfo.innerHTML = `<strong>Showing ${startItem}-${endItem}</strong> of <strong>${totalCount}</strong> orders`
+        paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${totalCount} orders`
     }
 
     if (prevButton) {
@@ -932,48 +1047,20 @@ function updateOrderPagination(currentPage, totalPages, totalCount) {
 
     if (pageNumbers) {
         pageNumbers.innerHTML = ""
+        const maxVisiblePages = 5
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
+        const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
 
-        const startPage = Math.max(1, currentPage - 2)
-        const endPage = Math.min(totalPages, startPage + 4)
-
-        if (startPage > 1) {
-            const firstPageBtn = document.createElement("button")
-            firstPageBtn.textContent = "1"
-            firstPageBtn.className = "page-btn"
-            firstPageBtn.onclick = () => loadOrders(1)
-            pageNumbers.appendChild(firstPageBtn)
-
-            if (startPage > 2) {
-                const ellipsis = document.createElement("span")
-                ellipsis.textContent = "..."
-                ellipsis.style.padding = "8px 4px"
-                ellipsis.style.color = "#6c757d"
-                pageNumbers.appendChild(ellipsis)
-            }
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1)
         }
 
         for (let i = startPage; i <= endPage; i++) {
-            const pageButton = document.createElement("button")
-            pageButton.textContent = i
-            pageButton.className = `page-btn ${i === currentPage ? "active" : ""}`
-            pageButton.onclick = () => loadOrders(i)
-            pageNumbers.appendChild(pageButton)
-        }
-
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement("span")
-                ellipsis.textContent = "..."
-                ellipsis.style.padding = "8px 4px"
-                ellipsis.style.color = "#6c757d"
-                pageNumbers.appendChild(ellipsis)
-            }
-
-            const lastPageBtn = document.createElement("button")
-            lastPageBtn.textContent = totalPages
-            lastPageBtn.className = "page-btn"
-            lastPageBtn.onclick = () => loadOrders(totalPages)
-            pageNumbers.appendChild(lastPageBtn)
+            const pageBtn = document.createElement("button")
+            pageBtn.className = `page-btn ${i === currentPage ? "active" : ""}`
+            pageBtn.textContent = i
+            pageBtn.onclick = () => loadOrders(i)
+            pageNumbers.appendChild(pageBtn)
         }
     }
 }
@@ -1045,30 +1132,33 @@ function updateUsersTable(users) {
 
     users.forEach((user) => {
         const row = document.createElement("tr")
+        row.id = `user-row-${user.userId}`
+
         row.innerHTML = `
-            <td>${user.userId.substring(0, 8).toUpperCase()}</td>
+            <td>${user.userId}</td>
             <td>${user.name}</td>
             <td>${user.email}</td>
-            <td><span class="role-badge role-${user.role.toLowerCase()}">${user.role}</span></td>
+            <td><span class="role-badge role-${user.role}">${user.role.toUpperCase()}</span></td>
             <td>
                 <button class="btn btn-sm btn-warning" onclick="openPopout('editUserPanel','${user.userId}')">Edit</button>
                 <button class="btn btn-sm btn-danger" onclick="confirmDelete('user', '${user.userId}')">Delete</button>
             </td>
         `
+
         tbody.appendChild(row)
     })
 }
 
 function updateUserPagination(currentPage, totalPages, totalCount) {
     const paginationInfo = document.getElementById("user-pagination-info")
-    const pageNumbers = document.getElementById("user-page-numbers")
     const prevButton = document.getElementById("user-prev-page")
     const nextButton = document.getElementById("user-next-page")
+    const pageNumbers = document.getElementById("user-page-numbers")
 
     if (paginationInfo) {
         const startItem = (currentPage - 1) * currentUserPageSize + 1
         const endItem = Math.min(currentPage * currentUserPageSize, totalCount)
-        paginationInfo.innerHTML = `<strong>Showing ${startItem}-${endItem}</strong> of <strong>${totalCount}</strong> users`
+        paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${totalCount} users`
     }
 
     if (prevButton) {
@@ -1081,48 +1171,20 @@ function updateUserPagination(currentPage, totalPages, totalCount) {
 
     if (pageNumbers) {
         pageNumbers.innerHTML = ""
+        const maxVisiblePages = 5
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
+        const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
 
-        const startPage = Math.max(1, currentPage - 2)
-        const endPage = Math.min(totalPages, startPage + 4)
-
-        if (startPage > 1) {
-            const firstPageBtn = document.createElement("button")
-            firstPageBtn.textContent = "1"
-            firstPageBtn.className = "page-btn"
-            firstPageBtn.onclick = () => loadUsers(1)
-            pageNumbers.appendChild(firstPageBtn)
-
-            if (startPage > 2) {
-                const ellipsis = document.createElement("span")
-                ellipsis.textContent = "..."
-                ellipsis.style.padding = "8px 4px"
-                ellipsis.style.color = "#6c757d"
-                pageNumbers.appendChild(ellipsis)
-            }
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1)
         }
 
         for (let i = startPage; i <= endPage; i++) {
-            const pageButton = document.createElement("button")
-            pageButton.textContent = i
-            pageButton.className = `page-btn ${i === currentPage ? "active" : ""}`
-            pageButton.onclick = () => loadUsers(i)
-            pageNumbers.appendChild(pageButton)
-        }
-
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement("span")
-                ellipsis.textContent = "..."
-                ellipsis.style.padding = "8px 4px"
-                ellipsis.style.color = "#6c757d"
-                pageNumbers.appendChild(ellipsis)
-            }
-
-            const lastPageBtn = document.createElement("button")
-            lastPageBtn.textContent = totalPages
-            lastPageBtn.className = "page-btn"
-            lastPageBtn.onclick = () => loadUsers(totalPages)
-            pageNumbers.appendChild(lastPageBtn)
+            const pageBtn = document.createElement("button")
+            pageBtn.className = `page-btn ${i === currentPage ? "active" : ""}`
+            pageBtn.textContent = i
+            pageBtn.onclick = () => loadUsers(i)
+            pageNumbers.appendChild(pageBtn)
         }
     }
 }
@@ -1134,57 +1196,190 @@ function changeUserPage(direction) {
     }
 }
 
-// Initialize event listeners when DOM is loaded
+function searchOrders() {
+    const searchTerm = document.getElementById("orderSearch").value.toLowerCase()
+    const rows = document.querySelectorAll("#orders-table-body tr")
+
+    rows.forEach((row) => {
+        const customerName = row.cells[1].textContent.toLowerCase() // Customer name is in the second column
+        if (customerName.includes(searchTerm)) {
+            row.style.display = ""
+        } else {
+            row.style.display = "none"
+        }
+    })
+}
+
+function searchUsers() {
+    const searchTerm = document.getElementById("userSearch").value.toLowerCase()
+    const rows = document.querySelectorAll("#users-table-body tr")
+
+    rows.forEach((row) => {
+        const userName = row.cells[1].textContent.toLowerCase() // User name is in the second column
+        if (userName.includes(searchTerm)) {
+            row.style.display = ""
+        } else {
+            row.style.display = "none"
+        }
+    })
+}
+
+function searchProducts() {
+    const searchTerm = document.getElementById("productSearch").value.toLowerCase()
+    const rows = document.querySelectorAll("#products-table-body tr")
+
+    rows.forEach((row) => {
+        const productName = row.cells[2].textContent.toLowerCase() // Product name is in the third column
+        if (productName.includes(searchTerm)) {
+            row.style.display = ""
+        } else {
+            row.style.display = "none"
+        }
+    })
+}
+
+// ================= CATEGORY MANAGEMENT =================
+let currentCategoryPage = 1
+const currentCategoryPageSize = 20
+
+function loadCategories(page = 1) {
+    currentCategoryPage = page
+
+    const tbody = document.getElementById("categories-table-body")
+    if (tbody) {
+        tbody.innerHTML =
+            '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #6c757d;"><div style="display: inline-flex; align-items: center; gap: 10px;"><div style="width: 20px; height: 20px; border: 2px solid #007bff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>Loading categories...</div></td></tr>'
+    }
+
+    const params = new URLSearchParams({
+        page: currentCategoryPage,
+        pageSize: currentCategoryPageSize,
+    })
+
+    fetch(`/Staff/GetCategoriesData?${params}`)
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success) {
+                updateCategoriesTable(data.categories)
+                updateCategoryPagination(data.currentPage, data.totalPages, data.totalCount)
+            } else {
+                showNotification("Error loading categories: " + data.error, "error")
+            }
+        })
+        .catch(() => {
+            showNotification("Error loading categories", "error")
+        })
+}
+
+function updateCategoriesTable(categories) {
+    const tbody = document.getElementById("categories-table-body")
+    if (!tbody) return
+
+    tbody.innerHTML = ""
+
+    categories.forEach((category) => {
+        const row = document.createElement("tr")
+        row.id = `category-row-${category.id}`
+
+        row.innerHTML = `
+            <td>${category.id}</td>
+            <td>${category.name}</td>
+            <td>${category.prefix}</td>
+            <td>${category.description || "N/A"}</td>
+            <td><span class="btn-toggle-status ${category.isActive ? "enabled" : "disabled"}">${category.isActive ? "Active" : "Inactive"}</span></td>
+            <td>${new Date(category.createdAt).toLocaleDateString()}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editCategory('${category.id}')">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="confirmDelete('category', '${category.id}')">Delete</button>
+            </td>
+        `
+
+        tbody.appendChild(row)
+    })
+}
+
+function updateCategoryPagination(currentPage, totalPages, totalCount) {
+    const paginationInfo = document.getElementById("category-pagination-info")
+    const prevButton = document.getElementById("category-prev-page")
+    const nextButton = document.getElementById("category-next-page")
+    const pageNumbers = document.getElementById("category-page-numbers")
+
+    if (paginationInfo) {
+        const startItem = (currentPage - 1) * currentCategoryPageSize + 1
+        const endItem = Math.min(currentPage * currentCategoryPageSize, totalCount)
+        paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${totalCount} categories`
+    }
+
+    if (prevButton) {
+        prevButton.disabled = currentPage <= 1
+    }
+
+    if (nextButton) {
+        nextButton.disabled = currentPage >= totalPages
+    }
+
+    if (pageNumbers) {
+        pageNumbers.innerHTML = ""
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement("button")
+            pageBtn.className = `page-btn ${i === currentPage ? "active" : ""}`
+            pageBtn.textContent = i
+            pageBtn.onclick = () => loadCategories(i)
+            pageNumbers.appendChild(pageBtn)
+        }
+    }
+}
+
+function changeCategoryPage(direction) {
+    const newPage = currentCategoryPage + direction
+    if (newPage >= 1) {
+        loadCategories(newPage)
+    }
+}
+
+function editCategory(categoryId) {
+    fetch(`/Staff/GetCategoryById?id=${categoryId}`)
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success) {
+                const category = data.category
+                document.getElementById("edit-category-id").value = category.id
+                document.getElementById("edit-category-name").value = category.name
+                document.getElementById("edit-category-prefix").value = category.prefix
+                document.getElementById("edit-category-description").value = category.description || ""
+                document.getElementById("edit-category-active").checked = category.isActive
+
+                openPopout("editCategoryPanel")
+            } else {
+                showNotification("Error loading category: " + data.error, "error")
+            }
+        })
+        .catch(() => showNotification("Error loading category", "error"))
+}
+
+function deleteCategory(categoryId) {
+    const formData = new FormData()
+    formData.append("id", categoryId)
+
+    fetch("/Staff/DeleteCategory", {
+        method: "POST",
+        body: formData,
+        credentials: "same-origin",
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success) {
+                showNotification("Category deleted successfully", "success")
+                loadCategories(currentCategoryPage) // Refresh the categories table
+            } else {
+                showNotification("Error deleting category: " + data.error, "error")
+            }
+        })
+        .catch(() => showNotification("Error deleting category", "error"))
+}
+
+// Initialize the page
 document.addEventListener("DOMContentLoaded", () => {
-    // Close popout when clicking the close button
-    document.querySelectorAll(".close-popout").forEach((button) => {
-        button.addEventListener("click", function () {
-            const panelId = this.getAttribute("data-close") || this.closest(".popout-panel").id
-            closePopout(panelId)
-        })
-    })
-
-    // Prevent form submission from refreshing the page
-    document.querySelectorAll("form").forEach((form) => {
-        form.addEventListener("submit", (e) => {
-            e.preventDefault()
-        })
-    })
-
-    // Load orders when orders tab is shown
-    const ordersTab = document.querySelector('[onclick*="orders"]')
-    if (ordersTab) {
-        ordersTab.addEventListener("click", () => {
-            setTimeout(() => loadOrders(1), 100)
-        })
-    }
-
-    const usersTab = document.querySelector('[onclick*="users"]')
-    if (usersTab) {
-        usersTab.addEventListener("click", () => {
-            setTimeout(() => loadUsers(1), 100)
-        })
-    }
-
-    // Load products when products tab is shown
-    const productsTab = document.querySelector('[onclick*="products"]')
-    if (productsTab) {
-        productsTab.addEventListener("click", () => {
-            setTimeout(() => loadProducts(1), 100)
-        })
-    }
-
-    // Load orders initially if orders tab is active
-    if (document.getElementById("orders-tab")?.classList.contains("active")) {
-        loadOrders(1)
-    }
-
-    if (document.getElementById("users-tab")?.classList.contains("active")) {
-        loadUsers(1)
-    }
-
-    // Load products initially if products tab is active
-    if (document.getElementById("products-tab")?.classList.contains("active")) {
-        loadProducts(1)
-    }
+    showTab("orders")
+    loadOrders()
 })

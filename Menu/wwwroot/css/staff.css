@@ -280,6 +280,35 @@
             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
         }
 
+/* Added search controls styling */
+.search-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 15px;
+}
+
+    .search-controls input {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: white;
+        min-width: 200px;
+        transition: all 0.2s ease;
+    }
+
+        .search-controls input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .search-controls input::placeholder {
+            color: #6c757d;
+            font-style: italic;
+        }
+
 /* Added table container and pagination styling */
 .table-container {
     background: white;
@@ -413,14 +442,16 @@
 
 .orders-table,
 .users-table,
-.products-table {
+.products-table,
+.categories-table {
     width: 100%;
     border-collapse: collapse;
 }
 
     .orders-table th,
     .users-table th,
-    .products-table th {
+    .products-table th,
+    .categories-table th {
         background-color: #f8f9fa;
         padding: 15px;
         text-align: left;
@@ -431,14 +462,16 @@
 
     .orders-table td,
     .users-table td,
-    .products-table td {
+    .products-table td,
+    .categories-table td {
         padding: 15px;
         border-bottom: 1px solid #f1f3f5;
     }
 
     .orders-table tr:hover,
     .users-table tr:hover,
-    .products-table tr:hover {
+    .products-table tr:hover,
+    .categories-table tr:hover {
         background-color: #f1f3f5;
     }
 
@@ -481,248 +514,535 @@
     }
 
 .status-select {
-    padding: 6px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-/* ---------------- BUTTONS ---------------- */
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.2s ease;
-}
-
-.btn-sm {
-    padding: 6px 12px;
-    font-size: 12px;
-}
-
-.btn-info {
-    background-color: #17a2b8;
-    color: white;
-}
-
-    .btn-info:hover {
-        background-color: #138496;
-    }
-
-.btn-warning {
-    background-color: #ffc107;
-    color: #212529;
-}
-
-    .btn-warning:hover {
-        background-color: #e0a800;
-    }
-
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-    .btn-danger:hover {
-        background-color: #c82333;
-    }
-
-.btn-primary {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-    border: none;
-    padding: 10px 20px;
+    padding: 8px 12px;
+    border: 2px solid #ced4da;
     border-radius: 8px;
+    font-size: 14px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
-    transition: all 0.2s ease;
-}
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #0056b3, #004085);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-    }
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-    .btn-secondary:hover {
-        background-color: #545b62;
-    }
-
-/* Enhanced logout button styling */
-.btn-logout {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
+    background-color: white;
+    color: #495057;
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
-    .btn-logout:hover {
-        background-color: #c82333;
+    .status-select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25), 0 4px 8px rgba(0, 0, 0, 0.15);
         transform: translateY(-1px);
     }
 
-.btn-toggle-status {
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s ease;
-}
-
-    .btn-toggle-status.enabled {
-        background-color: #28a745;
+    .status-select:hover {
+        border-color: #007bff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
-        .btn-toggle-status.enabled:hover {
-            background-color: #218838;
-        }
-
-    /* Disabled (red) */
-    .btn-toggle-status.disabled {
-        background-color: #dc3545;
-    }
-
-        .btn-toggle-status.disabled:hover {
-            background-color: #c82333;
-        }
-
-/* ---------------- FORMS ---------------- */
-.form-group {
-    margin-bottom: 15px;
-}
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-        color: #495057;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 8px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-        }
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
-
-.btn-open-popout {
+/* Enhanced color-coded order status badges with specific color requirements */
+.order-status {
+    display: inline-block;
     padding: 8px 16px;
-    margin-left: 10px;
-    border-radius: 6px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.2s;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-align: center;
+    min-width: 90px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-    .btn-open-popout:hover {
-        background: #0056b3;
+    /* Specific color implementations as requested */
+    .order-status.pending {
+        background: linear-gradient(135deg, #ffc107, #ffb300);
+        color: #212529;
+        border: 2px solid #ffc107;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
     }
 
-/* ---------------- ORDER ITEMS TABLE ---------------- */
-.order-items-table {
-    width: 100%;
-    margin-top: 15px;
-    border-collapse: collapse;
+    .order-status.preparing {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border: 2px solid #007bff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .order-status.ready {
+        background: linear-gradient(135deg, #fd7e14, #e8650e);
+        color: white;
+        border: 2px solid #fd7e14;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .order-status.completed {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: white;
+        border: 2px solid #28a745;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .order-status.cancelled {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border: 2px solid #dc3545;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Enhanced hover effects with smooth animations and glow effects */
+    .order-status:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    .order-status.pending:hover {
+        box-shadow: 0 6px 12px rgba(255, 193, 7, 0.4), 0 0 20px rgba(255, 193, 7, 0.2);
+    }
+
+    .order-status.preparing:hover {
+        box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4), 0 0 20px rgba(0, 123, 255, 0.2);
+    }
+
+    .order-status.ready:hover {
+        box-shadow: 0 6px 12px rgba(253, 126, 20, 0.4), 0 0 20px rgba(253, 126, 20, 0.2);
+    }
+
+    .order-status.completed:hover {
+        box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4), 0 0 20px rgba(40, 167, 69, 0.2);
+    }
+
+    .order-status.cancelled:hover {
+        box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4), 0 0 20px rgba(220, 53, 69, 0.2);
+    }
+
+/* Enhanced status indicator dots with improved pulsing animation */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+    position: relative;
+    animation: statusPulse 2s infinite;
 }
 
-    .order-items-table th,
-    .order-items-table td {
-        padding: 8px 12px;
-        border: 1px solid #dee2e6;
-        text-align: left;
+    .status-indicator.pending {
+        background-color: #ffc107;
+        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
     }
 
-    .order-items-table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
+    .status-indicator.preparing {
+        background-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
     }
 
-/* ---------------- NOTIFICATIONS ---------------- */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    border-radius: 4px;
-    color: white;
-    font-weight: 500;
-    z-index: 1000;
-    animation: slideIn 0.3s ease;
-}
+    .status-indicator.ready {
+        background-color: #fd7e14;
+        box-shadow: 0 0 0 3px rgba(253, 126, 20, 0.3);
+    }
 
-    .notification.success {
+    .status-indicator.completed {
         background-color: #28a745;
+        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3);
     }
 
-    .notification.error {
+    .status-indicator.cancelled {
         background-color: #dc3545;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
     }
 
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
+/* Improved pulsing animation with more natural rhythm */
+@keyframes statusPulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
     }
 
-    to {
-        transform: translateX(0);
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
         opacity: 1;
     }
 }
 
-/* ---------------- POP-OUT PANELS ---------------- */
-/* Added backdrop and improved z-index for better visibility */
+/* Enhanced loading animation for status updates with shimmer effect */
+.status-updating {
+    position: relative;
+    opacity: 0.7;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+    .status-updating::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        animation: shimmer 1.5s infinite;
+    }
+
+    .status-updating::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0 0 -8px;
+        border: 2px solid transparent;
+        border-top: 2px solid #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        z-index: 1;
+    }
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Enhanced notification styling with better visual hierarchy */
+.notification.status-update {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-left: 4px solid #0056b3;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+    .notification.status-update.success {
+        background: linear-gradient(135deg, #28a745, #218838);
+        border-left-color: #218838;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .notification.status-update.error {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        border-left-color: #c82333;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+/* Enhanced table row highlighting with gradient animation */
+.orders-table tr.status-changed {
+    background: linear-gradient(90deg, rgba(0, 123, 255, 0.1), transparent);
+    border-left: 4px solid #007bff;
+    animation: statusChangeHighlight 3s ease-out;
+    position: relative;
+}
+
+    .orders-table tr.status-changed::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, rgba(0, 123, 255, 0.05), transparent);
+        animation: fadeInOut 3s ease-out;
+        pointer-events: none;
+    }
+
+@keyframes statusChangeHighlight {
+    0% {
+        background: linear-gradient(90deg, rgba(0, 123, 255, 0.3), transparent);
+        transform: scale(1.01);
+    }
+
+    50% {
+        background: linear-gradient(90deg, rgba(0, 123, 255, 0.2), transparent);
+    }
+
+    100% {
+        background: linear-gradient(90deg, rgba(0, 123, 255, 0.1), transparent);
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Added success flash animation for successful status updates */
+.status-success-flash {
+    animation: successFlash 0.6s ease-out;
+}
+
+@keyframes successFlash {
+    0% {
+        background-color: rgba(40, 167, 69, 0.3);
+        transform: scale(1.05);
+    }
+
+    50% {
+        background-color: rgba(40, 167, 69, 0.1);
+        transform: scale(1.02);
+    }
+
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+/* Added error shake animation for failed status updates */
+.status-error-shake {
+    animation: errorShake 0.5s ease-in-out;
+}
+
+@keyframes errorShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-3px);
+    }
+
+    20%, 40%, 60%, 80% {
+        transform: translateX(3px);
+    }
+}
+
+/* Enhanced notification animations with slide and bounce effects */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    animation: slideInBounce 0.5s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+    .notification.success {
+        background: linear-gradient(135deg, #28a745, #218838);
+    }
+
+    .notification.error {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+    }
+
+@keyframes slideInBounce {
+    0% {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+
+    60% {
+        transform: translateX(-10px) scale(1.05);
+        opacity: 1;
+    }
+
+    80% {
+        transform: translateX(5px) scale(0.98);
+    }
+
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* Added loading state for table rows during status updates */
+.table-row-updating {
+    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+    .table-row-updating::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(0, 123, 255, 0.1), transparent);
+        animation: tableRowShimmer 1.5s infinite;
+    }
+
+@keyframes tableRowShimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Enhanced button hover effects with better feedback */
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Added pulse animation for important status indicators */
+.status-indicator.urgent {
+    animation: urgentPulse 1s infinite;
+}
+
+@keyframes urgentPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+/* Fixed product status button colors - Enable=green, Disable=red */
+.btn-toggle-status {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-toggle-status.enabled {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: white;
+        border: 1px solid #28a745;
+    }
+
+        .btn-toggle-status.enabled:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+    .btn-toggle-status.disabled {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border: 1px solid #dc3545;
+    }
+
+        .btn-toggle-status.disabled:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+/* Enhanced order controls and user controls styling */
+.order-controls,
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Added management container styling */
+.management-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Fixed popout panel visibility - panels should be hidden by default */
+.popout-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 500px;
+    height: 100vh;
+    background: white;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    display: block; /* Always display but positioned off-screen */
+}
+
+    .popout-panel.open {
+        right: 0;
+    }
+
+/* Added backdrop for modal panels */
 .popout-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1999;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -733,70 +1053,102 @@
         visibility: visible;
     }
 
-/* Increased z-index and improved positioning for popup panels */
-.popout-panel {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    width: 400px;
-    max-width: calc(100% - 40px);
-    max-height: calc(100vh - 80px);
-    background: #fff;
-    color: #212529;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    padding: 20px;
-    z-index: 2001;
-    transition: all 0.3s ease;
-    opacity: 0;
-    visibility: hidden;
-    overflow-y: auto;
-    display: none;
+/* Enhanced clickable status badges with dropdown functionality */
+.status-dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-    .popout-panel.open {
-        transform: translate(-50%, -50%) scale(1);
+.status-badge-clickable {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-align: center;
+    min-width: 90px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+    .status-badge-clickable:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .status-badge-clickable.pending {
+        background: linear-gradient(135deg, #ffc107, #ffb300);
+        color: #212529;
+        border-color: #ffc107;
+    }
+
+    .status-badge-clickable.preparing {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border-color: #007bff;
+    }
+
+    .status-badge-clickable.ready {
+        background: linear-gradient(135deg, #fd7e14, #e8650e);
+        color: white;
+        border-color: #fd7e14;
+    }
+
+    .status-badge-clickable.completed {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: white;
+        border-color: #28a745;
+    }
+
+    .status-badge-clickable.cancelled {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border-color: #dc3545;
+    }
+
+.status-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    min-width: 120px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+    .status-dropdown-menu.open {
         opacity: 1;
         visibility: visible;
-        display: block;
+        transform: translateY(0);
     }
 
-    .popout-panel .close-popout {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: transparent;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-        color: #6c757d;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: all 0.2s ease;
+.status-dropdown-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+    .status-dropdown-item:hover {
+        background-color: #f8f9fa;
     }
 
-        .popout-panel .close-popout:hover {
-            background-color: #f8f9fa;
-            color: #495057;
-        }
-
-    .popout-panel .popout-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #e9ecef;
-        margin-bottom: 20px;
-        margin-right: 40px;
+    .status-dropdown-item:first-child {
+        border-radius: 8px 8px 0 0;
     }
 
-        .popout-panel .popout-header h3 {
-            margin: 0;
-            color: #495057;
-            font-size: 18px;
-        }
+    .status-dropdown-item:last-child {
+        border-radius: 0 0 8px 8px;
+    }

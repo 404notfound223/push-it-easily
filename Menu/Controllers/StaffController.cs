@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text;
 
 public class StaffController : Controller
 {
@@ -279,10 +280,100 @@ public class StaffController : Controller
                 return Json(new { success = false, error = "User not found" });
             }
 
+            var hasOrders = await _context.Orders.AnyAsync(o => o.UserId == userId);
+            if (hasOrders)
+            {
+                return Json(new { success = false, error = "Cannot delete user with existing orders. Consider disabling the user instead." });
+            }
+
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    private string HashPassword(string password)
+    {
+        using (var sha256 = System.Security.Cryptography.SHA256.Create())
+        {
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddUser([FromBody] AddUserRequest request)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin")
+        {
+            return Json(new { success = false, error = "Only admin can create users" });
+        }
+
+        try
+        {
+            // Validate input
+            if (string.IsNullOrWhiteSpace(request.UserId) ||
+                string.IsNullOrWhiteSpace(request.Name) ||
+                string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.Password) ||
+                string.IsNullOrWhiteSpace(request.Role))
+            {
+                return Json(new { success = false, error = "All fields are required" });
+            }
+
+            // Check if user ID already exists
+            var existingUser = await _context.Users.FindAsync(request.UserId);
+            if (existingUser != null)
+            {
+                return Json(new { success = false, error = "User ID already exists" });
+            }
+
+            // Check if email already exists
+            var existingEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (existingEmail != null)
+            {
+                return Json(new { success = false, error = "Email already exists" });
+            }
+
+            // Validate role
+            var validRoles = new[] { "admin", "staff", "member" };
+            if (!validRoles.Contains(request.Role.ToLower()))
+            {
+                return Json(new { success = false, error = "Invalid role. Must be admin, staff, or member" });
+            }
+
+            var hashedPassword = HashPassword(request.Password);
+
+            var newUser = new User
+            {
+                UserId = request.UserId,
+                Name = request.Name,
+                Email = request.Email,
+                Password = hashedPassword,
+                Role = request.Role.ToLower()
+            };
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                user = new
+                {
+                    userId = newUser.UserId,
+                    name = newUser.Name,
+                    email = newUser.Email,
+                    role = newUser.Role
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -512,7 +603,7 @@ public class StaffController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddProductWithImage([FromForm] AddProductRequest request, IFormFile? imageFile)
+    public async Task<IActionResult> AddProductWithImage()
     {
         var userRole = HttpContext.Session.GetString("UserRole");
         if (userRole != "admin" && userRole != "staff")
@@ -522,49 +613,47 @@ public class StaffController : Controller
 
         try
         {
-            if (string.IsNullOrWhiteSpace(request.Name))
+            var name = Request.Form["name"].ToString();
+            var priceStr = Request.Form["price"].ToString();
+            var description = Request.Form["description"].ToString();
+            var category = Request.Form["category"].ToString();
+            var imageFile = Request.Form.Files["imageFile"];
+
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return Json(new { success = false, error = "Product name is required" });
             }
 
-            if (string.IsNullOrWhiteSpace(request.Category))
+            if (string.IsNullOrWhiteSpace(category))
             {
                 return Json(new { success = false, error = "Product category is required" });
             }
 
-            if (request.Price <= 0)
+            if (!decimal.TryParse(priceStr, out decimal price) || price <= 0)
             {
-                return Json(new { success = false, error = "Product price must be greater than 0" });
+                return Json(new { success = false, error = "Valid price is required" });
             }
 
-            string imagePath = "/images/default-product.jpg"; // Default image
+            // Get category prefix for product ID generation
+            var categoryEntity = await _context.Categories.FirstOrDefaultAsync(c => c.Name == category && c.IsActive);
+            string categoryPrefix = categoryEntity?.Prefix ?? GetCategoryPrefix(category);
+            string newId = await GenerateNextProductId(categoryPrefix);
 
-            // Handle image upload if provided
+            // Handle image upload
+            string imagePath = "/images/default-product.jpg";
             if (imageFile != null && imageFile.Length > 0)
             {
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-                var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-
-                if (!allowedExtensions.Contains(fileExtension))
+                // Create category-specific directory
+                var categoryDir = Path.Combine("wwwroot", "images", "products", category.ToLower());
+                if (!Directory.Exists(categoryDir))
                 {
-                    return Json(new { success = false, error = "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed." });
-                }
-
-                if (imageFile.Length > 5 * 1024 * 1024) // 5MB limit
-                {
-                    return Json(new { success = false, error = "File size must be less than 5MB" });
-                }
-
-                // Create uploads directory if it doesn't exist
-                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
-                if (!Directory.Exists(uploadsPath))
-                {
-                    Directory.CreateDirectory(uploadsPath);
+                    Directory.CreateDirectory(categoryDir);
                 }
 
                 // Generate unique filename
-                var fileName = Guid.NewGuid().ToString() + fileExtension;
-                var filePath = Path.Combine(uploadsPath, fileName);
+                var fileExtension = Path.GetExtension(imageFile.FileName);
+                var fileName = $"{newId}_{DateTime.Now:yyyyMMddHHmmss}{fileExtension}";
+                var filePath = Path.Combine(categoryDir, fileName);
 
                 // Save file
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -572,19 +661,16 @@ public class StaffController : Controller
                     await imageFile.CopyToAsync(stream);
                 }
 
-                imagePath = $"/uploads/products/{fileName}";
+                imagePath = $"/images/products/{category.ToLower()}/{fileName}";
             }
-
-            string categoryPrefix = GetCategoryPrefix(request.Category);
-            string newId = await GenerateNextProductId(categoryPrefix);
 
             var product = new Product
             {
                 Id = newId,
-                Name = request.Name,
-                Price = request.Price,
-                Description = request.Description ?? "",
-                Category = request.Category,
+                Name = name,
+                Price = price,
+                Description = description ?? "",
+                Category = category,
                 ImagePath = imagePath,
                 Sold = 0,
                 IsDisabled = false
@@ -592,21 +678,11 @@ public class StaffController : Controller
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-
             return Json(new { success = true, product });
         }
         catch (Exception ex)
         {
-            var errorMessage = ex.Message;
-            if (ex.InnerException != null)
-            {
-                errorMessage += " Inner Exception: " + ex.InnerException.Message;
-            }
-
-            // Log the full exception for debugging
-            Console.WriteLine($"[v0] Product save error: {ex}");
-
-            return Json(new { success = false, error = errorMessage });
+            return Json(new { success = false, error = ex.Message });
         }
     }
 
@@ -653,8 +729,8 @@ public class StaffController : Controller
                     }
                 }
 
-                // Create uploads directory if it doesn't exist
-                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
+                var categoryFolder = request.Category.ToLower();
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products", categoryFolder);
                 if (!Directory.Exists(uploadsPath))
                 {
                     Directory.CreateDirectory(uploadsPath);
@@ -670,7 +746,7 @@ public class StaffController : Controller
                     await imageFile.CopyToAsync(stream);
                 }
 
-                existing.ImagePath = $"/uploads/products/{fileName}";
+                existing.ImagePath = $"/uploads/products/{categoryFolder}/{fileName}";
             }
 
             // Update other properties
@@ -998,8 +1074,217 @@ public class StaffController : Controller
         }
     }
 
-    // Helper method to get category prefix
+    [HttpGet]
+    public async Task<IActionResult> GetCategoriesData(int page = 1, int pageSize = 20, string sortBy = "name", string sortOrder = "asc", string status = "")
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var query = _context.Categories.AsQueryable();
+
+            // Filter by status if specified
+            if (!string.IsNullOrEmpty(status) && status != "all")
+            {
+                bool isActive = status == "active";
+                query = query.Where(c => c.IsActive == isActive);
+            }
+
+            // Apply sorting
+            query = sortBy.ToLower() switch
+            {
+                "name" => sortOrder == "desc" ? query.OrderByDescending(c => c.Name) : query.OrderBy(c => c.Name),
+                "prefix" => sortOrder == "desc" ? query.OrderByDescending(c => c.Prefix) : query.OrderBy(c => c.Prefix),
+                "created" => sortOrder == "desc" ? query.OrderByDescending(c => c.CreatedDate) : query.OrderBy(c => c.CreatedDate),
+                _ => query.OrderBy(c => c.Name)
+            };
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            var categories = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Json(new
+            {
+                success = true,
+                categories = categories,
+                currentPage = page,
+                totalPages = totalPages,
+                totalCount = totalCount,
+                pageSize = pageSize
+            });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddCategory([FromBody] AddCategoryRequest request)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            // Validate input
+            if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Prefix))
+            {
+                return Json(new { success = false, error = "Name and prefix are required" });
+            }
+
+            if (request.Prefix.Length != 2)
+            {
+                return Json(new { success = false, error = "Prefix must be exactly 2 characters" });
+            }
+
+            // Check if prefix already exists
+            var existingPrefix = await _context.Categories.FirstOrDefaultAsync(c => c.Prefix == request.Prefix.ToUpper());
+            if (existingPrefix != null)
+            {
+                return Json(new { success = false, error = "Prefix already exists" });
+            }
+
+            // Check if name already exists
+            var existingName = await _context.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == request.Name.ToLower());
+            if (existingName != null)
+            {
+                return Json(new { success = false, error = "Category name already exists" });
+            }
+
+            var category = new Category
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = request.Name,
+                Prefix = request.Prefix.ToUpper(),
+                Description = request.Description,
+                IsActive = true,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, category });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var category = await _context.Categories.FindAsync(request.Id);
+            if (category == null)
+            {
+                return Json(new { success = false, error = "Category not found" });
+            }
+
+            // Check if new prefix conflicts with other categories
+            if (request.Prefix.ToUpper() != category.Prefix)
+            {
+                var existingPrefix = await _context.Categories.FirstOrDefaultAsync(c => c.Prefix == request.Prefix.ToUpper() && c.Id != request.Id);
+                if (existingPrefix != null)
+                {
+                    return Json(new { success = false, error = "Prefix already exists" });
+                }
+            }
+
+            category.Name = request.Name;
+            category.Prefix = request.Prefix.ToUpper();
+            category.Description = request.Description;
+            category.IsActive = request.IsActive;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, category });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteCategory(string id)
+    {
+        var userRole = HttpContext.Session.GetString("UserRole");
+        if (userRole != "admin" && userRole != "staff")
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        try
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+            {
+                return Json(new { success = false, error = "Category not found" });
+            }
+
+            // Check if category has products
+            var hasProducts = await _context.Products.AnyAsync(p => p.Category == category.Name);
+            if (hasProducts)
+            {
+                return Json(new { success = false, error = "Cannot delete category with existing products. Consider deactivating instead." });
+            }
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
+    }
+
     private string GetCategoryPrefix(string category)
+    {
+        var categoryEntity = _context.Categories.FirstOrDefault(c => c.Name == category && c.IsActive);
+        if (categoryEntity != null)
+        {
+            return categoryEntity.Prefix;
+        }
+
+        // Fallback to hardcoded prefixes for existing categories
+        return category.ToLower() switch
+        {
+            "pizza" => "PZ",
+            "pasta" => "PA",
+            "seafood" => "SF",
+            "burgers" => "BG",
+            "beverages" => "BV",
+            "desserts" => "DS",
+            "specials" => "SP",
+            _ => "GN" // General
+        };
+    }
+
+    // Helper method to get category prefix
+    private string GetCategoryPrefix_Original(string category)
     {
         return category.ToLower() switch
         {
