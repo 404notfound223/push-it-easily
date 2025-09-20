@@ -4,15 +4,12 @@ using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// db mdf path
 builder.Services.AddControllersWithViews();
 builder.Services.AddSqlServer<DB>($@"
     Data Source=(LocalDB)\MSSQLLocalDB;
     AttachDbFilename={builder.Environment.ContentRootPath}\DB.mdf;
 ");
-
-builder.Services.AddDbContext<DB>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Stripe setup
 builder.Services.AddSingleton<StripeClient>(sp =>
