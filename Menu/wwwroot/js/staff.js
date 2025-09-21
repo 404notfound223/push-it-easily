@@ -1291,7 +1291,7 @@ function updateOrdersTable(orders) {
 
         row.innerHTML = `
             <td>${order.orderId.substring(0, 8).toUpperCase()}</td>
-            <td>${order.user?.name || "Guest"}</td>
+            <td>${order.customerName}</td>
             <td>${new Date(order.orderDate).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",

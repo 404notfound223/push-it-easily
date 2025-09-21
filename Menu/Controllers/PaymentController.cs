@@ -60,7 +60,7 @@ namespace Menu.Controllers
                 var order = new Order
                 {
                     OrderId = Guid.NewGuid().ToString(),
-                    UserId = userId,
+                    UserId = userId?.Trim(),
                     User = user,
                     TotalAmount = request.TotalAmount,
                     Status = "Pending Payment",
@@ -265,7 +265,7 @@ namespace Menu.Controllers
                 var order = new Order
                 {
                     OrderId = Guid.NewGuid().ToString(),
-                    UserId = userId,
+                    UserId = userId?.Trim(),
                     User = user,
                     TotalAmount = request.TotalAmount,
                     Status = "Pending Payment",
