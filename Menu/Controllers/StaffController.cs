@@ -70,10 +70,10 @@ public class StaffController : Controller
                 orderDate = order.OrderDate,
                 status = order.Status,
                 totalAmount = order.TotalAmount,
-                user = order.User == null ? null : new
+                user = order.User == null ? new { name = "Guest", email = "N/A" } : new
                 {
-                    name = order.User.Name,
-                    email = order.User.Email
+                    name = order.User.Name ?? "Guest",
+                    email = order.User.Email ?? "N/A"
                 },
                 orderItems = order.OrderDetails.Select(od => new
                 {
@@ -91,8 +91,7 @@ public class StaffController : Controller
         return Json(result);
     }
 
-
-[HttpGet("GetUserById")]
+    [HttpGet("GetUserById")]
     public async Task<IActionResult> GetUserById(string userId)
     {
         var user = await _context.Users.FindAsync(userId);
@@ -127,10 +126,6 @@ public class StaffController : Controller
             return Json(new { success = false, error = ex.Message });
         }
     }
-
-
-
-
 
     [HttpPost]
     public async Task<IActionResult> UpdateOrder([FromBody] UpdateOrderRequest request)
@@ -224,9 +219,7 @@ public class StaffController : Controller
         }
     }
 
-
-
-[HttpPost]
+    [HttpPost]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -1066,7 +1059,6 @@ public class StaffController : Controller
             return Json(new { success = false, error = ex.Message });
         }
     }
-
 
     private string GetCategoryPrefix(string category)
     {
