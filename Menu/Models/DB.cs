@@ -12,7 +12,6 @@ public class DB : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderDetail> OrderDetails { get; set; }
-    public DbSet<Category> Categories { get; set; }
 
     protected DB()
     {
@@ -24,7 +23,7 @@ public class Product
     [Key]
     public required string Id { get; set; }
     public required string Name { get; set; }
-    [Precision(4, 2)]
+    [Precision(10, 2)]
     public required decimal Price { get; set; }
     public string Description { get; set; } // Fixed contradictory required nullable field - made it optional
     public required string Category { get; set; }
@@ -91,26 +90,8 @@ public class User
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }
 
-public class Category
-{
-    [Key]
-    public required string Id { get; set; }
 
-    [MaxLength(100)]
-    public required string Name { get; set; }
-
-    [MaxLength(500)]
-    public string? Description { get; set; }
-
-    [MaxLength(2)]
-    public required string Prefix { get; set; } // 2-character prefix for product IDs
-
-    public bool IsActive { get; set; } = true;
-
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
-}
-
-// need to move all the method below to separate files later
+// need to move all the method below to separate files later  // nvm too lazy
 public class VerificationRequest
 {
     public required string Email { get; set; }
@@ -207,20 +188,3 @@ public class BulkDeleteOrdersRequest
 {
     public List<string> OrderIds { get; set; } = new List<string>();
 }
-
-public class AddCategoryRequest
-{
-    public required string Name { get; set; }
-    public string? Description { get; set; }
-    public required string Prefix { get; set; }
-}
-
-public class UpdateCategoryRequest
-{
-    public required string Id { get; set; }
-    public required string Name { get; set; }
-    public string? Description { get; set; }
-    public required string Prefix { get; set; }
-    public bool IsActive { get; set; }
-}
-

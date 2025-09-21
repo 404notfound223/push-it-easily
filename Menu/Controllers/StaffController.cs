@@ -622,8 +622,7 @@ public class StaffController : Controller
             }
 
             // Get category prefix for product ID generation
-            var categoryEntity = await _context.Categories.FirstOrDefaultAsync(c => c.Name == category && c.IsActive);
-            string categoryPrefix = categoryEntity?.Prefix ?? GetCategoryPrefix(category);
+            string categoryPrefix = GetCategoryPrefix(category);
             string newId = await GenerateNextProductId(categoryPrefix);
 
             // Handle image upload
@@ -1074,13 +1073,9 @@ public class StaffController : Controller
 
     private string GetCategoryPrefix(string category)
     {
-        var categoryEntity = _context.Categories.FirstOrDefault(c => c.Name == category && c.IsActive);
-        if (categoryEntity != null)
-        {
-            return categoryEntity.Prefix;
-        }
+        if (string.IsNullOrWhiteSpace(category))
+            return "GN"; // General fallback
 
-        // Fallback to hardcoded prefixes for existing categories
         return category.ToLower() switch
         {
             "pizza" => "PZ",
@@ -1090,9 +1085,10 @@ public class StaffController : Controller
             "beverages" => "BV",
             "desserts" => "DS",
             "specials" => "SP",
-            _ => "GN" // General
+            _ => "GN" // General or unknown
         };
     }
+
 
     // Helper method to get category prefix
     private string GetCategoryPrefix_Original(string category)
@@ -1114,37 +1110,38 @@ public class StaffController : Controller
     {
         try
         {
-            // Find the highest existing ID with this prefix
             var existingIds = await _context.Products
                 .Where(p => p.Id.StartsWith(prefix))
                 .Select(p => p.Id)
                 .ToListAsync();
 
             int maxNumber = 0;
+
             foreach (var id in existingIds)
             {
-                if (id.Length == 5 && int.TryParse(id.Substring(2), out int number))
+                if (id.Length > prefix.Length &&
+                    int.TryParse(id.Substring(prefix.Length), out int number))
                 {
                     maxNumber = Math.Max(maxNumber, number);
                 }
             }
 
-            // Generate next number with leading zeros
             int nextNumber = maxNumber + 1;
             string newId = $"{prefix}{nextNumber:D3}";
 
+            // Safety check in case of race condition
             while (await _context.Products.AnyAsync(p => p.Id == newId))
             {
                 nextNumber++;
                 newId = $"{prefix}{nextNumber:D3}";
             }
 
-            Console.WriteLine($"[v0] Generated new product ID: {newId}");
+            Console.WriteLine($"Generated new product ID: {newId}");
             return newId;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[v0] Error generating product ID: {ex}");
+            Console.WriteLine($"Error generating product ID: {ex}");
             throw;
         }
     }
