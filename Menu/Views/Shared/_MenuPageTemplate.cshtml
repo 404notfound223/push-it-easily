@@ -1,0 +1,141 @@
+﻿@model IEnumerable<Menu.Models.Product>
+@{
+    var category = ViewBag.Category as string ?? "";
+    var title = ViewBag.Title as string ?? "Menu";
+}
+
+<link rel="stylesheet" href="~/css/ajax-paging.css" asp-append-version="true" />
+
+<h2>@title</h2>
+
+<!-- AJAX paging container for dynamic content loading -->
+<div id="menu-paging-container">
+    <!-- AJAX paging controls and content will be inserted here -->
+</div>
+
+<!-- Fallback content for non-JavaScript users -->
+<noscript>
+    <div class="product-grid">
+        @foreach (var product in Model)
+        {
+            <div class="product-card" onclick="addToOrder('@product.Id', '@product.Name', @product.Price)">
+                <div class="product-image-wrapper">
+                    <img src="@product.ImagePath" alt="@product.Name" class="product-image" />
+                </div>
+                <h3>@product.Name</h3>
+                <p>@product.Description</p>
+                <p><b>Category:</b> @product.Category</p>
+                <p><b>Price:</b> $@product.Price</p>
+            </div>
+        }
+    </div>
+</noscript>
+
+<script src="~/js/ajax-paging.js"></script>
+<script src="~/js/order.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        ajaxPaging = new AjaxPaging({
+            containerId: 'menu-paging-container',
+            apiUrl: '/Menu/GetPagedProducts',
+            pageSize: 12,
+            defaultSort: 'name',
+            templateFunction: function(product) {
+                return `
+                    <div class="product-card" onclick="addToOrder('${product.id}', '${product.name}', ${product.price})">
+                        <div class="product-image-wrapper">
+                            <img src="${product.imagePath}" alt="${product.name}" class="product-image" />
+                        </div>
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        <p><b>Category:</b> ${product.category}</p>
+                        <p><b>Price:</b> $${product.price.toFixed(2)}</p>
+                        ${product.isDisabled ? '<div class="disabled-badge">Disabled</div>' : ''}
+                    </div>
+                `;
+            }
+        });
+
+        @if (!string.IsNullOrEmpty(category))
+        {
+                <text>
+                ajaxPaging.category = '@category';
+                const categoryFilter = document.getElementById('category-filter');
+                if (categoryFilter) {
+                    categoryFilter.value = '@category';
+                }
+                </text>
+        }
+    });
+</script>
+
+<style>
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+    }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #007bff;
+        }
+
+    .product-image-wrapper {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        border-radius: 6px;
+        margin-bottom: 10px;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-card h3 {
+        margin: 10px 0;
+        color: #333;
+        font-size: 18px;
+    }
+
+    .product-card p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .disabled-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #dc3545;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    #content-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+</style>

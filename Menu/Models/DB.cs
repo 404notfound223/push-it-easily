@@ -223,3 +223,4 @@ public class UpdateCategoryRequest
     public required string Prefix { get; set; }
     public bool IsActive { get; set; }
 }
+

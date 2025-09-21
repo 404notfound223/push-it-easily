@@ -3,59 +3,44 @@
   "WorkspaceRootPath": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\order\\receipt.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\order\\receipt.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\css\\receipt.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\css\\receipt.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\css\\staff.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\css\\staff.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\staff\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\staff\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_USER_SOURCE_REPOS_PUSH_IT_EASILY_MENU_DB.MDF/True/SqlTable/dbo.User.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\js\\secure-order.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\js\\secure-order.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\login\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\login\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\js\\ajax-paging.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\js\\ajax-paging.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\css\\ajax-paging.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\css\\ajax-paging.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\shared\\_menupagetemplate.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\shared\\_menupagetemplate.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\order\\orderhistory.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\order\\orderhistory.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\order\\invoice.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\order\\invoice.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\menu\\specials.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -78,20 +63,64 @@
       "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\desserts.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\menu\\burgers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\burgers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\services\\paymentsecurityservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:services\\paymentsecurityservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\menu\\all.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\all.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\models\\validationmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:models\\validationmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\models\\pagedresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:models\\pagedresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\menu\\burgers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\burgers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\menu\\beverages.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\beverages.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
-      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\menu\\all.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\menu\\all.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\home\\searchresult.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\home\\searchresult.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\menu.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:menu.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\controllers\\menucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:controllers\\menucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\js\\staff.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\js\\staff.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\controllers\\staffcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:controllers\\staffcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\wwwroot\\css\\staff.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:wwwroot\\css\\staff.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|c:\\users\\user\\source\\repos\\push-it-easily\\menu\\views\\staff\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0120621A-C7C2-49AE-9CC0-387A9FCE14D1}|Menu.csproj|solutionrelative:views\\staff\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -101,8 +130,346 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 12,
+          "SelectedChildIndex": 5,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "receipt.css",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\receipt.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\receipt.css",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\receipt.css",
+              "RelativeToolTip": "wwwroot\\css\\receipt.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-09-21T06:03:57.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "secure-order.js",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\js\\secure-order.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\secure-order.js",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\js\\secure-order.js*",
+              "RelativeToolTip": "wwwroot\\js\\secure-order.js*",
+              "ViewState": "AgIAALUAAAAAAAAAAAAswNwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-09-21T05:22:09.73Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ajax-paging.js",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\js\\ajax-paging.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\ajax-paging.js",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\js\\ajax-paging.js*",
+              "RelativeToolTip": "wwwroot\\js\\ajax-paging.js*",
+              "ViewState": "AgIAALQAAAAAAAAAAAAwwNYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-09-21T05:21:39.516Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ajax-paging.css",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\ajax-paging.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\ajax-paging.css",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\ajax-paging.css*",
+              "RelativeToolTip": "wwwroot\\css\\ajax-paging.css*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-09-21T05:21:11.973Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "_MenuPageTemplate.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Shared\\_MenuPageTemplate.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_MenuPageTemplate.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Shared\\_MenuPageTemplate.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_MenuPageTemplate.cshtml",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAwwI0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:20:38.843Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Receipt.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Order\\Receipt.cshtml",
+              "RelativeDocumentMoniker": "Views\\Order\\Receipt.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Order\\Receipt.cshtml*",
+              "RelativeToolTip": "Views\\Order\\Receipt.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:19:39.474Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "OrderHistory.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Order\\OrderHistory.cshtml",
+              "RelativeDocumentMoniker": "Views\\Order\\OrderHistory.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Order\\OrderHistory.cshtml*",
+              "RelativeToolTip": "Views\\Order\\OrderHistory.cshtml*",
+              "ViewState": "AgIAAJoAAAAAAAAAAAAwwHABAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:19:05.695Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Invoice.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Order\\Invoice.cshtml",
+              "RelativeDocumentMoniker": "Views\\Order\\Invoice.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Order\\Invoice.cshtml*",
+              "RelativeToolTip": "Views\\Order\\Invoice.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMoBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:18:47.761Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\HomeController.cs*",
+              "RelativeToolTip": "Controllers\\HomeController.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:03:58.756Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "OrderController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\OrderController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OrderController.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\OrderController.cs*",
+              "RelativeToolTip": "Controllers\\OrderController.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:05:06.222Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Specials.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Specials.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\Specials.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:18:24.402Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Seafood.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Seafood.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\Seafood.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:18:15.436Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Pizza.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Pizza.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\Pizza.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:18:08.335Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Pasta.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Pasta.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\Pasta.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:17:47.717Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ValidationModels.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ValidationModels.cs",
+              "RelativeDocumentMoniker": "Models\\ValidationModels.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ValidationModels.cs",
+              "RelativeToolTip": "Models\\ValidationModels.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAwwC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:17:10.149Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "PagedResult.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\PagedResult.cs",
+              "RelativeDocumentMoniker": "Models\\PagedResult.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\PagedResult.cs",
+              "RelativeToolTip": "Models\\PagedResult.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAA5wBkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:16:36.304Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Desserts.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Desserts.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\Desserts.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:14:58.097Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Burgers.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Burgers.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\Burgers.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:14:44.702Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Beverages.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\Beverages.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\Beverages.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:14:27.498Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "All.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml",
+              "RelativeDocumentMoniker": "Views\\Menu\\All.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml*",
+              "RelativeToolTip": "Views\\Menu\\All.cshtml*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:14:17.884Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "SearchResult.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Home\\SearchResult.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\SearchResult.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Home\\SearchResult.cshtml",
+              "RelativeToolTip": "Views\\Home\\SearchResult.cshtml",
+              "ViewState": "AgIAALoAAAAAAAAAAAAAAD4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-21T05:12:07.798Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "PaymentSecurityService.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Services\\PaymentSecurityService.cs",
+              "RelativeDocumentMoniker": "Services\\PaymentSecurityService.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Services\\PaymentSecurityService.cs",
+              "RelativeToolTip": "Services\\PaymentSecurityService.cs",
+              "ViewState": "AgIAAJoAAAAAAAAAAAAtwKsAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:11:14.707Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "DB.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
+              "RelativeDocumentMoniker": "Models\\DB.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs*",
+              "RelativeToolTip": "Models\\DB.cs*",
+              "ViewState": "AgIAANkAAAAAAAAAAAA4wOIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:06:10.141Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Menu",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Menu.csproj",
+              "RelativeDocumentMoniker": "Menu.csproj",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Menu.csproj*",
+              "RelativeToolTip": "Menu.csproj*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-21T05:08:53.803Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "PaymentController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\PaymentController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PaymentController.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\PaymentController.cs*",
+              "RelativeToolTip": "Controllers\\PaymentController.cs*",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAYwAIAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:05:26.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "MenuController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\MenuController.cs",
+              "RelativeDocumentMoniker": "Controllers\\MenuController.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\MenuController.cs*",
+              "RelativeToolTip": "Controllers\\MenuController.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAN8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T05:04:40.84Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
@@ -125,277 +492,52 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Dashboard.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Staff\\Dashboard.cshtml",
-              "RelativeDocumentMoniker": "Views\\Staff\\Dashboard.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Staff\\Dashboard.cshtml",
-              "RelativeToolTip": "Views\\Staff\\Dashboard.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-10T13:07:03.965Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "HomeController.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\HomeController.cs",
-              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\HomeController.cs",
-              "RelativeToolTip": "Controllers\\HomeController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T13:00:14.444Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "_LayoutAdmin.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Shared\\_LayoutAdmin.cshtml",
-              "RelativeDocumentMoniker": "Views\\Shared\\_LayoutAdmin.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Shared\\_LayoutAdmin.cshtml",
-              "RelativeToolTip": "Views\\Shared\\_LayoutAdmin.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-10T12:39:59.181Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "dbo.User.sql",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_USER_SOURCE_REPOS_PUSH_IT_EASILY_MENU_DB.MDF/True/SqlTable/dbo.User.sql",
-              "ToolTip": "ViewDataWindow_MSSQL__/_LocalDB__MSSQLLocalDB/C__USERS_USER_SOURCE_REPOS_PUSH_IT_EASILY_MENU_DB.MDF/True/SqlTable/dbo.User.sql",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-09-10T12:36:19.596Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAAB0AAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-09T02:11:45.025Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "LoginController.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\LoginController.cs",
-              "RelativeDocumentMoniker": "Controllers\\LoginController.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\LoginController.cs",
-              "RelativeToolTip": "Controllers\\LoginController.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAgwKsAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-04T09:45:54.913Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Register.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Login\\Register.cshtml",
-              "RelativeDocumentMoniker": "Views\\Login\\Register.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Login\\Register.cshtml",
-              "RelativeToolTip": "Views\\Login\\Register.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-31T05:53:13.865Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-08-29T11:07:23.131Z",
+              "DocumentIndex": 26,
+              "Title": "staff.js",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\js\\staff.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\staff.js",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\js\\staff.js",
+              "RelativeToolTip": "wwwroot\\js\\staff.js",
+              "ViewState": "AgIAAOYEAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-09-21T04:35:57.542Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "app.css",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\app.css",
-              "RelativeDocumentMoniker": "wwwroot\\css\\app.css",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\app.css",
-              "RelativeToolTip": "wwwroot\\css\\app.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-09-10T13:14:44.503Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 27,
+              "Title": "StaffController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\StaffController.cs",
+              "RelativeDocumentMoniker": "Controllers\\StaffController.cs",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Controllers\\StaffController.cs",
+              "RelativeToolTip": "Controllers\\StaffController.cs",
+              "ViewState": "AgIAAC8FAAAAAAAAAAAuwD0FAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T13:18:44.493Z"
+              "WhenOpened": "2025-09-21T04:30:14.798Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "_ViewImports.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\_ViewImports.cshtml",
-              "RelativeDocumentMoniker": "Views\\_ViewImports.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\_ViewImports.cshtml",
-              "RelativeToolTip": "Views\\_ViewImports.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-10T13:19:46.312Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 28,
               "Title": "staff.css",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\staff.css",
               "RelativeDocumentMoniker": "wwwroot\\css\\staff.css",
               "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\wwwroot\\css\\staff.css",
               "RelativeToolTip": "wwwroot\\css\\staff.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIoDAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-09-10T13:20:16.525Z"
+              "WhenOpened": "2025-09-21T04:29:46.174Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "Specials.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\Specials.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Specials.cshtml",
-              "RelativeToolTip": "Views\\Menu\\Specials.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 29,
+              "Title": "Dashboard.cshtml",
+              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Staff\\Dashboard.cshtml",
+              "RelativeDocumentMoniker": "Views\\Staff\\Dashboard.cshtml",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Staff\\Dashboard.cshtml",
+              "RelativeToolTip": "Views\\Staff\\Dashboard.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:10:08.744Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "ErrorViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ErrorViewModel.cs",
-              "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\ErrorViewModel.cs",
-              "RelativeToolTip": "Models\\ErrorViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-29T11:35:08.74Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "DB.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
-              "RelativeDocumentMoniker": "Models\\DB.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Models\\DB.cs",
-              "RelativeToolTip": "Models\\DB.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-29T11:35:09.625Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Seafood.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\Seafood.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Seafood.cshtml",
-              "RelativeToolTip": "Views\\Menu\\Seafood.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:57.799Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "Pizza.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\Pizza.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pizza.cshtml",
-              "RelativeToolTip": "Views\\Menu\\Pizza.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:47.103Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "Pasta.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\Pasta.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Pasta.cshtml",
-              "RelativeToolTip": "Views\\Menu\\Pasta.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:29.466Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "Desserts.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\Desserts.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Desserts.cshtml",
-              "RelativeToolTip": "Views\\Menu\\Desserts.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:15.733Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "Burgers.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\Burgers.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Burgers.cshtml",
-              "RelativeToolTip": "Views\\Menu\\Burgers.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:09:02.11Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "Beverages.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\Beverages.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\Beverages.cshtml",
-              "RelativeToolTip": "Views\\Menu\\Beverages.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:08:43.948Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "All.cshtml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml",
-              "RelativeDocumentMoniker": "Views\\Menu\\All.cshtml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\Views\\Menu\\All.cshtml",
-              "RelativeToolTip": "Views\\Menu\\All.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T11:08:38.42Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "README.md",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\README.md",
-              "RelativeDocumentMoniker": "README.md",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\push-it-easily\\Menu\\README.md",
-              "RelativeToolTip": "README.md",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2025-08-29T11:03:36.492Z"
+              "WhenOpened": "2025-09-10T13:07:03.965Z"
             }
           ]
         }
