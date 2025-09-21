@@ -10,10 +10,10 @@
                 <polyline points="22,4 12,14.01 9,11.01"></polyline>
             </svg>
         </div>
-        
+
         <h1>Payment Successful!</h1>
         <p class="success-message">Thank you for your order. Your payment has been processed successfully.</p>
-        
+
         <div class="order-details">
             <div class="detail-row">
                 <span class="label">Order Number:</span>
@@ -23,9 +23,27 @@
                 <span class="label">Payment ID:</span>
                 <span class="value">@ViewBag.PaymentIntentId</span>
             </div>
+            @if (ViewBag.AmountPaid != null)
+            {
+                <div class="detail-row">
+                    <span class="label">Amount Paid:</span>
+                    <span class="value">$@(((decimal)ViewBag.AmountPaid).ToString("F2"))</span>
+                </div>
+            }
+            @if (ViewBag.MemberDiscount != null && (decimal)ViewBag.MemberDiscount > 0)
+            {
+                <div class="detail-row discount-row">
+                    <span class="label">Member Discount:</span>
+                    <span class="value discount-amount">-$@(((decimal)ViewBag.MemberDiscount).ToString("F2"))</span>
+                </div>
+            }
         </div>
-        
+
         <div class="action-buttons">
+            <!-- Added print receipt button -->
+            <button onclick="printOnlineReceipt()" class="btn btn-success">
+                <i class="fas fa-print"></i> Print Receipt
+            </button>
             <button onclick="createAnotherOrder()" class="btn btn-primary">Create Another Order</button>
             <button onclick="goToMenu()" class="btn btn-secondary">Back to Menu</button>
             <button onclick="logout()" class="btn btn-outline">Logout</button>
@@ -33,28 +51,81 @@
     </div>
 </div>
 
-<script>
-    function createAnotherOrder() {
-        window.location.href = '/Menu/All';
-    }
-    
-    function goToMenu() {
-        window.location.href = '/Menu/All';
-    }
-    
-    function logout() {
-        if (confirm('Are you sure you want to logout?')) {
-            fetch('/Login/Logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+<!-- Hidden receipt template for printing -->
+<div id="online-receipt" style="display: none;">
+    <div class="receipt-header">
+        <h2>The Secret Restaurant</h2>
+        <p>Payment Receipt</p>
+        <hr>
+    </div>
+    <div class="receipt-body">
+        <div class="receipt-row">
+            <span>Date:</span>
+            <span id="receipt-date"></span>
+        </div>
+        <div class="receipt-row">
+            <span>Time:</span>
+            <span id="receipt-time"></span>
+        </div>
+        <div class="receipt-row">
+            <span>Order ID:</span>
+            <span>@ViewBag.OrderId</span>
+        </div>
+        <div class="receipt-row">
+            <span>Payment ID:</span>
+            <span>@ViewBag.PaymentIntentId</span>
+        </div>
+        @if (ViewBag.Order != null)
+        {
+            <hr>
+            <div class="receipt-items">
+                <h4>Order Items:</h4>
+                @foreach (var detail in ((Menu.Models.Order)ViewBag.Order).OrderDetails)
+                {
+                    <div class="receipt-row">
+                        <span>@detail.Product.Name x@detail.Quantity</span>
+                        <span>$@((detail.UnitPrice * detail.Quantity).ToString("F2"))</span>
+                    </div>
                 }
-            }).then(() => {
-                window.location.href = '/Login/Login';
-            });
+            </div>
+            <hr>
+            <div class="receipt-row">
+                <span>Subtotal:</span>
+                <span>$@(((Menu.Models.Order)ViewBag.Order).OrderDetails.Sum(od => od.UnitPrice * od.Quantity).ToString("F2"))</span>
+            </div>
+            @if (ViewBag.MemberDiscount != null && (decimal)ViewBag.MemberDiscount > 0)
+            {
+                <div class="receipt-row discount-row">
+                    <span>Member Discount (10%):</span>
+                    <span class="discount-amount">-$@(((decimal)ViewBag.MemberDiscount).ToString("F2"))</span>
+                </div>
+            }
+            <div class="receipt-row">
+                <span>Tax (8.5%):</span>
+                <span>$@((((Menu.Models.Order)ViewBag.Order).OrderDetails.Sum(od => od.UnitPrice * od.Quantity) * 0.085m).ToString("F2"))</span>
+            </div>
         }
-    }
-</script>
+        <div class="receipt-row total-row">
+            <span><strong>Total Paid:</strong></span>
+            <span><strong>$@(ViewBag.AmountPaid != null ? ((decimal)ViewBag.AmountPaid).ToString("F2") : "0.00")</strong></span>
+        </div>
+        <hr>
+        <p class="receipt-instructions">
+            Thank you for your online payment! Your order has been confirmed and payment processed successfully.
+            Keep this receipt for your records.
+        </p>
+        <div class="receipt-row">
+            <span><strong>Payment Method:</strong></span>
+            <span>Online Payment (Stripe)</span>
+        </div>
+        <div class="receipt-row">
+            <span><strong>Status:</strong></span>
+            <span>PAID</span>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/Print.js" asp-append-version="true"></script>
 
 <style>
     .payment-result {
@@ -64,7 +135,7 @@
         min-height: 60vh;
         padding: 40px 20px;
     }
-    
+
     .result-container {
         background: white;
         border-radius: 12px;
@@ -74,65 +145,87 @@
         max-width: 500px;
         width: 100%;
     }
-    
+
     .success-icon {
         margin-bottom: 20px;
     }
-    
+
     .success-page h1 {
         color: #28a745;
         margin-bottom: 15px;
         font-size: 2.5rem;
     }
-    
+
     .success-message {
         color: #6c757d;
         font-size: 1.1rem;
         margin-bottom: 30px;
         line-height: 1.5;
     }
-    
+
     .order-details {
         background: #f8f9fa;
         border-radius: 8px;
         padding: 20px;
         margin-bottom: 30px;
     }
-    
+
     .detail-row {
         display: flex;
         justify-content: space-between;
         margin-bottom: 10px;
     }
-    
-    .detail-row:last-child {
-        margin-bottom: 0;
-    }
-    
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
     .label {
         font-weight: 600;
         color: #495057;
     }
-    
+
     .value {
         color: #212529;
         font-family: monospace;
     }
-    
+
+    /* Added discount styling */
+    .discount-row .label {
+        color: #28a745;
+    }
+
+    .discount-amount {
+        color: #28a745 !important;
+        font-weight: bold;
+    }
+
     .action-buttons {
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
-    
+
+    /* Added print button styling */
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border: 1px solid #28a745;
+    }
+
+        .btn-success:hover {
+            background: #218838;
+            border-color: #1e7e34;
+        }
+
     .btn-outline {
         background: transparent;
         color: #6c757d;
         border: 1px solid #6c757d;
     }
-    
-    .btn-outline:hover {
-        background: #6c757d;
-        color: white;
-    }
+
+        .btn-outline:hover {
+            background: #6c757d;
+            color: white;
+        }
 </style>

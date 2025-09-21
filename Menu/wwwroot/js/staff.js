@@ -10,6 +10,17 @@
     // Show selected tab
     document.getElementById(tabName + "-tab").classList.add("active")
     if (event) event.target.classList.add("active")
+
+                // Load data for the selected tab
+            if (tabName === 'orders') {
+                loadOrders();
+            } else if (tabName === 'users') {
+                loadUsers();
+            } else if (tabName === 'products') {
+                loadProducts();
+            } else if (tabName === 'categories') {
+                loadCategories();
+            }
 }
 
 // ================= POPOUT MANAGEMENT =================
@@ -457,6 +468,18 @@ function deleteOrder(orderId) {
     const formData = new FormData()
     formData.append("orderId", orderId)
 
+    // Show loading state on delete button
+    const deleteBtn = document.querySelector(`button[onclick*="confirmDeleteOrder('${orderId}')"]`)
+    if (deleteBtn) {
+        deleteBtn.disabled = true
+        deleteBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+            Deleting...
+        `
+    }
+
     fetch("/Staff/DeleteOrder", {
         method: "POST",
         body: formData,
@@ -465,13 +488,51 @@ function deleteOrder(orderId) {
         .then((res) => res.json())
         .then((data) => {
             if (data.success) {
-                showNotification("Order deleted successfully", "success")
-                location.reload()
+                showNotification(`Order ${orderId.substring(0, 8).toUpperCase()} deleted successfully`, "success")
+                // Remove the row from table instead of full page reload
+                const row = document.querySelector(`tr[data-order-id="${orderId}"]`)
+                if (row) {
+                    row.style.transition = "opacity 0.3s ease"
+                    row.style.opacity = "0"
+                    setTimeout(() => {
+                        row.remove()
+                        // Update pagination info if needed
+                        loadOrders(currentOrderPage)
+                    }, 300)
+                }
             } else {
                 showNotification("Error deleting order: " + data.error, "error")
+                // Restore delete button
+                if (deleteBtn) {
+                    deleteBtn.disabled = false
+                    deleteBtn.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3,6 5,6 21,6"></polyline>
+                            <path d="M19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                        Delete
+                    `
+                }
             }
         })
-        .catch(() => showNotification("Error deleting order", "error"))
+        .catch(() => {
+            showNotification("Error deleting order", "error")
+            // Restore delete button
+            if (deleteBtn) {
+                deleteBtn.disabled = false
+                deleteBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="M19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                    Delete
+                `
+            }
+        })
 }
 
 // ================= DELETE =================
@@ -780,7 +841,6 @@ function confirmDelete(type, id) {
         order: "order",
         user: "user",
         product: "product",
-        category: "category",
     }
 
     const message = `Are you sure you want to delete this ${typeNames[type]}? This action cannot be undone.`
@@ -789,7 +849,6 @@ function confirmDelete(type, id) {
         if (type === "order") deleteOrder(id)
         else if (type === "user") deleteUser(id)
         else if (type === "product") deleteProduct(id)
-        else if (type === "category") deleteCategory(id)
     }
 }
 
@@ -1016,9 +1075,31 @@ function updateOrdersTable(orders) {
             </td>
             <td style="font-weight: 600; color: #28a745;">$${order.totalAmount.toFixed(2)}</td>
             <td>
-                <button onclick="openPopout('orderDetailPanel', '${order.orderId}')" class="btn btn-info btn-sm">
-                    View Details
-                </button>
+                <div class="action-buttons" style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    <button onclick="openPopout('orderDetailPanel', '${order.orderId}')" class="btn btn-info btn-sm" title="View Details">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        View
+                    </button>
+                    <button onclick="editOrder('${order.orderId}')" class="btn btn-warning btn-sm" title="Edit Order">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <button onclick="confirmDeleteOrder('${order.orderId}')" class="btn btn-danger btn-sm" title="Delete Order">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3,6 5,6 21,6"></polyline>
+                            <path d="M19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
             </td>
         `
         tbody.appendChild(row)
@@ -1236,146 +1317,6 @@ function searchProducts() {
             row.style.display = "none"
         }
     })
-}
-
-// ================= CATEGORY MANAGEMENT =================
-let currentCategoryPage = 1
-const currentCategoryPageSize = 20
-
-function loadCategories(page = 1) {
-    currentCategoryPage = page
-
-    const tbody = document.getElementById("categories-table-body")
-    if (tbody) {
-        tbody.innerHTML =
-            '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #6c757d;"><div style="display: inline-flex; align-items: center; gap: 10px;"><div style="width: 20px; height: 20px; border: 2px solid #007bff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>Loading categories...</div></td></tr>'
-    }
-
-    const params = new URLSearchParams({
-        page: currentCategoryPage,
-        pageSize: currentCategoryPageSize,
-    })
-
-    fetch(`/Staff/GetCategoriesData?${params}`)
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.success) {
-                updateCategoriesTable(data.categories)
-                updateCategoryPagination(data.currentPage, data.totalPages, data.totalCount)
-            } else {
-                showNotification("Error loading categories: " + data.error, "error")
-            }
-        })
-        .catch(() => {
-            showNotification("Error loading categories", "error")
-        })
-}
-
-function updateCategoriesTable(categories) {
-    const tbody = document.getElementById("categories-table-body")
-    if (!tbody) return
-
-    tbody.innerHTML = ""
-
-    categories.forEach((category) => {
-        const row = document.createElement("tr")
-        row.id = `category-row-${category.id}`
-
-        row.innerHTML = `
-            <td>${category.id}</td>
-            <td>${category.name}</td>
-            <td>${category.prefix}</td>
-            <td>${category.description || "N/A"}</td>
-            <td><span class="btn-toggle-status ${category.isActive ? "enabled" : "disabled"}">${category.isActive ? "Active" : "Inactive"}</span></td>
-            <td>${new Date(category.createdAt).toLocaleDateString()}</td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="editCategory('${category.id}')">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="confirmDelete('category', '${category.id}')">Delete</button>
-            </td>
-        `
-
-        tbody.appendChild(row)
-    })
-}
-
-function updateCategoryPagination(currentPage, totalPages, totalCount) {
-    const paginationInfo = document.getElementById("category-pagination-info")
-    const prevButton = document.getElementById("category-prev-page")
-    const nextButton = document.getElementById("category-next-page")
-    const pageNumbers = document.getElementById("category-page-numbers")
-
-    if (paginationInfo) {
-        const startItem = (currentPage - 1) * currentCategoryPageSize + 1
-        const endItem = Math.min(currentPage * currentCategoryPageSize, totalCount)
-        paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${totalCount} categories`
-    }
-
-    if (prevButton) {
-        prevButton.disabled = currentPage <= 1
-    }
-
-    if (nextButton) {
-        nextButton.disabled = currentPage >= totalPages
-    }
-
-    if (pageNumbers) {
-        pageNumbers.innerHTML = ""
-        for (let i = 1; i <= totalPages; i++) {
-            const pageBtn = document.createElement("button")
-            pageBtn.className = `page-btn ${i === currentPage ? "active" : ""}`
-            pageBtn.textContent = i
-            pageBtn.onclick = () => loadCategories(i)
-            pageNumbers.appendChild(pageBtn)
-        }
-    }
-}
-
-function changeCategoryPage(direction) {
-    const newPage = currentCategoryPage + direction
-    if (newPage >= 1) {
-        loadCategories(newPage)
-    }
-}
-
-function editCategory(categoryId) {
-    fetch(`/Staff/GetCategoryById?id=${categoryId}`)
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.success) {
-                const category = data.category
-                document.getElementById("edit-category-id").value = category.id
-                document.getElementById("edit-category-name").value = category.name
-                document.getElementById("edit-category-prefix").value = category.prefix
-                document.getElementById("edit-category-description").value = category.description || ""
-                document.getElementById("edit-category-active").checked = category.isActive
-
-                openPopout("editCategoryPanel")
-            } else {
-                showNotification("Error loading category: " + data.error, "error")
-            }
-        })
-        .catch(() => showNotification("Error loading category", "error"))
-}
-
-function deleteCategory(categoryId) {
-    const formData = new FormData()
-    formData.append("id", categoryId)
-
-    fetch("/Staff/DeleteCategory", {
-        method: "POST",
-        body: formData,
-        credentials: "same-origin",
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.success) {
-                showNotification("Category deleted successfully", "success")
-                loadCategories(currentCategoryPage) // Refresh the categories table
-            } else {
-                showNotification("Error deleting category: " + data.error, "error")
-            }
-        })
-        .catch(() => showNotification("Error deleting category", "error"))
 }
 
 // Initialize the page

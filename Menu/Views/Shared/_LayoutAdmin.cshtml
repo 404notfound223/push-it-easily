@@ -9,6 +9,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/css/staff.css" />
+    <!-- Added OrderStatus CSS file for color-coded status styling -->
+    <link rel="stylesheet" href="~/css/OrderStatus.css" />
 </head>
 <body>
     <header class="admin-header">
@@ -235,18 +237,6 @@
                             </svg>
                             Add New Product
                         </button>
-                        
-                        <!-- Moved Add Category button into Product Management section -->
-                        @if (role.ToLower() == "admin")
-                        {
-                            <button class="btn btn-secondary" onclick="showAddCategoryPanel()" style="margin-left: 10px;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Add Category
-                            </button>
-                        }
                     </div>
                 </div>
 
@@ -356,9 +346,9 @@
                         <div id="edit-image-dropzone" class="image-dropzone" onclick="document.getElementById('edit-product-image').click()">
                             <div class="dropzone-content">
                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <polyline points="21,15 16,10 5,21"/>
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21,15 16,10 5,21" />
                                 </svg>
                                 <p>Drag & drop an image here or click to browse</p>
                                 <small>Supports JPG, PNG, GIF, WebP (max 5MB)</small>
@@ -466,9 +456,9 @@
                         <div id="add-image-dropzone" class="image-dropzone" onclick="document.getElementById('add-product-image').click()">
                             <div class="dropzone-content">
                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <polyline points="21,15 16,10 5,21"/>
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21,15 16,10 5,21" />
                                 </svg>
                                 <p>Drag & drop an image here or click to browse</p>
                                 <small>Supports JPG, PNG, GIF, WebP (max 5MB)</small>
@@ -487,334 +477,11 @@
                 </div>
             </form>
         </div>
-
-        <!-- Moved Add Category Panel to be accessible from Product Management -->
-        <div id="addCategoryPanel" class="popout-panel">
-            <button class="close-popout" onclick="closePopout('addCategoryPanel')">&times;</button>
-            <div class="popout-header">
-                <h3>Add New Category</h3>
-            </div>
-            <form id="add-category-form" onsubmit="addCategory(event)">
-                <div class="form-group">
-                    <label for="add-category-name">Category Name:</label>
-                    <input type="text" id="add-category-name" required placeholder="Enter category name" maxlength="100" />
-                </div>
-                <div class="form-group">
-                    <label for="add-category-prefix">Product ID Prefix:</label>
-                    <input type="text" id="add-category-prefix" required placeholder="Enter 2-character prefix (e.g., PZ, BG)" maxlength="2" style="text-transform: uppercase;" />
-                    <small>This will be used to generate product IDs (e.g., PZ001, BG002)</small>
-                </div>
-                <div class="form-group">
-                    <label for="add-category-description">Description:</label>
-                    <textarea id="add-category-description" rows="3" placeholder="Enter category description (optional)" maxlength="500"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closePopout('addCategoryPanel')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Category</button>
-                </div>
-            </form>
-        </div>
-
         @RenderBody()
     </main>
 
     <script src="~/js/staff.js" asp-append-version="true"></script>
     <script>
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                fetch('/Staff/Logout', {
-                    method: 'POST',
-                    credentials: 'same-origin'
-                })
-                .then(() => {
-                    window.location.href = '/Login/Login';
-                })
-                .catch(() => {
-                    window.location.href = '/Login/Login';
-                });
-            }
-        }
-
-        function showTab(tabName, event) {
-            // Remove active class from all tabs and buttons
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Show selected tab and mark button as active
-            document.getElementById(tabName + '-tab').classList.add('active');
-            if (event && event.target) {
-                event.target.classList.add('active');
-            }
-
-            // Load data for the selected tab
-            if (tabName === 'orders') {
-                loadOrders();
-            } else if (tabName === 'users') {
-                loadUsers();
-            } else if (tabName === 'products') {
-                loadProducts();
-            } else if (tabName === 'categories') {
-                loadCategories();
-            }
-        }
-
-        function closeAllPopouts() {
-            document.querySelectorAll('.popout-panel').forEach(panel => {
-                panel.classList.remove('open');
-            });
-        }
-
-        function showAddUserPanel() {
-            document.getElementById('addUserPanel').classList.add('open');
-        }
-
-        function showAddProductPanel() {
-            document.getElementById('addProductPanel').classList.add('open');
-            setupImageUpload('add');
-        }
-
-        function showAddCategoryPanel() {
-            document.getElementById('addCategoryPanel').classList.add('open');
-        }
-
-        function setupImageUpload(type) {
-            const dropzone = document.getElementById(`${type}-image-dropzone`);
-            const fileInput = document.getElementById(`${type}-product-image`);
-            const preview = document.getElementById(`${type}-image-preview`);
-            const actions = dropzone.parentElement.querySelector('.image-actions');
-
-            // Handle drag and drop
-            dropzone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropzone.classList.add('dragover');
-            });
-
-            dropzone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dropzone.classList.remove('dragover');
-            });
-
-            dropzone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropzone.classList.remove('dragover');
-                
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleImageFile(files[0], type);
-                }
-            });
-
-            // Handle file input change
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    handleImageFile(e.target.files[0], type);
-                }
-            });
-        }
-
-        function handleImageFile(file, type) {
-            // Validate file type
-            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-            if (!allowedTypes.includes(file.type)) {
-                alert('Invalid file type. Please select a JPG, PNG, GIF, or WebP image.');
-                return;
-            }
-
-            // Validate file size (5MB limit)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size too large. Please select an image smaller than 5MB.');
-                return;
-            }
-
-            // Show preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const dropzone = document.getElementById(`${type}-image-dropzone`);
-                const preview = document.getElementById(`${type}-image-preview`);
-                const actions = dropzone.parentElement.querySelector('.image-actions');
-                const content = dropzone.querySelector('.dropzone-content');
-
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                content.style.display = 'none';
-                actions.style.display = 'block';
-                dropzone.classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeAddImage() {
-            const dropzone = document.getElementById('add-image-dropzone');
-            const preview = document.getElementById('add-image-preview');
-            const fileInput = document.getElementById('add-product-image');
-            const actions = dropzone.parentElement.querySelector('.image-actions');
-            const content = dropzone.querySelector('.dropzone-content');
-
-            preview.style.display = 'none';
-            preview.src = '';
-            content.style.display = 'block';
-            actions.style.display = 'none';
-            fileInput.value = '';
-            dropzone.classList.remove('has-image');
-        }
-
-        function removeEditImage() {
-            const dropzone = document.getElementById('edit-image-dropzone');
-            const preview = document.getElementById('edit-image-preview');
-            const fileInput = document.getElementById('edit-product-image');
-            const actions = dropzone.parentElement.querySelector('.image-actions');
-            const content = dropzone.querySelector('.dropzone-content');
-
-            preview.style.display = 'none';
-            preview.src = '';
-            content.style.display = 'block';
-            actions.style.display = 'none';
-            fileInput.value = '';
-            dropzone.classList.remove('has-image');
-        }
-
-        function addUser(event) {
-            event.preventDefault();
-            
-            const userData = {
-                userId: document.getElementById('new-user-id').value,
-                name: document.getElementById('new-user-name').value,
-                email: document.getElementById('new-user-email').value,
-                password: document.getElementById('new-user-password').value,
-                role: document.getElementById('new-user-role').value
-            };
-
-            fetch('/Staff/AddUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('User created successfully!');
-                    closePopout('addUserPanel');
-                    document.getElementById('add-user-form').reset();
-                    loadUsers(); // Refresh the users table
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while creating the user.');
-            });
-        }
-
-        function addProduct(event) {
-            event.preventDefault();
-            
-            const formData = new FormData();
-            formData.append('name', document.getElementById('add-product-name').value);
-            formData.append('price', document.getElementById('add-product-price').value);
-            formData.append('description', document.getElementById('add-product-description').value);
-            formData.append('category', document.getElementById('add-product-category').value);
-            
-            const imageFile = document.getElementById('add-product-image').files[0];
-            if (imageFile) {
-                formData.append('imageFile', imageFile);
-            }
-
-            fetch('/Staff/AddProductWithImage', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Product added successfully!');
-                    closePopout('addProductPanel');
-                    document.getElementById('add-product-form').reset();
-                    removeAddImage(); // Clear image preview
-                    loadProducts(); // Refresh the products table
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while adding the product.');
-            });
-        }
-
-        function addCategory(event) {
-            event.preventDefault();
-            
-            const categoryData = {
-                name: document.getElementById('add-category-name').value,
-                prefix: document.getElementById('add-category-prefix').value.toUpperCase(),
-                description: document.getElementById('add-category-description').value
-            };
-
-            fetch('/Staff/AddCategory', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(categoryData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Category created successfully!');
-                    closePopout('addCategoryPanel');
-                    document.getElementById('add-category-form').reset();
-                    loadCategories(); // Refresh the categories table
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while creating the category.');
-            });
-        }
-
-        function saveCategory(event) {
-            event.preventDefault();
-            
-            const categoryData = {
-                id: document.getElementById('edit-category-id').value,
-                name: document.getElementById('edit-category-name').value,
-                prefix: document.getElementById('edit-category-prefix').value.toUpperCase(),
-                description: document.getElementById('edit-category-description').value,
-                isActive: document.getElementById('edit-category-active').checked
-            };
-
-            fetch('/Staff/UpdateCategory', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(categoryData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Category updated successfully!');
-                    closePopout('editCategoryPanel');
-                    loadCategories(); // Refresh the categories table
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the category.');
-            });
-        }
-
         // Auto-uppercase prefix input
         document.addEventListener('DOMContentLoaded', function() {
             const prefixInputs = document.querySelectorAll('#add-category-prefix, #edit-category-prefix');
@@ -823,9 +490,10 @@
                     this.value = this.value.toUpperCase();
                 });
             });
-            
+
             showTab('orders');
         });
     </script>
 </body>
-</html>
+</html>
+

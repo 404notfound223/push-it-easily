@@ -84,59 +84,44 @@ public class StaffController : Controller
     [HttpGet]
     public async Task<IActionResult> GetOrderDetails(string orderId)
     {
-        var userRole = HttpContext.Session.GetString("UserRole");
-        if (userRole != "admin" && userRole != "staff")
-        {
-            return Json(new { success = false, error = "Unauthorized" });
-        }
-
-        try
-        {
-            var order = await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.OrderDetails)
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
-                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
 
-            if (order == null)
-            {
-                return Json(new { success = false, error = "Order not found" });
-            }
-
-            var result = new
-            {
-                orderId = order.OrderId,
-                orderDate = order.OrderDate,
-                status = order.Status,
-                totalAmount = order.TotalAmount,
-                user = order.User != null ? new
-                {
-                    userId = order.User.UserId,
-                    name = order.User.Name,
-                    email = order.User.Email,
-                    role = order.User.Role
-                } : null,
-                orderDetails = order.OrderDetails.Select(od => new
-                {
-                    id = od.OrderDetailId,
-                    orderDetailId = od.OrderDetailId,
-                    productId = od.ProductId,
-                    product = new
-                    {
-                        name = od.Product.Name
-                    },
-                    quantity = od.Quantity,
-                    unitPrice = od.UnitPrice
-                }).ToList()
-            };
-
-            return Json(new { success = true, order = result });
-        }
-        catch (Exception ex)
+        if (order == null)
         {
-            return Json(new { success = false, error = ex.Message });
+            return Json(new { success = false, error = "Order not found" });
         }
+
+        var orderDto = new
+        {
+            orderId = order.OrderId,
+            orderDate = order.OrderDate,
+            status = order.Status,
+            totalAmount = order.TotalAmount,
+            user = order.User == null ? null : new
+            {
+                name = order.User.Name,
+                email = order.User.Email
+            },
+            orderItems = order.OrderDetails.Select(od => new
+            {
+                id = od.OrderDetailId,
+                quantity = od.Quantity,
+                unitPrice = od.UnitPrice,
+                product = new
+                {
+                    name = od.Product.Name
+                }
+            })
+        };
+
+        return Json(new { success = true, order = orderDto });
     }
+
+
 
     [HttpPost]
     public async Task<IActionResult> UpdateOrder([FromBody] UpdateOrderRequest request)
@@ -158,14 +143,15 @@ public class StaffController : Controller
                 return Json(new { success = false, error = "Order not found" });
             }
 
-            // Update order details
+            // Update existing order details
             foreach (var item in request.Items)
             {
-                var orderDetail = order.OrderDetails.FirstOrDefault(od => od.OrderDetailId.ToString() == item.ItemId);
+                var orderDetail = order.OrderDetails
+                    .FirstOrDefault(od => od.OrderDetailId.ToString() == item.ItemId);
+
                 if (orderDetail != null)
                 {
                     orderDetail.Quantity = item.Quantity;
-                    // Unit price remains the same unless specifically changed
                     if (item.UnitPrice > 0)
                     {
                         orderDetail.UnitPrice = item.UnitPrice;
@@ -173,10 +159,10 @@ public class StaffController : Controller
                 }
             }
 
-            // Remove items that are no longer in the request (quantity = 0 or removed)
+            // Remove items missing or with 0 qty
             var itemsToRemove = order.OrderDetails
                 .Where(od => !request.Items.Any(item => item.ItemId == od.OrderDetailId.ToString()) ||
-                            request.Items.Any(item => item.ItemId == od.OrderDetailId.ToString() && item.Quantity <= 0))
+                             request.Items.Any(item => item.ItemId == od.OrderDetailId.ToString() && item.Quantity <= 0))
                 .ToList();
 
             foreach (var item in itemsToRemove)
@@ -184,7 +170,7 @@ public class StaffController : Controller
                 _context.OrderDetails.Remove(item);
             }
 
-            // Recalculate total amount
+            // Update total
             order.TotalAmount = request.TotalAmount;
 
             await _context.SaveChangesAsync();
@@ -217,10 +203,7 @@ public class StaffController : Controller
                 return Json(new { success = false, error = "Order not found" });
             }
 
-            // Remove related OrderDetails first
             _context.OrderDetails.RemoveRange(order.OrderDetails);
-
-            // Remove the order
             _context.Orders.Remove(order);
 
             await _context.SaveChangesAsync();
@@ -232,7 +215,9 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+
+
+[HttpPost]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -1074,192 +1059,6 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetCategoriesData(int page = 1, int pageSize = 20, string sortBy = "name", string sortOrder = "asc", string status = "")
-    {
-        var userRole = HttpContext.Session.GetString("UserRole");
-        if (userRole != "admin" && userRole != "staff")
-        {
-            return Json(new { success = false, error = "Unauthorized" });
-        }
-
-        try
-        {
-            var query = _context.Categories.AsQueryable();
-
-            // Filter by status if specified
-            if (!string.IsNullOrEmpty(status) && status != "all")
-            {
-                bool isActive = status == "active";
-                query = query.Where(c => c.IsActive == isActive);
-            }
-
-            // Apply sorting
-            query = sortBy.ToLower() switch
-            {
-                "name" => sortOrder == "desc" ? query.OrderByDescending(c => c.Name) : query.OrderBy(c => c.Name),
-                "prefix" => sortOrder == "desc" ? query.OrderByDescending(c => c.Prefix) : query.OrderBy(c => c.Prefix),
-                "created" => sortOrder == "desc" ? query.OrderByDescending(c => c.CreatedDate) : query.OrderBy(c => c.CreatedDate),
-                _ => query.OrderBy(c => c.Name)
-            };
-
-            var totalCount = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
-            var categories = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return Json(new
-            {
-                success = true,
-                categories = categories,
-                currentPage = page,
-                totalPages = totalPages,
-                totalCount = totalCount,
-                pageSize = pageSize
-            });
-        }
-        catch (Exception ex)
-        {
-            return Json(new { success = false, error = ex.Message });
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddCategory([FromBody] AddCategoryRequest request)
-    {
-        var userRole = HttpContext.Session.GetString("UserRole");
-        if (userRole != "admin" && userRole != "staff")
-        {
-            return Json(new { success = false, error = "Unauthorized" });
-        }
-
-        try
-        {
-            // Validate input
-            if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Prefix))
-            {
-                return Json(new { success = false, error = "Name and prefix are required" });
-            }
-
-            if (request.Prefix.Length != 2)
-            {
-                return Json(new { success = false, error = "Prefix must be exactly 2 characters" });
-            }
-
-            // Check if prefix already exists
-            var existingPrefix = await _context.Categories.FirstOrDefaultAsync(c => c.Prefix == request.Prefix.ToUpper());
-            if (existingPrefix != null)
-            {
-                return Json(new { success = false, error = "Prefix already exists" });
-            }
-
-            // Check if name already exists
-            var existingName = await _context.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == request.Name.ToLower());
-            if (existingName != null)
-            {
-                return Json(new { success = false, error = "Category name already exists" });
-            }
-
-            var category = new Category
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = request.Name,
-                Prefix = request.Prefix.ToUpper(),
-                Description = request.Description,
-                IsActive = true,
-                CreatedDate = DateTime.Now
-            };
-
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, category });
-        }
-        catch (Exception ex)
-        {
-            return Json(new { success = false, error = ex.Message });
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request)
-    {
-        var userRole = HttpContext.Session.GetString("UserRole");
-        if (userRole != "admin" && userRole != "staff")
-        {
-            return Json(new { success = false, error = "Unauthorized" });
-        }
-
-        try
-        {
-            var category = await _context.Categories.FindAsync(request.Id);
-            if (category == null)
-            {
-                return Json(new { success = false, error = "Category not found" });
-            }
-
-            // Check if new prefix conflicts with other categories
-            if (request.Prefix.ToUpper() != category.Prefix)
-            {
-                var existingPrefix = await _context.Categories.FirstOrDefaultAsync(c => c.Prefix == request.Prefix.ToUpper() && c.Id != request.Id);
-                if (existingPrefix != null)
-                {
-                    return Json(new { success = false, error = "Prefix already exists" });
-                }
-            }
-
-            category.Name = request.Name;
-            category.Prefix = request.Prefix.ToUpper();
-            category.Description = request.Description;
-            category.IsActive = request.IsActive;
-
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, category });
-        }
-        catch (Exception ex)
-        {
-            return Json(new { success = false, error = ex.Message });
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> DeleteCategory(string id)
-    {
-        var userRole = HttpContext.Session.GetString("UserRole");
-        if (userRole != "admin" && userRole != "staff")
-        {
-            return Json(new { success = false, error = "Unauthorized" });
-        }
-
-        try
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return Json(new { success = false, error = "Category not found" });
-            }
-
-            // Check if category has products
-            var hasProducts = await _context.Products.AnyAsync(p => p.Category == category.Name);
-            if (hasProducts)
-            {
-                return Json(new { success = false, error = "Cannot delete category with existing products. Consider deactivating instead." });
-            }
-
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true });
-        }
-        catch (Exception ex)
-        {
-            return Json(new { success = false, error = ex.Message });
-        }
-    }
 
     private string GetCategoryPrefix(string category)
     {

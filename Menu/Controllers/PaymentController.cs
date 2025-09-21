@@ -174,16 +174,30 @@ namespace Menu.Controllers
 
                 if (session.PaymentStatus == "paid")
                 {
-                    var order = await _context.Orders.FindAsync(order_id);
+                    var order = await _context.Orders
+                        .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Product)
+                        .Include(o => o.User)
+                        .FirstOrDefaultAsync(o => o.OrderId == order_id);
+
                     if (order != null)
                     {
                         order.Status = "Paid";
                         await _context.SaveChangesAsync();
                     }
 
+                    decimal memberDiscount = 0;
+                    if (session.Metadata != null && session.Metadata.ContainsKey("member_discount"))
+                    {
+                        decimal.TryParse(session.Metadata["member_discount"], out memberDiscount);
+                    }
+
                     ViewBag.OrderId = order_id;
                     ViewBag.SessionId = session_id;
                     ViewBag.PaymentIntentId = session.PaymentIntentId;
+                    ViewBag.Order = order;
+                    ViewBag.MemberDiscount = memberDiscount;
+                    ViewBag.AmountPaid = session.AmountTotal / 100.0m; // Convert from cents
                     return View();
                 }
                 else
