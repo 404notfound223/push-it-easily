@@ -98,18 +98,49 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
     color: #f8f9fa;
-    text-decoration: none;
+    border: none;
     border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
     transition: all 0.2s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
     .btn-return:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-        color: white;
-        text-decoration: none;
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+/* Added styling for customer menu access button */
+.btn-menu-access {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+    .btn-menu-access:hover {
+        background: linear-gradient(135deg, #218838, #1ea085);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-menu-access svg {
+        opacity: 0.9;
     }
 
 .main-content {
@@ -1154,7 +1185,7 @@
     }
 
 /*--------------------- IMAGE STYLING ---------------------*/
-/* Added drag-and-drop image upload styling */
+/* Enhanced drag-and-drop image upload styling */
 .image-upload-container {
     margin-top: 8px;
 }
@@ -1177,18 +1208,26 @@
     .image-dropzone:hover {
         border-color: #007bff;
         background-color: rgba(0, 123, 255, 0.05);
+        transform: scale(1.01);
     }
 
     .image-dropzone.dragover {
         border-color: #007bff;
         background-color: rgba(0, 123, 255, 0.1);
         transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
     }
 
     .image-dropzone.has-image {
         border-color: #28a745;
         background-color: rgba(40, 167, 69, 0.05);
+        padding: 10px;
     }
+
+        .image-dropzone.has-image:hover {
+            border-color: #218838;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
 
 .dropzone-content {
     display: flex;
@@ -1196,10 +1235,12 @@
     align-items: center;
     gap: 12px;
     color: #6c757d;
+    pointer-events: none;
 }
 
     .dropzone-content svg {
         opacity: 0.6;
+        transition: opacity 0.2s ease;
     }
 
     .dropzone-content p {
@@ -1218,6 +1259,7 @@
     max-height: 200px;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    object-fit: contain;
 }
 
 .image-actions {

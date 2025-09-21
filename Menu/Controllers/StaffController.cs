@@ -630,17 +630,29 @@ public class StaffController : Controller
             string imagePath = "/images/default-product.jpg";
             if (imageFile != null && imageFile.Length > 0)
             {
-                // Create category-specific directory
-                var categoryDir = Path.Combine("wwwroot", "images", "products", category.ToLower());
-                if (!Directory.Exists(categoryDir))
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(fileExtension))
                 {
-                    Directory.CreateDirectory(categoryDir);
+                    return Json(new { success = false, error = "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed." });
+                }
+
+                if (imageFile.Length > 5 * 1024 * 1024) // 5MB limit
+                {
+                    return Json(new { success = false, error = "File size must be less than 5MB" });
+                }
+
+                // Create uploads directory if it doesn't exist
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
+                if (!Directory.Exists(uploadsPath))
+                {
+                    Directory.CreateDirectory(uploadsPath);
                 }
 
                 // Generate unique filename
-                var fileExtension = Path.GetExtension(imageFile.FileName);
-                var fileName = $"{newId}_{DateTime.Now:yyyyMMddHHmmss}{fileExtension}";
-                var filePath = Path.Combine(categoryDir, fileName);
+                var fileName = Guid.NewGuid().ToString() + fileExtension;
+                var filePath = Path.Combine(uploadsPath, fileName);
 
                 // Save file
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -648,7 +660,7 @@ public class StaffController : Controller
                     await imageFile.CopyToAsync(stream);
                 }
 
-                imagePath = $"/wwwroot/images/{fileName}";
+                imagePath = $"/uploads/products/{fileName}";
             }
 
             var product = new Product
@@ -732,7 +744,7 @@ public class StaffController : Controller
                     await imageFile.CopyToAsync(stream);
                 }
 
-                existing.ImagePath = $"/wwwroot/image/{fileName}";
+                existing.ImagePath = $"/uploads/products/{fileName}";
             }
 
             // Update other properties
