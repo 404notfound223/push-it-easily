@@ -188,137 +188,152 @@ function animateNumberChange(element, from, to) {
     }, stepDuration)
 }
 
-function loadOrderDetails(orderId) {
+function loadOrderDetails(orderId, callback) {
+    const container = document.getElementById("orderDetailContent");
+    if (!container) {
+        console.error("orderDetailContent element not found in DOM");
+        return;
+    }
+
     fetch(`/Staff/GetOrderDetails?orderId=${orderId}`)
-        .then((res) => res.json())
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
         .then((data) => {
-            if (data.success) {
-                const order = data.order
-                let detailsHtml = `
+            if (!data.success || !data.order) {
+                throw new Error(data.error || "Order not found");
+            }
+
+            const order = data.order;
+            const customerName = order.user?.name || "Guest";
+            const customerEmail = order.user?.email || "N/A";
+            const orderDate = order.orderDate ? new Date(order.orderDate).toLocaleString() : "Unknown";
+            const status = order.status || "pending";
+            const totalAmount = (order.totalAmount || 0).toFixed(2);
+
+            let detailsHtml = `
                 <div class="order-info">
+                    <div class="info-row"><strong>Order ID:</strong> <span>${order.orderId}</span></div>
+                    <div class="info-row"><strong>Customer:</strong> <span>${customerName}</span></div>
+                    <div class="info-row"><strong>Email:</strong> <span>${customerEmail}</span></div>
+                    <div class="info-row"><strong>Date:</strong> <span>${orderDate}</span></div>
                     <div class="info-row">
-                        <strong>Order ID:</strong> 
-                        <span>${order.orderId}</span>
-                    </div>
-                    <div class="info-row">
-                        <strong>Customer:</strong> 
-                        <span>${order.user ? order.user.name : "Guest"}</span>
-                    </div>
-                    <div class="info-row">
-                        <strong>Email:</strong> 
-                        <span>${order.user ? order.user.email : "N/A"}</span>
-                    </div>
-                    <div class="info-row">
-                        <strong>Date:</strong> 
-                        <span>${new Date(order.orderDate).toLocaleString()}</span>
-                    </div>
-                    <div class="info-row">
-                        <strong>Status:</strong> 
-                        <span class="order-status ${order.status.toLowerCase()}">
-                            <span class="status-indicator ${order.status.toLowerCase()}"></span>
-                            ${order.status.toUpperCase()}
+                        <strong>Status:</strong>
+                        <span class="order-status ${status.toLowerCase()}">
+                            <span class="status-indicator ${status.toLowerCase()}"></span>
+                            ${status.toUpperCase()}
                         </span>
                     </div>
                     <div class="info-row">
                         <strong>Total:</strong> 
-                        <span style="font-size: 1.2em; font-weight: bold; color: #28a745;">$${order.totalAmount.toFixed(2)}</span>
+                        <span style="font-size: 1.2em; font-weight: bold; color: #28a745;">$${totalAmount}</span>
                     </div>
                 </div>
-                
-                <div class="order-actions" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <label for="status-select" style="display: block; margin-bottom: 8px; font-weight: 600;">Update Status:</label>
-                    <select id="status-select" class="status-select" onchange="updateOrderStatus('${order.orderId}', this.value)" style="margin-right: 10px;">
-                        <option value="pending" ${order.status === "pending" ? "selected" : ""}>Pending</option>
-                        <option value="preparing" ${order.status === "preparing" ? "selected" : ""}>Preparing</option>
-                        <option value="ready" ${order.status === "ready" ? "selected" : ""}>Ready</option>
-                        <option value="completed" ${order.status === "completed" ? "selected" : ""}>Completed</option>
-                        <option value="cancelled" ${order.status === "cancelled" ? "selected" : ""}>Cancelled</option>
+
+                <div class="order-actions" style="margin:20px 0; padding:15px; background:#f8f9fa; border-radius:8px;">
+                    <label for="status-select" style="display:block; margin-bottom:8px; font-weight:600;">Update Status:</label>
+                    <select id="status-select" class="status-select" 
+                        onchange="updateOrderStatus('${order.orderId}', this.value)" style="margin-right:10px;">
+                        ${["pending", "preparing", "ready", "completed", "cancelled"].map(s =>
+                `<option value="${s}" ${status === s ? "selected" : ""}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`
+            ).join("")}
                     </select>
                     <button onclick="enableOrderEdit('${order.orderId}')" class="btn btn-info btn-sm">Edit Order</button>
                 </div>
-                
-                <h4 style="margin-top: 25px; color: #495057; border-bottom: 2px solid #e9ecef; padding-bottom: 8px;">Order Items</h4>
-                <table class="order-items-table" style="margin-top: 15px;">
+
+                <h4 style="margin-top:25px; color:#495057; border-bottom:2px solid #e9ecef; padding-bottom:8px;">Order Items</h4>
+                <table class="order-items-table" style="margin-top:15px;">
                     <thead>
                         <tr>
                             <th>Product</th>
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Total</th>
-                            <th id="actions-header" style="display: none;">Actions</th>
+                            <th id="actions-header" style="display:none;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="order-items-tbody">
-            `
+            `;
 
+            if (order.orderItems && order.orderItems.length > 0) {
                 order.orderItems.forEach((item) => {
-                    detailsHtml += `
-                    <tr data-item-id="${item.id}">
-                        <td>${item.product.name}</td>
-                        <td class="item-price">$${item.unitPrice.toFixed(2)}</td>
-                        <td>
-                            <span class="quantity-display">${item.quantity}</span>
-                            <input type="number" class="quantity-edit" value="${item.quantity}" min="1" 
-                                   onchange="updateItemTotal(this, ${item.unitPrice})" style="display: none; width: 60px;">
-                        </td>
-                        <td class="item-total">$${(item.quantity * item.unitPrice).toFixed(2)}</td>
-                        <td class="item-actions" style="display: none;">
-                            <button onclick="removeOrderItem('${item.id}')" class="btn btn-danger btn-sm">Remove</button>
-                        </td>
-                    </tr>
-                `
-                })
+                    const productName = item.product?.name || "Unknown Product";
+                    const unitPrice = item.unitPrice || 0;
+                    const quantity = item.quantity || 0;
+                    const itemTotal = (unitPrice * quantity).toFixed(2);
 
+                    detailsHtml += `
+                        <tr data-item-id="${item.id}">
+                            <td>${productName}</td>
+                            <td class="item-price">$${unitPrice.toFixed(2)}</td>
+                            <td>
+                                <span class="quantity-display">${quantity}</span>
+                                <input type="number" class="quantity-edit" value="${quantity}" min="1"
+                                    onchange="updateItemTotal(this, ${unitPrice})" 
+                                    style="display:none; width:60px;">
+                            </td>
+                            <td class="item-total">$${itemTotal}</td>
+                            <td class="item-actions" style="display:none;">
+                                <button onclick="removeOrderItem('${item.id}')" class="btn btn-danger btn-sm">Remove</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
                 detailsHtml += `
+                    <tr>
+                        <td colspan="5" style="text-align:center; color:#6c757d; padding:15px;">No items found for this order.</td>
+                    </tr>
+                `;
+            }
+
+            detailsHtml += `
                     </tbody>
                     <tfoot>
-                        <tr style="font-weight: bold; background-color: #f8f9fa;">
-                            <td colspan="3" style="text-align: right; padding: 15px;">Total:</td>
-                            <td id="order-total" style="font-size: 1.1em; color: #28a745;">$${order.totalAmount.toFixed(2)}</td>
+                        <tr style="font-weight:bold; background-color:#f8f9fa;">
+                            <td colspan="3" style="text-align:right; padding:15px;">Total:</td>
+                            <td id="order-total" style="font-size:1.1em; color:#28a745;">$${totalAmount}</td>
                             <td></td>
                         </tr>
                     </tfoot>
                 </table>
-                
-                <div class="order-edit-actions" style="margin-top: 20px; text-align: right; display: none;">
-                    <button id="save-order-btn" onclick="saveOrderChanges('${order.orderId}')" class="btn btn-primary" style="display: none;">Save Changes</button>
-                    <button id="cancel-edit-btn" onclick="cancelOrderEdit()" class="btn btn-secondary" style="display: none; margin-left: 10px;">Cancel</button>
-                </div>
-            `
 
-                document.getElementById("orderDetailContent").innerHTML = detailsHtml
-            } else {
-                showNotification("Error loading order details: " + data.error, "error")
-                document.getElementById("orderDetailContent").innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #dc3545;">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 16px;">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                </svg>
-                <h4>Error Loading Order</h4>
-                <p>Unable to load order details. Please try again.</p>
-                <button class="btn btn-primary" onclick="loadOrderDetails('${orderId}')">Retry</button>
-            </div>
-        `
+                <div class="order-edit-actions" style="margin-top:20px; text-align:right; display:none;">
+                    <button id="save-order-btn" onclick="saveOrderChanges('${order.orderId}')" class="btn btn-primary" style="display:none;">Save Changes</button>
+                    <button id="cancel-edit-btn" onclick="cancelOrderEdit()" class="btn btn-secondary" style="display:none; margin-left:10px;">Cancel</button>
+                </div>
+            `;
+
+            container.innerHTML = detailsHtml;
+
+            // ✅ Run callback if provided
+            if (typeof callback === "function") {
+                callback();
             }
         })
-        .catch(() => {
-            showNotification("Error loading order details", "error")
-            document.getElementById("orderDetailContent").innerHTML = `
-        <div style="text-align: center; padding: 40px; color: #dc3545;">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 16px;">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="15" y1="9" x2="9" y2="15"></line>
-                <line x1="9" y1="9" x2="15" y2="15"></line>
-            </svg>
-            <h4>Connection Error</h4>
-            <p>Unable to connect to server. Please check your connection and try again.</p>
-            <button class="btn btn-primary" onclick="loadOrderDetails('${orderId}')">Retry</button>
-        </div>
-      `
-        })
+        .catch((err) => {
+            console.error("Error loading order details:", err);
+            showNotification("Error loading order details: " + err.message, "error");
+
+            container.innerHTML = `
+                <div style="text-align:center; padding:40px; color:#dc3545;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:16px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    <h4>Error Loading Order</h4>
+                    <p>${err.message}</p>
+                    <button class="btn btn-primary" onclick="loadOrderDetails('${orderId}')">Retry</button>
+                </div>
+            `;
+        });
 }
+
+
 
 function enableOrderEdit(orderId) {
     // Show edit controls
@@ -456,12 +471,12 @@ function saveOrderChanges(orderId) {
 }
 
 function editOrder(orderId) {
-    // Open the order details panel and enable edit mode
-    openPopout("orderDetailPanel", orderId)
-    // Wait for the panel to load, then enable edit mode
-    setTimeout(() => {
-        enableOrderEdit(orderId)
-    }, 500)
+    openPopout("orderDetailPanel", orderId);
+
+    // Load order details and then enable edit mode immediately after
+    loadOrderDetails(orderId, () => {
+        enableOrderEdit(orderId);
+    });
 }
 
 function deleteOrder(orderId) {

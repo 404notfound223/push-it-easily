@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
 
+[Route("Staff")]
 public class StaffController : Controller
 {
     private readonly DB _context;
@@ -18,7 +19,7 @@ public class StaffController : Controller
         _context = context;
     }
 
-    [HttpGet]
+    [HttpGet("Dashboard")]
     public async Task<IActionResult> Dashboard()
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -45,7 +46,53 @@ public class StaffController : Controller
         return View(model);
     }
 
-    [HttpGet]
+    [HttpGet("GetOrderDetails")]
+    public async Task<IActionResult> GetOrderDetails(string orderId)
+    {
+        if (string.IsNullOrEmpty(orderId))
+            return Json(new { success = false, error = "Order ID is required." });
+
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order == null)
+            return Json(new { success = false, error = "Order not found." });
+
+        var result = new
+        {
+            success = true,
+            order = new
+            {
+                orderId = order.OrderId,
+                orderDate = order.OrderDate,
+                status = order.Status,
+                totalAmount = order.TotalAmount,
+                user = order.User == null ? null : new
+                {
+                    name = order.User.Name,
+                    email = order.User.Email
+                },
+                orderItems = order.OrderDetails.Select(od => new
+                {
+                    id = od.OrderDetailId,
+                    quantity = od.Quantity,
+                    unitPrice = od.UnitPrice,
+                    product = new
+                    {
+                        name = od.Product.Name
+                    }
+                })
+            }
+        };
+
+        return Json(result);
+    }
+
+
+[HttpGet("GetUserById")]
     public async Task<IActionResult> GetUserById(string userId)
     {
         var user = await _context.Users.FindAsync(userId);
@@ -81,45 +128,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetOrderDetails(string orderId)
-    {
-        var order = await _context.Orders
-            .Include(o => o.User)
-            .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
-            .FirstOrDefaultAsync(o => o.OrderId == orderId);
 
-        if (order == null)
-        {
-            return Json(new { success = false, error = "Order not found" });
-        }
-
-        var orderDto = new
-        {
-            orderId = order.OrderId,
-            orderDate = order.OrderDate,
-            status = order.Status,
-            totalAmount = order.TotalAmount,
-            user = order.User == null ? null : new
-            {
-                name = order.User.Name,
-                email = order.User.Email
-            },
-            orderItems = order.OrderDetails.Select(od => new
-            {
-                id = od.OrderDetailId,
-                quantity = od.Quantity,
-                unitPrice = od.UnitPrice,
-                product = new
-                {
-                    name = od.Product.Name
-                }
-            })
-        };
-
-        return Json(new { success = true, order = orderDto });
-    }
 
 
 
@@ -535,7 +544,7 @@ public class StaffController : Controller
         return RedirectToAction("Login", "Login");
     }
 
-    [HttpGet]
+    [HttpGet("GetProductsData")]
     public async Task<IActionResult> GetProductsData(int page = 1, int pageSize = 20, string sortBy = "name", string sortOrder = "asc", string category = "")
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -646,7 +655,7 @@ public class StaffController : Controller
                     await imageFile.CopyToAsync(stream);
                 }
 
-                imagePath = $"/images/products/{category.ToLower()}/{fileName}";
+                imagePath = $"/wwwroot/images/{fileName}";
             }
 
             var product = new Product
@@ -714,8 +723,7 @@ public class StaffController : Controller
                     }
                 }
 
-                var categoryFolder = request.Category.ToLower();
-                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products", categoryFolder);
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
                 if (!Directory.Exists(uploadsPath))
                 {
                     Directory.CreateDirectory(uploadsPath);
@@ -731,7 +739,7 @@ public class StaffController : Controller
                     await imageFile.CopyToAsync(stream);
                 }
 
-                existing.ImagePath = $"/uploads/products/{categoryFolder}/{fileName}";
+                existing.ImagePath = $"/wwwroot/image/{fileName}";
             }
 
             // Update other properties
@@ -749,7 +757,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("GetOrdersData")]
     public async Task<IActionResult> GetOrdersData(int page = 1, int pageSize = 20, string sortBy = "orderDate", string sortOrder = "desc", string status = "", string dateFrom = "", string dateTo = "")
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -836,7 +844,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("GetOrderStatistics")]
     public async Task<IActionResult> GetOrderStatistics()
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -949,7 +957,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("ExportOrders")]
     public async Task<IActionResult> ExportOrders(string format = "csv", string status = "", string dateFrom = "", string dateTo = "")
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -1007,7 +1015,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("GetUsersData")]
     public async Task<IActionResult> GetUsersData(int page = 1, int pageSize = 20, string sortBy = "name", string sortOrder = "asc", string role = "")
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -1137,7 +1145,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("GetProductById")]
     public async Task<IActionResult> GetProductById(string id)
     {
         var product = await _context.Products.FindAsync(id);
