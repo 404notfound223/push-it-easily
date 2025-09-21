@@ -10,6 +10,15 @@
     // Show selected tab
     document.getElementById(tabName + "-tab").classList.add("active")
     if (event) event.target.classList.add("active")
+
+    //Load data for the selected tab
+    if (tabName === 'orders') {
+        loadOrders();
+    } else if (tabName === 'users') {
+        loadUsers();
+    } else if (tabName === 'products') {
+        loadProducts();
+    }
 }
 
 // ================= POPOUT MANAGEMENT =================
