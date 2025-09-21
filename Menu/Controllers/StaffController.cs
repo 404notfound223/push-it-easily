@@ -99,7 +99,7 @@ public class StaffController : Controller
         return Json(new { success = true, user });
     }
 
-    [HttpPost]
+    [HttpPost("UpdateOrderStatus")]
     public async Task<IActionResult> UpdateOrderStatus(string orderId, string status)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -127,7 +127,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("UpdateOrder")]
     public async Task<IActionResult> UpdateOrder([FromBody] UpdateOrderRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -187,7 +187,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("DeleteOrder")]
     public async Task<IActionResult> DeleteOrder([FromForm] string orderId)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -219,7 +219,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("UpdateUser")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -250,7 +250,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("DeleteUser")]
     public async Task<IActionResult> DeleteUser(string userId)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -294,7 +294,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("AddUser")]
     public async Task<IActionResult> AddUser([FromBody] AddUserRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -368,7 +368,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("AddProduct")]
     public async Task<IActionResult> AddProduct([FromBody] Product product)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -422,7 +422,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("UpdateProduct")]
     public async Task<IActionResult> UpdateProduct([FromBody] Product product)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -454,7 +454,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("DeleteProduct")]
     public async Task<IActionResult> DeleteProduct(string id)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -489,7 +489,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("ToggleDisable")]
     public async Task<IActionResult> ToggleDisable(string id)
     {
         var product = await _context.Products.FindAsync(id);
@@ -502,7 +502,7 @@ public class StaffController : Controller
         return RedirectToAction("Dashboard");
     }
 
-    [HttpPost]
+    [HttpPost("ToggleProductDisable")]
     public async Task<IActionResult> ToggleProductDisable([FromBody] ToggleDisableRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -530,7 +530,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("Logout")]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
@@ -589,7 +589,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("AddProductWithImage")]
     public async Task<IActionResult> AddProductWithImage()
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -685,7 +685,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("UpdateProductWithImage")]
     public async Task<IActionResult> UpdateProductWithImage([FromForm] UpdateProductRequest request, IFormFile? imageFile)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -896,7 +896,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("BulkUpdateOrderStatus")]
     public async Task<IActionResult> BulkUpdateOrderStatus([FromBody] BulkOrderStatusRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
@@ -931,7 +931,7 @@ public class StaffController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("BulkDeleteOrders")]
     public async Task<IActionResult> BulkDeleteOrders([FromBody] BulkDeleteOrdersRequest request)
     {
         var userRole = HttpContext.Session.GetString("UserRole");
