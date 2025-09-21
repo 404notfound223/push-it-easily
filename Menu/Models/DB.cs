@@ -207,3 +207,20 @@ public class BulkDeleteOrdersRequest
 {
     public List<string> OrderIds { get; set; } = new List<string>();
 }
+
+public class AddCategoryRequest
+{
+    public required string Name { get; set; }
+    public string? Description { get; set; }
+    public required string Prefix { get; set; }
+}
+
+public class UpdateCategoryRequest
+{
+    public required string Id { get; set; }
+    public required string Name { get; set; }
+    public string? Description { get; set; }
+    public required string Prefix { get; set; }
+    public bool IsActive { get; set; }
+}
+

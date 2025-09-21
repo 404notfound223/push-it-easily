@@ -3,177 +3,75 @@
     ViewData["Title"] = "Order History";
 }
 <link rel="stylesheet" href="~/css/OrderHistory.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/ajax-paging.css" asp-append-version="true" />
-
 <div class="order-history-page">
     <div class="page-header">
         <h1>Order History</h1>
         <button onclick="window.location.href='/Menu/All'" class="btn btn-primary">Continue Shopping</button>
     </div>
 
-    <!-- Replaced static order list with AJAX paging container -->
-    <div id="order-history-paging-container">
-        <!-- AJAX paging controls and content will be inserted here -->
-    </div>
-
-    <!-- Fallback content for non-JavaScript users -->
-    <noscript>
-        @if (Model.Any())
-        {
-            <div class="orders-container">
-                @foreach (var order in Model)
-                {
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div class="order-info">
-                                <h3>Order #@order.OrderId.Substring(0, 8).ToUpper()</h3>
-                                <p class="order-date">@order.OrderDate.ToString("MMM dd, yyyy 'at' h:mm tt")</p>
-                            </div>
-                            <div class="order-status">
-                                <span class="status-badge status-@order.Status.ToLower().Replace(" ", "-")">@order.Status</span>
-                                <span class="order-total">$@order.TotalAmount.ToString("F2")</span>
-                            </div>
+    @if (Model.Any())
+    {
+        <div class="orders-container">
+            @foreach (var order in Model)
+            {
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h3>Order #@order.OrderId.Substring(0, 8).ToUpper()</h3>
+                            <p class="order-date">@order.OrderDate.ToString("MMM dd, yyyy 'at' h:mm tt")</p>
                         </div>
-
-                        <div class="order-items">
-                            @foreach (var item in order.OrderDetails.Take(3))
-                            {
-                                <div class="order-item-summary">
-                                    <span class="item-name">@item.Product.Name</span>
-                                    <span class="item-quantity">x @item.Quantity</span>
-                                    <span class="item-price">$@((item.UnitPrice * item.Quantity).ToString("F2"))</span>
-                                </div>
-                            }
-                            @if (order.OrderDetails.Count > 3)
-                            {
-                                <div class="more-items">
-                                    +@(order.OrderDetails.Count - 3) more items
-                                </div>
-                            }
-                        </div>
-
-                        <div class="order-actions">
-                            <button onclick="viewOrderDetails('@order.OrderId')" class="btn btn-outline btn-sm">View Details</button>
-                            @if (order.Status == "Completed")
-                            {
-                                <button onclick="reorder('@order.OrderId')" class="btn btn-primary btn-sm">Reorder</button>
-                            }
+                        <div class="order-status">
+                            <span class="status-badge status-@order.Status.ToLower().Replace(" ", "-")">@order.Status</span>
+                            <span class="order-total">$@order.TotalAmount.ToString("F2")</span>
                         </div>
                     </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="empty-history">
-                <div class="empty-state">
-                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    <h3>No orders yet</h3>
-                    <p>When you place your first order, it will appear here.</p>
-                    <button onclick="window.location.href='/Menu/All'" class="btn btn-primary">Start Shopping</button>
+
+                    <div class="order-items">
+                        @foreach (var item in order.OrderDetails.Take(3))
+                        {
+                            <div class="order-item-summary">
+                                <span class="item-name">@item.Product.Name</span>
+                                <span class="item-quantity">x @item.Quantity</span>
+                                <span class="item-price">$@((item.UnitPrice * item.Quantity).ToString("F2"))</span>
+                            </div>
+                        }
+                        @if (order.OrderDetails.Count > 3)
+                        {
+                            <div class="more-items">
+                                +@(order.OrderDetails.Count - 3) more items
+                            </div>
+                        }
+                    </div>
+
+                    <div class="order-actions">
+                        <button onclick="viewOrderDetails('@order.OrderId')" class="btn btn-outline btn-sm">View Details</button>
+                        @if (order.Status == "Completed")
+                        {
+                            <button onclick="reorder('@order.OrderId')" class="btn btn-primary btn-sm">Reorder</button>
+                        }
+                    </div>
                 </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-history">
+            <div class="empty-state">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <h3>No orders yet</h3>
+                <p>When you place your first order, it will appear here.</p>
+                <button onclick="window.location.href='/Menu/All'" class="btn btn-primary">Start Shopping</button>
             </div>
-        }
-    </noscript>
+        </div>
+    }
 </div>
 
-<script src="~/js/ajax-paging.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        ajaxPaging = new AjaxPaging({
-            containerId: 'order-history-paging-container',
-            apiUrl: '/Order/GetPagedOrderHistory',
-            pageSize: 10,
-            defaultSort: 'date',
-            templateFunction: function(order) {
-                const orderDate = new Date(order.orderDate).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit'
-                });
-
-                const statusClass = order.status.toLowerCase().replace(' ', '-');
-
-                let itemsHtml = '';
-                order.items.forEach(item => {
-                    itemsHtml += `
-                        <div class="order-item-summary">
-                            <span class="item-name">${item.productName}</span>
-                            <span class="item-quantity">x ${item.quantity}</span>
-                            <span class="item-price">$${(item.unitPrice * item.quantity).toFixed(2)}</span>
-                        </div>
-                    `;
-                });
-
-                if (order.hasMoreItems) {
-                    const moreCount = order.itemCount - 3;
-                    itemsHtml += `<div class="more-items">+${moreCount} more items</div>`;
-                }
-
-                const reorderButton = order.status === 'Completed'
-                    ? `<button onclick="reorder('${order.orderId}')" class="btn btn-primary btn-sm">Reorder</button>`
-                    : '';
-
-                return `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div class="order-info">
-                                <h3>Order #${order.orderId.substring(0, 8).toUpperCase()}</h3>
-                                <p class="order-date">${orderDate}</p>
-                            </div>
-                            <div class="order-status">
-                                <span class="status-badge status-${statusClass}">${order.status}</span>
-                                <span class="order-total">$${order.totalAmount.toFixed(2)}</span>
-                            </div>
-                        </div>
-
-                        <div class="order-items">
-                            ${itemsHtml}
-                        </div>
-
-                        <div class="order-actions">
-                            <button onclick="viewOrderDetails('${order.orderId}')" class="btn btn-outline btn-sm">View Details</button>
-                            ${reorderButton}
-                        </div>
-                    </div>
-                `;
-            }
-        });
-
-        const categoryFilter = document.getElementById('category-filter');
-        if (categoryFilter) {
-            categoryFilter.innerHTML = `
-                <option value="">All Status</option>
-                <option value="Pending Payment">Pending Payment</option>
-                <option value="Paid">Paid</option>
-                <option value="Preparing">Preparing</option>
-                <option value="Ready">Ready</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
-            `;
-        }
-
-        const sortFilter = document.getElementById('sort-filter');
-        if (sortFilter) {
-            sortFilter.innerHTML = `
-                <option value="date">Date</option>
-                <option value="total">Total Amount</option>
-                <option value="status">Status</option>
-            `;
-        }
-
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.placeholder = 'Search orders...';
-        }
-    });
-
     function viewOrderDetails(orderId) {
         window.location.href = `/Order/OrderDetails?orderId=${orderId}`;
     }
@@ -197,172 +95,4 @@
     }
 </script>
 
-<style>
-    #content-container {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
 
-    .order-card {
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: box-shadow 0.2s;
-    }
-
-        .order-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-    .order-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 15px;
-    }
-
-    .order-info h3 {
-        margin: 0 0 5px 0;
-        color: #333;
-        font-size: 18px;
-    }
-
-    .order-date {
-        margin: 0;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .order-status {
-        text-align: right;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    .status-pending-payment {
-        background: #fff3cd;
-        color: #856404;
-    }
-
-    .status-paid {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .status-preparing {
-        background: #cce5ff;
-        color: #004085;
-    }
-
-    .status-ready {
-        background: #e2e3e5;
-        color: #383d41;
-    }
-
-    .status-completed {
-        background: #d1ecf1;
-        color: #0c5460;
-    }
-
-    .status-cancelled {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-    .order-total {
-        display: block;
-        font-size: 16px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .order-items {
-        margin-bottom: 15px;
-    }
-
-    .order-item-summary {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-        .order-item-summary:last-child {
-            border-bottom: none;
-        }
-
-    .item-name {
-        flex: 1;
-        font-weight: 500;
-    }
-
-    .item-quantity {
-        margin: 0 15px;
-        color: #666;
-    }
-
-    .item-price {
-        font-weight: bold;
-        color: #333;
-    }
-
-    .more-items {
-        text-align: center;
-        color: #666;
-        font-style: italic;
-        padding: 10px 0;
-    }
-
-    .order-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-    }
-
-    .btn {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.2s;
-    }
-
-    .btn-outline {
-        background: white;
-        color: #007bff;
-        border: 1px solid #007bff;
-    }
-
-        .btn-outline:hover {
-            background: #007bff;
-            color: white;
-        }
-
-    .btn-primary {
-        background: #007bff;
-        color: white;
-    }
-
-        .btn-primary:hover {
-            background: #0056b3;
-        }
-
-    .btn-sm {
-        padding: 4px 8px;
-        font-size: 12px;
-    }
-</style>

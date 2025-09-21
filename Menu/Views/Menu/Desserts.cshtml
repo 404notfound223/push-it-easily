@@ -1,8 +1,23 @@
 @model IEnumerable<Menu.Models.Product>
 @{
     ViewData["Title"] = "Desserts";
-    ViewBag.Category = "Desserts";
-    ViewBag.Title = "Desserts";
 }
 
-@await Html.PartialAsync("_MenuPageTemplate", Model)
+<h2>Desserts</h2>
+
+<div class="product-grid">
+    @foreach (var product in Model)
+    {
+        <div class="product-card" onclick="addToOrder('@product.Id', '@product.Name', @product.Price)">
+            <div class="product-image-wrapper">
+                <img src="@product.ImagePath" alt="@product.Name" class="product-image" />
+            </div>
+            <h3>@product.Name</h3>
+            <p>@product.Description</p>
+            <p><b>Category:</b> @product.Category</p>
+            <p><b>Price:</b> $@product.Price</p>
+        </div>
+    }
+</div>
+
+<script src="~/js/order.js"></script>

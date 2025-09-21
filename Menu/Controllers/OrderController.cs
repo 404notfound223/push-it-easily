@@ -1,7 +1,6 @@
 using Menu.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-//using System.Linq.Dynamic.Core;
 
 public class OrderController : Controller
 {
@@ -19,18 +18,12 @@ public class OrderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> OrderHistory(PagingRequest request)
+    public async Task<IActionResult> OrderHistory()
     {
         var userId = HttpContext.Session.GetString("UserId");
         if (string.IsNullOrEmpty(userId))
         {
             return RedirectToAction("Login", "Login");
-        }
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Request.Query.ContainsKey("ajax"))
-        {
-            var pagedResult = await GetPagedOrderHistory(userId, request);
-            return Json(new { success = true, result = pagedResult });
         }
 
         try
@@ -53,99 +46,6 @@ public class OrderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetPagedOrderHistory(PagingRequest request)
-    {
-        var userId = HttpContext.Session.GetString("UserId");
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Json(new { success = false, error = "User not logged in" });
-        }
-
-        var pagedResult = await GetPagedOrderHistory(userId, request);
-        return Json(new { success = true, result = pagedResult });
-    }
-
-    private async Task<PagedResult<object>> GetPagedOrderHistory(string userId, PagingRequest request)
-    {
-        var query = _context.Orders
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.Product)
-            .Include(o => o.User)
-            .Where(o => o.UserId != null && o.UserId == userId)
-            .AsQueryable();
-
-        if (!string.IsNullOrEmpty(request.SearchTerm))
-        {
-            var searchTerm = request.SearchTerm.ToLower();
-            query = query.Where(o => o.OrderId.ToLower().Contains(searchTerm) ||
-                                   o.Status.ToLower().Contains(searchTerm) ||
-                                   o.OrderDetails.Any(od => od.Product.Name.ToLower().Contains(searchTerm)));
-        }
-
-        if (!string.IsNullOrEmpty(request.Category)) // Using Category field for status filter
-        {
-            query = query.Where(o => o.Status == request.Category);
-        }
-
-        if (!string.IsNullOrEmpty(request.SortBy))
-        {
-            switch (request.SortBy.ToLower())
-            {
-                case "date":
-                    query = request.SortDirection == "desc"
-                        ? query.OrderByDescending(o => o.OrderDate)
-                        : query.OrderBy(o => o.OrderDate);
-                    break;
-                case "total":
-                    query = request.SortDirection == "desc"
-                        ? query.OrderByDescending(o => o.TotalAmount)
-                        : query.OrderBy(o => o.TotalAmount);
-                    break;
-                case "status":
-                    query = request.SortDirection == "desc"
-                        ? query.OrderByDescending(o => o.Status)
-                        : query.OrderBy(o => o.Status);
-                    break;
-                default:
-                    query = query.OrderByDescending(o => o.OrderDate);
-                    break;
-            }
-        }
-        else
-        {
-            query = query.OrderByDescending(o => o.OrderDate);
-        }
-
-        var totalCount = await query.CountAsync();
-        var orders = await query
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .Select(o => new {
-                orderId = o.OrderId,
-                orderDate = o.OrderDate,
-                totalAmount = o.TotalAmount,
-                status = o.Status,
-                customer = o.User != null ? o.User.Name : "Guest",
-                itemCount = o.OrderDetails.Count(),
-                items = o.OrderDetails.Take(3).Select(od => new {
-                    productName = od.Product.Name,
-                    quantity = od.Quantity,
-                    unitPrice = od.UnitPrice
-                }).ToList(),
-                hasMoreItems = o.OrderDetails.Count() > 3
-            })
-            .ToListAsync();
-
-        return new PagedResult<object>
-        {
-            Items = orders.Cast<object>().ToList(),
-            TotalCount = totalCount,
-            PageNumber = request.Page,
-            PageSize = request.PageSize
-        };
-    }
-
-    [HttpGet]
     public async Task<IActionResult> GetUserOrders()
     {
         var userId = HttpContext.Session.GetString("UserId");
@@ -159,8 +59,8 @@ public class OrderController : Controller
             var orders = await _context.Orders
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
-                .Include(o => o.User) 
-                .Where(o => o.UserId != null && o.UserId == userId) 
+                .Include(o => o.User)
+                .Where(o => o.UserId != null && o.UserId == userId)
                 .OrderByDescending(o => o.OrderDate)
                 .Select(o => new {
                     orderId = o.OrderId,
